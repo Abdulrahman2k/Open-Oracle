@@ -1,0 +1,1084 @@
+# $Header$
+
+# dbdrv: exec fnd bin FNDLOAD bin &phase=daa+52 checkfile:~PROD:~PATH:~FILE &ui_apps 0 Y UPLOAD @ALR:patch/115/import/alr.lct @~PROD:~PATH/~FILE
+LANGUAGE = "US"
+LDRCONFIG = "alr.lct"
+
+#Source Database ERPDEV
+
+#RELEASE_NAME 12.2.4
+
+# -- Begin Entity Definitions -- 
+
+DEFINE ALR_ALERTS
+  KEY   APPLICATION_SHORT_NAME          VARCHAR2(50)
+  KEY   ALERT_NAME                      VARCHAR2(50)
+  CTX   OWNER                           VARCHAR2(4000)
+  BASE  ALERT_CONDITION_TYPE            VARCHAR2(1)
+  BASE  ENABLED_FLAG                    VARCHAR2(1)
+  BASE  START_DATE_ACTIVE               VARCHAR2(25)
+  BASE  END_DATE_ACTIVE                 VARCHAR2(25)
+  BASE  TABLE_APPLICATION_SHORT_NAME    VARCHAR2(50)
+  BASE  DESCRIPTION                     VARCHAR2(240)
+  BASE  FREQUENCY_TYPE                  VARCHAR2(1)
+  BASE  WEEKLY_CHECK_DAY                VARCHAR2(3)
+  BASE  MONTHLY_CHECK_DAY_NUM           VARCHAR2(50)
+  BASE  DAYS_BETWEEN_CHECKS             VARCHAR2(50)
+  BASE  CHECK_BEGIN_DATE                VARCHAR2(25)
+  BASE  DATE_LAST_CHECKED               VARCHAR2(25)
+  BASE  INSERT_FLAG                     VARCHAR2(1)
+  BASE  UPDATE_FLAG                     VARCHAR2(1)
+  BASE  DELETE_FLAG                     VARCHAR2(1)
+  BASE  MAINTAIN_HISTORY_DAYS           VARCHAR2(50)
+  BASE  CHECK_TIME                      VARCHAR2(50)
+  BASE  CHECK_START_TIME                VARCHAR2(50)
+  BASE  CHECK_END_TIME                  VARCHAR2(50)
+  BASE  SECONDS_BETWEEN_CHECKS          VARCHAR2(50)
+  BASE  CHECK_ONCE_DAILY_FLAG           VARCHAR2(1)
+  BASE  SQL_STATEMENT_TEXT              VARCHAR2(32000)
+  BASE  ONE_TIME_ONLY_FLAG              VARCHAR2(50)
+  BASE  TABLE_NAME                      VARCHAR2(31)
+  BASE  LAST_UPDATE_DATE                VARCHAR2(10)
+
+  DEFINE ALR_RESPONSE_SETS
+    KEY   RESP_SET_NAME                   VARCHAR2(30)
+    CTX   OWNER                           VARCHAR2(4000)
+    BASE  DESCRIPTION                     VARCHAR2(240)
+    BASE  ENABLED_FLAG                    VARCHAR2(1)
+    BASE  END_DATE_ACTIVE                 VARCHAR2(25)
+    BASE  LAST_UPDATE_DATE                VARCHAR2(10)
+
+    DEFINE ALR_RESPONSE_VARIABLES
+      KEY   RESP_VAR_NAME                   VARCHAR2(30)
+      CTX   OWNER                           VARCHAR2(4000)
+      BASE  DESCRIPTION                     VARCHAR2(240)
+      BASE  TYPE                            VARCHAR2(1)
+      BASE  DEFAULT_VALUE                   VARCHAR2(240)
+      BASE  DATA_TYPE                       VARCHAR2(1)
+      BASE  DETAIL_MAX_LEN                  VARCHAR2(50)
+      BASE  LAST_UPDATE_DATE                VARCHAR2(10)
+    END ALR_RESPONSE_VARIABLES
+
+      DEFINE ALR_RESPONSE_ACTIONS
+        KEY   RESPONSE_NAME                   VARCHAR2(240)
+        KEY   SEQUENCE                        VARCHAR2(50)
+        CTX   OWNER                           VARCHAR2(4000)
+        BASE  ACTION_NAME                     VARCHAR2(80)
+        BASE  ENABLED_FLAG                    VARCHAR2(1)
+        BASE  END_DATE_ACTIVE                 VARCHAR2(25)
+        BASE  LAST_UPDATE_DATE                VARCHAR2(10)
+      END ALR_RESPONSE_ACTIONS
+
+        DEFINE ALR_VALID_RESPONSES
+          KEY   RESPONSE_NAME                   VARCHAR2(240)
+          CTX   OWNER                           VARCHAR2(4000)
+          BASE  TYPE                            VARCHAR2(1)
+          BASE  RESPONSE_TEXT                   VARCHAR2(32000)
+          BASE  LAST_UPDATE_DATE                VARCHAR2(10)
+        END ALR_VALID_RESPONSES
+  END ALR_RESPONSE_SETS
+
+    DEFINE ALR_ACTION_SETS
+      KEY   NAME                            VARCHAR2(50)
+      CTX   OWNER                           VARCHAR2(4000)
+      BASE  END_DATE_ACTIVE                 VARCHAR2(25)
+      BASE  ENABLED_FLAG                    VARCHAR2(1)
+      BASE  RECIPIENTS_VIEW_ONLY_FLAG       VARCHAR2(1)
+      BASE  DESCRIPTION                     VARCHAR2(240)
+      BASE  SUPPRESS_FLAG                   VARCHAR2(1)
+      BASE  SUPPRESS_DAYS                   VARCHAR2(50)
+      BASE  SEQUENCE                        VARCHAR2(50)
+      BASE  LAST_UPDATE_DATE                VARCHAR2(10)
+
+      DEFINE ALR_ACTION_SET_MEMBERS
+        CTX   OWNER                           VARCHAR2(4000)
+        BASE  ACTION_NAME                     VARCHAR2(80)
+        BASE  GROUP_NAME                      VARCHAR2(80)
+        BASE  GROUP_TYPE                      VARCHAR2(1)
+        BASE  SEQUENCE                        VARCHAR2(50)
+        BASE  END_DATE_ACTIVE                 VARCHAR2(25)
+        BASE  ENABLED_FLAG                    VARCHAR2(1)
+        BASE  SUMMARY_THRESHOLD               VARCHAR2(50)
+        BASE  ABORT_FLAG                      VARCHAR2(1)
+        BASE  ERROR_ACTION_SEQUENCE           VARCHAR2(50)
+        BASE  LAST_UPDATE_DATE                VARCHAR2(10)
+      END ALR_ACTION_SET_MEMBERS
+
+        DEFINE ALR_ACTION_SET_OUTPUTS
+          KEY   ACTION_SET_OUTPUT_NAME          VARCHAR2(30)
+          CTX   OWNER                           VARCHAR2(4000)
+          BASE  SEQUENCE                        VARCHAR2(50)
+          BASE  SUPPRESS_FLAG                   VARCHAR2(1)
+          BASE  LAST_UPDATE_DATE                VARCHAR2(10)
+        END ALR_ACTION_SET_OUTPUTS
+
+          DEFINE ALR_ACTION_SET_INPUTS
+            KEY   ACTION_SET_INPUT_NAME           VARCHAR2(30)
+            CTX   OWNER                           VARCHAR2(4000)
+            BASE  VALUE                           VARCHAR2(240)
+            BASE  LAST_UPDATE_DATE                VARCHAR2(10)
+          END ALR_ACTION_SET_INPUTS
+    END ALR_ACTION_SETS
+
+      DEFINE ALR_ACTION_GROUPS
+        KEY   NAME                            VARCHAR2(80)
+        KEY   GROUP_TYPE                      VARCHAR2(1)
+        CTX   OWNER                           VARCHAR2(4000)
+        BASE  ACTION_GROUP_TYPE               VARCHAR2(1)
+        BASE  END_DATE_ACTIVE                 VARCHAR2(25)
+        BASE  ENABLED_FLAG                    VARCHAR2(1)
+        BASE  DESCRIPTION                     VARCHAR2(240)
+        BASE  LAST_UPDATE_DATE                VARCHAR2(10)
+
+        DEFINE ALR_ACTION_GROUP_MEMBERS
+          CTX   OWNER                           VARCHAR2(4000)
+          BASE  ACTION_NAME                     VARCHAR2(80)
+          BASE  END_DATE_ACTIVE                 VARCHAR2(25)
+          BASE  ENABLED_FLAG                    VARCHAR2(1)
+          BASE  ACTION_LEVEL                    VARCHAR2(50)
+          BASE  LAST_UPDATE_DATE                VARCHAR2(10)
+        END ALR_ACTION_GROUP_MEMBERS
+      END ALR_ACTION_GROUPS
+
+        DEFINE ALR_ACTIONS
+          KEY   ACTION_NAME                     VARCHAR2(80)
+          KEY   ACTION_END_DATE_ACTIVE          VARCHAR2(25)
+          CTX   OWNER                           VARCHAR2(4000)
+          BASE  ACTION_TYPE                     VARCHAR2(1)
+          BASE  ENABLED_FLAG                    VARCHAR2(1)
+          BASE  DESCRIPTION                     VARCHAR2(240)
+          BASE  ACTION_LEVEL_TYPE               VARCHAR2(1)
+          BASE  DATE_LAST_EXECUTED              VARCHAR2(25)
+          BASE  FILE_NAME                       VARCHAR2(240)
+          BASE  ARGUMENT_STRING                 VARCHAR2(240)
+          BASE  PROGRAM_APPLICATION_NAME        VARCHAR2(50)
+          BASE  CONCURRENT_PROGRAM_NAME         VARCHAR2(30)
+          BASE  LIST_APPLICATION_NAME           VARCHAR2(50)
+          BASE  LIST_NAME                       VARCHAR2(30)
+          BASE  TO_RECIPIENTS                   VARCHAR2(240)
+          BASE  CC_RECIPIENTS                   VARCHAR2(240)
+          BASE  BCC_RECIPIENTS                  VARCHAR2(240)
+          BASE  PRINT_RECIPIENTS                VARCHAR2(240)
+          BASE  PRINTER                         VARCHAR2(30)
+          BASE  SUBJECT                         VARCHAR2(240)
+          BASE  REPLY_TO                        VARCHAR2(240)
+          BASE  RESPONSE_SET_NAME               VARCHAR2(30)
+          BASE  FOLLOW_UP_AFTER_DAYS            VARCHAR2(50)
+          BASE  COLUMN_WRAP_FLAG                VARCHAR2(1)
+          BASE  MAXIMUM_SUMMARY_MESSAGE_WIDTH   VARCHAR2(50)
+          BASE  BODY                            VARCHAR2(2000)
+          BASE  VERSION_NUMBER                  VARCHAR2(50)
+          BASE  LAST_UPDATE_DATE                VARCHAR2(10)
+
+          DEFINE ALR_ACTION_OUTPUTS
+            KEY   ACTION_OUT_NAME                 VARCHAR2(30)
+            CTX   OWNER                           VARCHAR2(4000)
+            BASE  CRITICAL_FLAG                   VARCHAR2(1)
+            BASE  END_DATE_ACTIVE                 VARCHAR2(25)
+            BASE  LAST_UPDATE_DATE                VARCHAR2(10)
+          END ALR_ACTION_OUTPUTS
+        END ALR_ACTIONS
+
+          DEFINE ALR_ALERT_OUTPUTS
+            KEY   NAME                            VARCHAR2(30)
+            CTX   OWNER                           VARCHAR2(4000)
+            BASE  SEQUENCE                        VARCHAR2(50)
+            BASE  ENABLED_FLAG                    VARCHAR2(1)
+            BASE  START_DATE_ACTIVE               VARCHAR2(25)
+            BASE  END_DATE_ACTIVE                 VARCHAR2(25)
+            BASE  TITLE                           VARCHAR2(240)
+            BASE  DETAIL_MAX_LEN                  VARCHAR2(50)
+            BASE  SUMMARY_MAX_LEN                 VARCHAR2(50)
+            BASE  DEFAULT_SUPPRESS_FLAG           VARCHAR2(1)
+            BASE  FORMAT_MASK                     VARCHAR2(30)
+            BASE  LAST_UPDATE_DATE                VARCHAR2(10)
+          END ALR_ALERT_OUTPUTS
+
+            DEFINE ALR_ALERT_INSTALLATIONS
+              KEY   ORACLE_USERNAME                 VARCHAR2(30)
+              KEY   DATA_GROUP_NAME                 VARCHAR2(240)
+              CTX   OWNER                           VARCHAR2(4000)
+              BASE  ENABLED_FLAG                    VARCHAR2(1)
+              BASE  LAST_UPDATE_DATE                VARCHAR2(10)
+            END ALR_ALERT_INSTALLATIONS
+
+              DEFINE ALR_ALERT_INPUTS
+                KEY   NAME                            VARCHAR2(30)
+                CTX   OWNER                           VARCHAR2(4000)
+                BASE  ENABLED_FLAG                    VARCHAR2(1)
+                BASE  START_DATE_ACTIVE               VARCHAR2(25)
+                BASE  END_DATE_ACTIVE                 VARCHAR2(25)
+                BASE  TITLE                           VARCHAR2(240)
+                BASE  DATA_TYPE                       VARCHAR2(1)
+                BASE  DEFAULT_VALUE                   VARCHAR2(240)
+                BASE  LAST_UPDATE_DATE                VARCHAR2(10)
+              END ALR_ALERT_INPUTS
+END ALR_ALERTS
+
+# -- End Entity Definitions -- 
+
+
+BEGIN ALR_ALERTS "XXSC" "XXSC : Probation Period Notification Alert"
+  OWNER = "DIVYA"
+  ALERT_CONDITION_TYPE = "P"
+  ENABLED_FLAG = "Y"
+  START_DATE_ACTIVE = "2015/03/05 00:00:00"
+  FREQUENCY_TYPE = "C"
+  DAYS_BETWEEN_CHECKS = "1"
+  DATE_LAST_CHECKED = "2016/05/23 07:00:21"
+  MAINTAIN_HISTORY_DAYS = "1"
+  CHECK_START_TIME = "25200"
+  SQL_STATEMENT_TEXT =
+ "SELECT employee_number,\n\
+  LINE_MANAGER_EMAIL_ID,\n\
+  manager_name,\n\
+  EMPLOYEE_NAME,\n\
+  DATE_PROBATION_END,\n\
+  GENDER,\n\
+  dat_prb_end_bf_wk,\n\
+  GENDER_1,\n\
+  hr_ml,\n\
+  hr_ml_1,\n\
+  url\n\
+INTO\n\
+  &p_employee_number,\n\
+  &p_LINE_MANAGER_EMAIL_ID,\n\
+  &p_manager_name,\n\
+  &p_EMPLOYEE_NAME,\n\
+  &p_DATE_PROBATION_END,\n\
+  &p_GENDER,\n\
+  &p_dat_prb_end_bf_wk,\n\
+  &p_GENDER_1,\n\
+  &hr_ml,\n\
+  &hr_ml_1,\n\
+  &url\n\
+FROM\n\
+  (SELECT INITCAP (hou.NAME) COmpany,\n\
+    pap.employee_number employee_number,\n\
+    paa.assignment_id,\n\
+    ROUND ( (TRUNC (paa.date_probation_end) - TRUNC (pps.date_start)) / 30, 2)\n\
+    || ' Months' probation_period,\n\
+    pap.full_name employee_name,\n\
+    DECODE (pap.sex, 'M', 'him', 'F', 'her') gender,\n\
+    DECODE (pap.sex, 'M', 'he', 'F', 'she') gender_1,\n\
+    --  trim(xxwc_emp_master_details.get_job_name (PAA.JOB_ID, SYSDATE)) job,\n\
+    (\n\
+    SELECT NAME\n\
+    FROM per_jobs pj\n\
+    WHERE pj.job_id = paa.job_id\n\
+    ) job,\n\
+    TO_CHAR (pps.date_start, 'DD-MON-RRRR') join_date,\n\
+    TO_CHAR (paa.date_probation_end, 'DD-MON-RRRR') date_probation_end,\n\
+    TO_CHAR ( (paa.date_probation_end - 7), 'DD-MON-RRRR') dat_prb_end_bf_wk,\n\
+    TRUNC (paa.date_probation_end)    - TRUNC (SYSDATE) + 1 probation_expiry_days,\n\
+    (SELECT EMAIL_ADDRESS\n\
+    FROM per_all_people_f ppf\n\
+    WHERE ppf.person_id = paa.supervisor_id\n\
+    AND TRUNC (SYSDATE) BETWEEN ppf.effective_start_date AND ppf.effective_end_date\n\
+    ) Line_Manager_Email_Id,\n\
+    /*(SELECT EMAIL_ADDRESS\n\
+    FROM per_all_people_f ppf\n\
+    WHERE employee_number = pap.employee_number\n\
+    AND TRUNC (SYSDATE) BETWEEN ppf.effective_start_date\n\
+    AND ppf.effective_end_date)*/\n\
+    /*(SELECT INITCAP (ppf.title) || ' ' || ppf.full_name\n\
+    FROM per_all_people_f ppf\n\
+    WHERE ppf.person_id = paa.supervisor_id\n\
+    AND TRUNC (SYSDATE) BETWEEN ppf.effective_start_date\n\
+    AND ppf.effective_end_date) */\n\
+    (\n\
+    SELECT full_name\n\
+    FROM per_all_people_f ppf\n\
+    WHERE ppf.person_id = paa.SUPERVISOR_ID\n\
+    AND TRUNC (SYSDATE) BETWEEN ppf.effective_start_date AND ppf.effective_end_date\n\
+    ) manager_name,\n\
+    NULL,\n\
+    paa.supervisor_id,\n\
+    DECODE (\n\
+    (SELECT name FROM per_business_groups b WHERE b.business_group_id = pap.business_group_id\n\
+    ),'GFC UAE',\n\
+    (SELECT DISTINCT value\n\
+    FROM PAY_USER_COLUMN_INSTANCES_F pi,\n\
+      PAY_USER_COLUMNS_FV pc,\n\
+      PAY_USER_TABLES_FV p\n\
+    WHERE pi.USER_COLUMN_ID = pc.USER_COLUMN_ID\n\
+    AND p.USER_TABLE_ID     = pc.USER_TABLE_ID\n\
+    AND user_table_name     = 'XXSC_GFC_UAE_PROB_EXPIRY_HR_MAIL'\n\
+    AND USER_COLUMN_NAME    = 'E-Mail'\n\
+    AND p.BUSINESS_GROUP_ID = pi.BUSINESS_GROUP_ID\n\
+    AND p.BUSINESS_GROUP_ID = pap.business_group_id\n\
+      -- and trunc(sysdate) between pi.Effective_Start_Date and pi.Effective_Start_Date\n\
+    ) ,'Shuaa Group KSA','jdeklerk@shuaa.com','Shuaa Group UAE','jdeklerk@shuaa.com',NULL) hr_ml,\n\
+    DECODE (\n\
+    (SELECT name FROM per_business_groups b WHERE b.business_group_id = pap.business_group_id\n\
+    ),'Shuaa Group KSA','mgreen@shuaa.com','Shuaa Group UAE','mgreen@shuaa.com',NULL) hr_ml_1,\n\
+    DECODE (\n\
+    (SELECT name FROM per_business_groups b WHERE b.business_group_id = pap.business_group_id\n\
+    ),'Shuaa Group KSA','http://sc21/SiteDirectory/HR/Lists/End%20of%20Probation%20Assessment%20Form/NewForm.aspx?Source=http%3A%2F%2Fsc21%2FSiteDirectory%2FHR%2FLists%2FEnd%2520of%2520Probation%2520Assessment%2520Form%2Foverview%2Easpx', 'Shuaa Group UAE','http://sc21/SiteDirectory/HR/Lists/End%20of%20Probation%20Assessment%20Form/NewForm.aspx?Source=http%3A%2F%2Fsc21%2FSiteDirectory%2FHR%2FLists%2FEnd%2520of%2520Probation%2520Assessment%2520Form%2Foverview%2Easpx', 'GFC UAE', 'http://gfcsharep1/gfcblog/Lists/End%20of%20Probation%20Assesment%20Form/overview.aspx', NULL) url\n\
+  FROM per_all_people_f pap,\n\
+    per_all_assignments_f paa,\n\
+    hr_organization_units hou,\n\
+    Per_Periods_Of_Service Pps\n\
+  WHERE pap.person_id = paa.person_id\n\
+  AND Pap.Person_Id   = Pps.Person_Id\n\
+  AND Pps.date_start  =\n\
+    (SELECT MAX (Pps1.Date_Start)\n\
+    FROM Per_Periods_Of_Service Pps1\n\
+    WHERE Pps1.Person_Id = Pps.Person_Id\n\
+    AND Pps1.Date_Start <= SYSDATE\n\
+    )\n\
+  AND TRUNC (SYSDATE) BETWEEN pap.effective_start_date AND pap.effective_end_date\n\
+  AND TRUNC (SYSDATE) BETWEEN paa.effective_start_date AND paa.effective_end_date\n\
+  AND paa.organization_id                                  = hou.organization_id\n\
+  AND paa.primary_flag                                     = 'Y'\n\
+  AND pap.employee_number                                 IS NOT NULL\n\
+  AND TRUNC (paa.date_probation_end) - TRUNC (SYSDATE) + 1 = 14\n\
+  ) x\n\
+ORDER BY employee_number"
+  LAST_UPDATE_DATE = "2015/04/29"
+
+
+  BEGIN ALR_ALERT_INSTALLATIONS "APPS" ""
+    OWNER = "DIVYA"
+    ENABLED_FLAG = "Y"
+    LAST_UPDATE_DATE = "2015/04/29"
+  END ALR_ALERT_INSTALLATIONS
+  
+
+  BEGIN ALR_ALERT_OUTPUTS "HR_ML"
+    OWNER = "DIVYA"
+    SEQUENCE = "9"
+    ENABLED_FLAG = "Y"
+    START_DATE_ACTIVE = "2015/04/21 17:22:22"
+    TITLE = "HR_ML"
+    DEFAULT_SUPPRESS_FLAG = "Y"
+    LAST_UPDATE_DATE = "2015/04/21"
+  END ALR_ALERT_OUTPUTS
+  
+  BEGIN ALR_ALERT_OUTPUTS "HR_ML_1"
+    OWNER = "DIVYA"
+    SEQUENCE = "10"
+    ENABLED_FLAG = "Y"
+    START_DATE_ACTIVE = "2015/04/29 10:43:57"
+    TITLE = "HR_ML_1"
+    DEFAULT_SUPPRESS_FLAG = "Y"
+    LAST_UPDATE_DATE = "2015/04/29"
+  END ALR_ALERT_OUTPUTS
+  
+  BEGIN ALR_ALERT_OUTPUTS "P_DATE_PROBATION_END"
+    OWNER = "DIVYA"
+    SEQUENCE = "5"
+    ENABLED_FLAG = "Y"
+    START_DATE_ACTIVE = "2015/03/05 18:24:45"
+    TITLE = "P_DATE_PROBATION_END"
+    DEFAULT_SUPPRESS_FLAG = "Y"
+    LAST_UPDATE_DATE = "2015/03/05"
+  END ALR_ALERT_OUTPUTS
+  
+  BEGIN ALR_ALERT_OUTPUTS "P_DAT_PRB_END_BF_WK"
+    OWNER = "DIVYA"
+    SEQUENCE = "7"
+    ENABLED_FLAG = "Y"
+    START_DATE_ACTIVE = "2015/03/05 18:24:45"
+    TITLE = "P_DAT_PRB_END_BF_WK"
+    DEFAULT_SUPPRESS_FLAG = "Y"
+    LAST_UPDATE_DATE = "2015/03/05"
+  END ALR_ALERT_OUTPUTS
+  
+  BEGIN ALR_ALERT_OUTPUTS "P_EMPLOYEE_NAME"
+    OWNER = "DIVYA"
+    SEQUENCE = "4"
+    ENABLED_FLAG = "Y"
+    START_DATE_ACTIVE = "2015/03/05 18:24:45"
+    TITLE = "P_EMPLOYEE_NAME"
+    DEFAULT_SUPPRESS_FLAG = "Y"
+    LAST_UPDATE_DATE = "2015/03/05"
+  END ALR_ALERT_OUTPUTS
+  
+  BEGIN ALR_ALERT_OUTPUTS "P_EMPLOYEE_NUMBER"
+    OWNER = "DIVYA"
+    SEQUENCE = "1"
+    ENABLED_FLAG = "Y"
+    START_DATE_ACTIVE = "2015/03/05 18:24:45"
+    TITLE = "P_EMPLOYEE_NUMBER"
+    DEFAULT_SUPPRESS_FLAG = "Y"
+    LAST_UPDATE_DATE = "2015/03/05"
+  END ALR_ALERT_OUTPUTS
+  
+  BEGIN ALR_ALERT_OUTPUTS "P_GENDER"
+    OWNER = "DIVYA"
+    SEQUENCE = "6"
+    ENABLED_FLAG = "Y"
+    START_DATE_ACTIVE = "2015/03/05 18:24:45"
+    TITLE = "P_GENDER"
+    DEFAULT_SUPPRESS_FLAG = "Y"
+    LAST_UPDATE_DATE = "2015/03/05"
+  END ALR_ALERT_OUTPUTS
+  
+  BEGIN ALR_ALERT_OUTPUTS "P_GENDER_1"
+    OWNER = "DIVYA"
+    SEQUENCE = "8"
+    ENABLED_FLAG = "Y"
+    START_DATE_ACTIVE = "2015/03/05 18:24:45"
+    TITLE = "P_GENDER_1"
+    DEFAULT_SUPPRESS_FLAG = "Y"
+    LAST_UPDATE_DATE = "2015/03/05"
+  END ALR_ALERT_OUTPUTS
+  
+  BEGIN ALR_ALERT_OUTPUTS "P_LINE_MANAGER_EMAIL_ID"
+    OWNER = "DIVYA"
+    SEQUENCE = "2"
+    ENABLED_FLAG = "Y"
+    START_DATE_ACTIVE = "2015/03/05 18:24:45"
+    TITLE = "P_LINE_MANAGER_EMAIL_ID"
+    DEFAULT_SUPPRESS_FLAG = "Y"
+    LAST_UPDATE_DATE = "2015/03/05"
+  END ALR_ALERT_OUTPUTS
+  
+  BEGIN ALR_ALERT_OUTPUTS "P_MANAGER_NAME"
+    OWNER = "DIVYA"
+    SEQUENCE = "3"
+    ENABLED_FLAG = "Y"
+    START_DATE_ACTIVE = "2015/03/05 18:24:45"
+    TITLE = "P_MANAGER_NAME"
+    DEFAULT_SUPPRESS_FLAG = "Y"
+    LAST_UPDATE_DATE = "2015/03/05"
+  END ALR_ALERT_OUTPUTS
+  
+  BEGIN ALR_ALERT_OUTPUTS "URL"
+    OWNER = "DIVYA"
+    SEQUENCE = "11"
+    ENABLED_FLAG = "Y"
+    START_DATE_ACTIVE = "2015/04/29 10:43:57"
+    TITLE = "URL"
+    DEFAULT_SUPPRESS_FLAG = "Y"
+    LAST_UPDATE_DATE = "2015/04/29"
+  END ALR_ALERT_OUTPUTS
+  
+
+  BEGIN ALR_ACTIONS "Send Notification Mail" ""
+    OWNER = "DIVYA"
+    ACTION_TYPE = "M"
+    ENABLED_FLAG = "Y"
+    ACTION_LEVEL_TYPE = "D"
+    TO_RECIPIENTS = "&P_LINE_MANAGER_EMAIL_ID"
+    CC_RECIPIENTS = "&HR_ML,&HR_ML_1,edummy@shuaa.com"
+    SUBJECT = "Probation Period Expiry Notification"
+    COLUMN_WRAP_FLAG = "Y"
+    BODY =
+ "Dear &P_MANAGER_NAME\n\
+\n\
+&P_EMPLOYEE_NAME’s probation period as per the contract is due to expire on &P_DATE_PROBATION_END. We would appreciate if you could please complete the probation review form &URL   \n\
+\n\
+Kindly have a performance discussion with  &P_EMPLOYEE_NAME and at the same time allow &P_GENDER to raise any concerns &P_GENDER_1 may have.\n\
+\n\
+Look forward to hearing from you by &P_DAT_PRB_END_BF_WK, so that we can confirm &p_EMPLOYEE_NAME’s Employment Status.\n\
+\n\
+\n\
+Thanks and regards,\n\
+HR\n\
+" 
+    VERSION_NUMBER = "5"
+    LAST_UPDATE_DATE = "2015/04/29"
+  
+    BEGIN ALR_ACTION_OUTPUTS "HR_ML"
+      OWNER = "DIVYA"
+      CRITICAL_FLAG = "N"
+      LAST_UPDATE_DATE = "2015/04/21"
+    END ALR_ACTION_OUTPUTS
+    
+    BEGIN ALR_ACTION_OUTPUTS "HR_ML_1"
+      OWNER = "DIVYA"
+      CRITICAL_FLAG = "N"
+      LAST_UPDATE_DATE = "2015/04/29"
+    END ALR_ACTION_OUTPUTS
+    
+    BEGIN ALR_ACTION_OUTPUTS "P_DATE_PROBATION_END"
+      OWNER = "DIVYA"
+      CRITICAL_FLAG = "N"
+      LAST_UPDATE_DATE = "2015/03/05"
+    END ALR_ACTION_OUTPUTS
+    
+    BEGIN ALR_ACTION_OUTPUTS "P_DAT_PRB_END_BF_WK"
+      OWNER = "DIVYA"
+      CRITICAL_FLAG = "N"
+      LAST_UPDATE_DATE = "2015/03/05"
+    END ALR_ACTION_OUTPUTS
+    
+    BEGIN ALR_ACTION_OUTPUTS "P_EMPLOYEE_NAME"
+      OWNER = "DIVYA"
+      CRITICAL_FLAG = "N"
+      LAST_UPDATE_DATE = "2015/03/05"
+    END ALR_ACTION_OUTPUTS
+    
+    BEGIN ALR_ACTION_OUTPUTS "P_EMPLOYEE_NUMBER"
+      OWNER = "DIVYA"
+      CRITICAL_FLAG = "N"
+      LAST_UPDATE_DATE = "2015/03/05"
+    END ALR_ACTION_OUTPUTS
+    
+    BEGIN ALR_ACTION_OUTPUTS "P_GENDER"
+      OWNER = "DIVYA"
+      CRITICAL_FLAG = "N"
+      LAST_UPDATE_DATE = "2015/03/05"
+    END ALR_ACTION_OUTPUTS
+    
+    BEGIN ALR_ACTION_OUTPUTS "P_GENDER_1"
+      OWNER = "DIVYA"
+      CRITICAL_FLAG = "N"
+      LAST_UPDATE_DATE = "2015/03/05"
+    END ALR_ACTION_OUTPUTS
+    
+    BEGIN ALR_ACTION_OUTPUTS "P_LINE_MANAGER_EMAIL_ID"
+      OWNER = "DIVYA"
+      CRITICAL_FLAG = "N"
+      LAST_UPDATE_DATE = "2015/03/05"
+    END ALR_ACTION_OUTPUTS
+    
+    BEGIN ALR_ACTION_OUTPUTS "P_MANAGER_NAME"
+      OWNER = "DIVYA"
+      CRITICAL_FLAG = "N"
+      LAST_UPDATE_DATE = "2015/03/05"
+    END ALR_ACTION_OUTPUTS
+    
+    BEGIN ALR_ACTION_OUTPUTS "URL"
+      OWNER = "DIVYA"
+      CRITICAL_FLAG = "N"
+      LAST_UPDATE_DATE = "2015/04/29"
+    END ALR_ACTION_OUTPUTS
+    
+  END ALR_ACTIONS
+  
+
+
+  BEGIN ALR_ACTION_SETS "Send Notification Mail"
+    OWNER = "DIVYA"
+    ENABLED_FLAG = "Y"
+    RECIPIENTS_VIEW_ONLY_FLAG = "N"
+    SUPPRESS_FLAG = "N"
+    SEQUENCE = "1"
+    LAST_UPDATE_DATE = "2015/04/28"
+  
+  
+    BEGIN ALR_ACTION_SET_OUTPUTS "HR_ML"
+      OWNER = "DIVYA"
+      SEQUENCE = "9"
+      SUPPRESS_FLAG = "Y"
+      LAST_UPDATE_DATE = "2015/04/21"
+    END ALR_ACTION_SET_OUTPUTS
+    
+    BEGIN ALR_ACTION_SET_OUTPUTS "HR_ML_1"
+      OWNER = "DIVYA"
+      SEQUENCE = "10"
+      SUPPRESS_FLAG = "Y"
+      LAST_UPDATE_DATE = "2015/04/29"
+    END ALR_ACTION_SET_OUTPUTS
+    
+    BEGIN ALR_ACTION_SET_OUTPUTS "P_DATE_PROBATION_END"
+      OWNER = "DIVYA"
+      SEQUENCE = "5"
+      SUPPRESS_FLAG = "Y"
+      LAST_UPDATE_DATE = "2015/03/05"
+    END ALR_ACTION_SET_OUTPUTS
+    
+    BEGIN ALR_ACTION_SET_OUTPUTS "P_DAT_PRB_END_BF_WK"
+      OWNER = "DIVYA"
+      SEQUENCE = "7"
+      SUPPRESS_FLAG = "Y"
+      LAST_UPDATE_DATE = "2015/03/05"
+    END ALR_ACTION_SET_OUTPUTS
+    
+    BEGIN ALR_ACTION_SET_OUTPUTS "P_EMPLOYEE_NAME"
+      OWNER = "DIVYA"
+      SEQUENCE = "4"
+      SUPPRESS_FLAG = "Y"
+      LAST_UPDATE_DATE = "2015/03/05"
+    END ALR_ACTION_SET_OUTPUTS
+    
+    BEGIN ALR_ACTION_SET_OUTPUTS "P_EMPLOYEE_NUMBER"
+      OWNER = "DIVYA"
+      SEQUENCE = "1"
+      SUPPRESS_FLAG = "Y"
+      LAST_UPDATE_DATE = "2015/03/05"
+    END ALR_ACTION_SET_OUTPUTS
+    
+    BEGIN ALR_ACTION_SET_OUTPUTS "P_GENDER"
+      OWNER = "DIVYA"
+      SEQUENCE = "6"
+      SUPPRESS_FLAG = "Y"
+      LAST_UPDATE_DATE = "2015/03/05"
+    END ALR_ACTION_SET_OUTPUTS
+    
+    BEGIN ALR_ACTION_SET_OUTPUTS "P_GENDER_1"
+      OWNER = "DIVYA"
+      SEQUENCE = "8"
+      SUPPRESS_FLAG = "Y"
+      LAST_UPDATE_DATE = "2015/03/05"
+    END ALR_ACTION_SET_OUTPUTS
+    
+    BEGIN ALR_ACTION_SET_OUTPUTS "P_LINE_MANAGER_EMAIL_ID"
+      OWNER = "DIVYA"
+      SEQUENCE = "2"
+      SUPPRESS_FLAG = "Y"
+      LAST_UPDATE_DATE = "2015/03/05"
+    END ALR_ACTION_SET_OUTPUTS
+    
+    BEGIN ALR_ACTION_SET_OUTPUTS "P_MANAGER_NAME"
+      OWNER = "DIVYA"
+      SEQUENCE = "3"
+      SUPPRESS_FLAG = "Y"
+      LAST_UPDATE_DATE = "2015/03/05"
+    END ALR_ACTION_SET_OUTPUTS
+    
+    BEGIN ALR_ACTION_SET_OUTPUTS "URL"
+      OWNER = "DIVYA"
+      SEQUENCE = "11"
+      SUPPRESS_FLAG = "Y"
+      LAST_UPDATE_DATE = "2015/04/29"
+    END ALR_ACTION_SET_OUTPUTS
+    
+  
+    BEGIN ALR_ACTION_SET_MEMBERS
+      OWNER = "DIVYA"
+      ACTION_NAME = "Send Notification Mail"
+      SEQUENCE = "1"
+      ENABLED_FLAG = "Y"
+      ABORT_FLAG = "A"
+      LAST_UPDATE_DATE = "2015/03/05"
+    END ALR_ACTION_SET_MEMBERS
+    
+  END ALR_ACTION_SETS
+  
+
+END ALR_ALERTS
+
+BEGIN ALR_ALERTS "XXSC" "XXSC : Employee assignment changes"
+  OWNER = "DIVYA"
+  ALERT_CONDITION_TYPE = "E"
+  ENABLED_FLAG = "Y"
+  START_DATE_ACTIVE = "2015/03/05 00:00:00"
+  TABLE_APPLICATION_SHORT_NAME = "XXSC"
+  DESCRIPTION = "Sending mails for the changes in master details of employees"
+  FREQUENCY_TYPE = "O"
+  DATE_LAST_CHECKED = "2016/04/14 11:29:48"
+  INSERT_FLAG = "Y"
+  UPDATE_FLAG = "Y"
+  MAINTAIN_HISTORY_DAYS = "0"
+  SQL_STATEMENT_TEXT =
+ "SELECT person_id,\n\
+       employee_number,\n\
+       employee_name,\n\
+       organization_name,\n\
+       effective_date,\n\
+       change_column,\n\
+       old_value,\n\
+       new_value,\n\
+       subject,\n\
+       mail_to\n\
+  INTO &p_person_id,\n\
+       &p_employee_number,\n\
+       &p_employee_name,\n\
+       &p_organization_name,\n\
+       &p_effective_date,\n\
+       &p_change_column,\n\
+       &p_old_value,\n\
+       &p_new_value,\n\
+       &p_subject,\n\
+       &p_mail\n\
+  FROM XXSC_TRACK_PEOPLE_TEMP_T\n\
+ WHERE rowid = :rowid"
+  TABLE_NAME = "XXSC_TRACK_PEOPLE_TEMP_T"
+  LAST_UPDATE_DATE = "2015/04/28"
+
+
+  BEGIN ALR_ALERT_INSTALLATIONS "APPS" "SHUAA Capital psc"
+    OWNER = "JYOTHI"
+    ENABLED_FLAG = "Y"
+    LAST_UPDATE_DATE = "2016/04/14"
+  END ALR_ALERT_INSTALLATIONS
+  
+
+  BEGIN ALR_ALERT_OUTPUTS "P_CHANGE_COLUMN"
+    OWNER = "DIVYA"
+    SEQUENCE = "6"
+    ENABLED_FLAG = "Y"
+    START_DATE_ACTIVE = "2015/03/05 18:37:06"
+    TITLE = "P_CHANGE_COLUMN"
+    DEFAULT_SUPPRESS_FLAG = "Y"
+    LAST_UPDATE_DATE = "2015/03/05"
+  END ALR_ALERT_OUTPUTS
+  
+  BEGIN ALR_ALERT_OUTPUTS "P_EFFECTIVE_DATE"
+    OWNER = "DIVYA"
+    SEQUENCE = "5"
+    ENABLED_FLAG = "Y"
+    START_DATE_ACTIVE = "2015/03/05 18:37:06"
+    TITLE = "P_EFFECTIVE_DATE"
+    DEFAULT_SUPPRESS_FLAG = "Y"
+    LAST_UPDATE_DATE = "2015/03/05"
+  END ALR_ALERT_OUTPUTS
+  
+  BEGIN ALR_ALERT_OUTPUTS "P_EMPLOYEE_NAME"
+    OWNER = "DIVYA"
+    SEQUENCE = "3"
+    ENABLED_FLAG = "Y"
+    START_DATE_ACTIVE = "2015/03/05 18:37:06"
+    TITLE = "P_EMPLOYEE_NAME"
+    DEFAULT_SUPPRESS_FLAG = "Y"
+    LAST_UPDATE_DATE = "2015/03/05"
+  END ALR_ALERT_OUTPUTS
+  
+  BEGIN ALR_ALERT_OUTPUTS "P_EMPLOYEE_NUMBER"
+    OWNER = "DIVYA"
+    SEQUENCE = "2"
+    ENABLED_FLAG = "Y"
+    START_DATE_ACTIVE = "2015/03/05 18:37:06"
+    TITLE = "P_EMPLOYEE_NUMBER"
+    DEFAULT_SUPPRESS_FLAG = "Y"
+    LAST_UPDATE_DATE = "2015/03/05"
+  END ALR_ALERT_OUTPUTS
+  
+  BEGIN ALR_ALERT_OUTPUTS "P_MAIL"
+    OWNER = "DIVYA"
+    SEQUENCE = "10"
+    ENABLED_FLAG = "Y"
+    START_DATE_ACTIVE = "2015/04/28 10:39:04"
+    TITLE = "P_MAIL"
+    DEFAULT_SUPPRESS_FLAG = "Y"
+    LAST_UPDATE_DATE = "2015/04/28"
+  END ALR_ALERT_OUTPUTS
+  
+  BEGIN ALR_ALERT_OUTPUTS "P_NEW_VALUE"
+    OWNER = "DIVYA"
+    SEQUENCE = "8"
+    ENABLED_FLAG = "Y"
+    START_DATE_ACTIVE = "2015/03/05 18:37:06"
+    TITLE = "P_NEW_VALUE"
+    DEFAULT_SUPPRESS_FLAG = "Y"
+    LAST_UPDATE_DATE = "2015/03/05"
+  END ALR_ALERT_OUTPUTS
+  
+  BEGIN ALR_ALERT_OUTPUTS "P_OLD_VALUE"
+    OWNER = "DIVYA"
+    SEQUENCE = "7"
+    ENABLED_FLAG = "Y"
+    START_DATE_ACTIVE = "2015/03/05 18:37:06"
+    TITLE = "P_OLD_VALUE"
+    DEFAULT_SUPPRESS_FLAG = "Y"
+    LAST_UPDATE_DATE = "2015/03/05"
+  END ALR_ALERT_OUTPUTS
+  
+  BEGIN ALR_ALERT_OUTPUTS "P_ORGANIZATION_NAME"
+    OWNER = "DIVYA"
+    SEQUENCE = "4"
+    ENABLED_FLAG = "Y"
+    START_DATE_ACTIVE = "2015/03/05 18:37:06"
+    TITLE = "P_ORGANIZATION_NAME"
+    DEFAULT_SUPPRESS_FLAG = "Y"
+    LAST_UPDATE_DATE = "2015/03/05"
+  END ALR_ALERT_OUTPUTS
+  
+  BEGIN ALR_ALERT_OUTPUTS "P_PERSON_ID"
+    OWNER = "DIVYA"
+    SEQUENCE = "1"
+    ENABLED_FLAG = "Y"
+    START_DATE_ACTIVE = "2015/03/05 18:37:06"
+    TITLE = "P_PERSON_ID"
+    DEFAULT_SUPPRESS_FLAG = "Y"
+    LAST_UPDATE_DATE = "2015/03/05"
+  END ALR_ALERT_OUTPUTS
+  
+  BEGIN ALR_ALERT_OUTPUTS "P_SUBJECT"
+    OWNER = "DIVYA"
+    SEQUENCE = "9"
+    ENABLED_FLAG = "Y"
+    START_DATE_ACTIVE = "2015/03/05 18:37:06"
+    TITLE = "P_SUBJECT"
+    DEFAULT_SUPPRESS_FLAG = "Y"
+    LAST_UPDATE_DATE = "2015/03/05"
+  END ALR_ALERT_OUTPUTS
+  
+
+  BEGIN ALR_ACTIONS "Send Mail" ""
+    OWNER = "DIVYA"
+    ACTION_TYPE = "M"
+    ENABLED_FLAG = "Y"
+    DESCRIPTION =
+ "Sending mails for the changes in master details of employees"
+    ACTION_LEVEL_TYPE = "S"
+    TO_RECIPIENTS = "&p_mail"
+    SUBJECT = "Employee &p_subject"
+    COLUMN_WRAP_FLAG = "Y"
+    MAXIMUM_SUMMARY_MESSAGE_WIDTH = "80"
+    BODY =
+ "Dear HR,\n\
+\n\
+Please be informed about the change in &p_change_column of &p_employee_name.\n\
+\n\
+Organization: &p_organization_name\n\
+Old Value: &p_old_value\n\
+New Value: &p_new_value\n\
+Effective Date: &p_effective_date\n\
+\n\
+Regards,\n\
+HR\n\
+" 
+    VERSION_NUMBER = "3"
+    LAST_UPDATE_DATE = "2015/04/28"
+  
+    BEGIN ALR_ACTION_OUTPUTS "P_CHANGE_COLUMN"
+      OWNER = "DIVYA"
+      CRITICAL_FLAG = "Y"
+      LAST_UPDATE_DATE = "2015/04/28"
+    END ALR_ACTION_OUTPUTS
+    
+    BEGIN ALR_ACTION_OUTPUTS "P_EFFECTIVE_DATE"
+      OWNER = "DIVYA"
+      CRITICAL_FLAG = "Y"
+      LAST_UPDATE_DATE = "2015/04/28"
+    END ALR_ACTION_OUTPUTS
+    
+    BEGIN ALR_ACTION_OUTPUTS "P_EMPLOYEE_NAME"
+      OWNER = "DIVYA"
+      CRITICAL_FLAG = "Y"
+      LAST_UPDATE_DATE = "2015/04/28"
+    END ALR_ACTION_OUTPUTS
+    
+    BEGIN ALR_ACTION_OUTPUTS "P_EMPLOYEE_NUMBER"
+      OWNER = "DIVYA"
+      CRITICAL_FLAG = "N"
+      LAST_UPDATE_DATE = "2015/03/05"
+    END ALR_ACTION_OUTPUTS
+    
+    BEGIN ALR_ACTION_OUTPUTS "P_MAIL"
+      OWNER = "DIVYA"
+      CRITICAL_FLAG = "Y"
+      LAST_UPDATE_DATE = "2015/04/28"
+    END ALR_ACTION_OUTPUTS
+    
+    BEGIN ALR_ACTION_OUTPUTS "P_NEW_VALUE"
+      OWNER = "DIVYA"
+      CRITICAL_FLAG = "Y"
+      LAST_UPDATE_DATE = "2015/04/28"
+    END ALR_ACTION_OUTPUTS
+    
+    BEGIN ALR_ACTION_OUTPUTS "P_OLD_VALUE"
+      OWNER = "DIVYA"
+      CRITICAL_FLAG = "Y"
+      LAST_UPDATE_DATE = "2015/04/28"
+    END ALR_ACTION_OUTPUTS
+    
+    BEGIN ALR_ACTION_OUTPUTS "P_ORGANIZATION_NAME"
+      OWNER = "DIVYA"
+      CRITICAL_FLAG = "Y"
+      LAST_UPDATE_DATE = "2015/04/28"
+    END ALR_ACTION_OUTPUTS
+    
+    BEGIN ALR_ACTION_OUTPUTS "P_PERSON_ID"
+      OWNER = "DIVYA"
+      CRITICAL_FLAG = "N"
+      LAST_UPDATE_DATE = "2015/03/05"
+    END ALR_ACTION_OUTPUTS
+    
+    BEGIN ALR_ACTION_OUTPUTS "P_SUBJECT"
+      OWNER = "DIVYA"
+      CRITICAL_FLAG = "Y"
+      LAST_UPDATE_DATE = "2015/04/28"
+    END ALR_ACTION_OUTPUTS
+    
+  END ALR_ACTIONS
+  
+
+
+  BEGIN ALR_ACTION_SETS "Send Mail"
+    OWNER = "DIVYA"
+    ENABLED_FLAG = "Y"
+    RECIPIENTS_VIEW_ONLY_FLAG = "N"
+    DESCRIPTION =
+ "Sending mails for the changes in master details of employees"
+    SUPPRESS_FLAG = "N"
+    SEQUENCE = "1"
+    LAST_UPDATE_DATE = "2015/03/05"
+  
+  
+    BEGIN ALR_ACTION_SET_OUTPUTS "P_CHANGE_COLUMN"
+      OWNER = "DIVYA"
+      SEQUENCE = "6"
+      SUPPRESS_FLAG = "Y"
+      LAST_UPDATE_DATE = "2015/03/05"
+    END ALR_ACTION_SET_OUTPUTS
+    
+    BEGIN ALR_ACTION_SET_OUTPUTS "P_EFFECTIVE_DATE"
+      OWNER = "DIVYA"
+      SEQUENCE = "5"
+      SUPPRESS_FLAG = "Y"
+      LAST_UPDATE_DATE = "2015/03/05"
+    END ALR_ACTION_SET_OUTPUTS
+    
+    BEGIN ALR_ACTION_SET_OUTPUTS "P_EMPLOYEE_NAME"
+      OWNER = "DIVYA"
+      SEQUENCE = "3"
+      SUPPRESS_FLAG = "Y"
+      LAST_UPDATE_DATE = "2015/03/05"
+    END ALR_ACTION_SET_OUTPUTS
+    
+    BEGIN ALR_ACTION_SET_OUTPUTS "P_EMPLOYEE_NUMBER"
+      OWNER = "DIVYA"
+      SEQUENCE = "2"
+      SUPPRESS_FLAG = "Y"
+      LAST_UPDATE_DATE = "2015/03/05"
+    END ALR_ACTION_SET_OUTPUTS
+    
+    BEGIN ALR_ACTION_SET_OUTPUTS "P_MAIL"
+      OWNER = "DIVYA"
+      SEQUENCE = "10"
+      SUPPRESS_FLAG = "Y"
+      LAST_UPDATE_DATE = "2015/04/28"
+    END ALR_ACTION_SET_OUTPUTS
+    
+    BEGIN ALR_ACTION_SET_OUTPUTS "P_NEW_VALUE"
+      OWNER = "DIVYA"
+      SEQUENCE = "8"
+      SUPPRESS_FLAG = "Y"
+      LAST_UPDATE_DATE = "2015/03/05"
+    END ALR_ACTION_SET_OUTPUTS
+    
+    BEGIN ALR_ACTION_SET_OUTPUTS "P_OLD_VALUE"
+      OWNER = "DIVYA"
+      SEQUENCE = "7"
+      SUPPRESS_FLAG = "Y"
+      LAST_UPDATE_DATE = "2015/03/05"
+    END ALR_ACTION_SET_OUTPUTS
+    
+    BEGIN ALR_ACTION_SET_OUTPUTS "P_ORGANIZATION_NAME"
+      OWNER = "DIVYA"
+      SEQUENCE = "4"
+      SUPPRESS_FLAG = "Y"
+      LAST_UPDATE_DATE = "2015/03/05"
+    END ALR_ACTION_SET_OUTPUTS
+    
+    BEGIN ALR_ACTION_SET_OUTPUTS "P_PERSON_ID"
+      OWNER = "DIVYA"
+      SEQUENCE = "1"
+      SUPPRESS_FLAG = "Y"
+      LAST_UPDATE_DATE = "2015/03/05"
+    END ALR_ACTION_SET_OUTPUTS
+    
+    BEGIN ALR_ACTION_SET_OUTPUTS "P_SUBJECT"
+      OWNER = "DIVYA"
+      SEQUENCE = "9"
+      SUPPRESS_FLAG = "Y"
+      LAST_UPDATE_DATE = "2015/03/05"
+    END ALR_ACTION_SET_OUTPUTS
+    
+  
+    BEGIN ALR_ACTION_SET_MEMBERS
+      OWNER = "DIVYA"
+      ACTION_NAME = "Send Mail"
+      SEQUENCE = "1"
+      ENABLED_FLAG = "Y"
+      ABORT_FLAG = "A"
+      LAST_UPDATE_DATE = "2015/03/05"
+    END ALR_ACTION_SET_MEMBERS
+    
+    BEGIN ALR_ACTION_SET_MEMBERS
+      OWNER = "DIVYA"
+      ACTION_NAME = "Exit Action Set Successfully"
+      SEQUENCE = "2"
+      ENABLED_FLAG = "Y"
+      ABORT_FLAG = "A"
+      LAST_UPDATE_DATE = "2015/03/05"
+    END ALR_ACTION_SET_MEMBERS
+    
+  END ALR_ACTION_SETS
+  
+
+END ALR_ALERTS
+
+BEGIN ALR_ALERTS "XXSC" "XXSC : Alert on Assets"
+  OWNER = "PRANEETH"
+  ALERT_CONDITION_TYPE = "P"
+  ENABLED_FLAG = "Y"
+  START_DATE_ACTIVE = "2015/03/12 00:00:00"
+  DESCRIPTION =
+ "Send notification about additions,retirements,modifications in assets"
+  FREQUENCY_TYPE = "C"
+  DAYS_BETWEEN_CHECKS = "1"
+  DATE_LAST_CHECKED = "2016/05/23 09:00:28"
+  MAINTAIN_HISTORY_DAYS = "0"
+  CHECK_START_TIME = "32400"
+  SQL_STATEMENT_TEXT = "SELECT SYSDATE INTO &OUTPUT1 FROM DUAL"
+  LAST_UPDATE_DATE = "2015/08/19"
+
+
+  BEGIN ALR_ALERT_INSTALLATIONS "APPS" ""
+    OWNER = "PRANEETH"
+    ENABLED_FLAG = "Y"
+    LAST_UPDATE_DATE = "2015/03/12"
+  END ALR_ALERT_INSTALLATIONS
+  
+
+  BEGIN ALR_ALERT_OUTPUTS "OUTPUT1"
+    OWNER = "PRANEETH"
+    SEQUENCE = "1"
+    ENABLED_FLAG = "Y"
+    START_DATE_ACTIVE = "2015/03/12 13:57:08"
+    TITLE = "OUTPUT1"
+    DEFAULT_SUPPRESS_FLAG = "Y"
+    LAST_UPDATE_DATE = "2015/03/12"
+  END ALR_ALERT_OUTPUTS
+  
+
+  BEGIN ALR_ACTIONS "Run program" ""
+    OWNER = "PRANEETH"
+    ACTION_TYPE = "C"
+    ENABLED_FLAG = "Y"
+    DESCRIPTION = "Run program"
+    ACTION_LEVEL_TYPE = "D"
+    PROGRAM_APPLICATION_NAME = "XXSC"
+    CONCURRENT_PROGRAM_NAME = "XXSCFA_NTF_MAILNOTIF"
+    COLUMN_WRAP_FLAG = "Y"
+    VERSION_NUMBER = "1"
+    LAST_UPDATE_DATE = "2015/03/12"
+  
+    BEGIN ALR_ACTION_OUTPUTS "OUTPUT1"
+      OWNER = "PRANEETH"
+      CRITICAL_FLAG = "N"
+      LAST_UPDATE_DATE = "2015/03/12"
+    END ALR_ACTION_OUTPUTS
+    
+  END ALR_ACTIONS
+  
+
+
+  BEGIN ALR_ACTION_SETS "Run program"
+    OWNER = "PRANEETH"
+    ENABLED_FLAG = "Y"
+    RECIPIENTS_VIEW_ONLY_FLAG = "N"
+    SUPPRESS_FLAG = "N"
+    SEQUENCE = "1"
+    LAST_UPDATE_DATE = "2015/03/12"
+  
+  
+    BEGIN ALR_ACTION_SET_OUTPUTS "OUTPUT1"
+      OWNER = "PRANEETH"
+      SEQUENCE = "1"
+      SUPPRESS_FLAG = "Y"
+      LAST_UPDATE_DATE = "2015/03/12"
+    END ALR_ACTION_SET_OUTPUTS
+    
+  
+    BEGIN ALR_ACTION_SET_MEMBERS
+      OWNER = "PRANEETH"
+      ACTION_NAME = "Run program"
+      SEQUENCE = "1"
+      ENABLED_FLAG = "Y"
+      ABORT_FLAG = "A"
+      LAST_UPDATE_DATE = "2015/03/12"
+    END ALR_ACTION_SET_MEMBERS
+    
+  END ALR_ACTION_SETS
+  
+
+END ALR_ALERTS
+

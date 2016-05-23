@@ -1,0 +1,1907 @@
+# $Header: xdotmpl.drvx 115.0 2001/01/01 00:00:00 mnagakur noship $
+
+# dbdrv: exec java oracle/apps/xdo/oa/util XDOLoader.class \
+# dbdrv: java &phase=dat \
+# dbdrv: checkfile:~PROD:patch/115/publisher/templates:TEMPLATE_XXSC_XXSCANA_ELEMENTS_en.xsl \
+# dbdrv: UPLOAD \
+# dbdrv: -DB_USERNAME  &un_apps \
+# dbdrv: -DB_PASSWORD  &pw_apps \
+# dbdrv: -JDBC_CONNECTION  &jdbc_db_addr \
+# dbdrv: -LOB_TYPE TEMPLATE \
+# dbdrv: -APPS_SHORT_NAME ~PROD \
+# dbdrv: -LOB_CODE XXSCANA_ELEMENTS \
+# dbdrv: -LANGUAGE en \
+# dbdrv: -TERRITORY 00 \
+# dbdrv: -XDO_FILE_TYPE XSL-FO \
+# dbdrv: -FILE_NAME &fullpath:~PROD:patch/115/publisher/templates:TEMPLATE_XXSC_XXSCANA_ELEMENTS_en.xsl 
+
+# dbdrv: exec java oracle/apps/xdo/oa/util XDOLoader.class \
+# dbdrv: java &phase=dat \
+# dbdrv: checkfile:~PROD:patch/115/publisher/templates:TEMPLATE_SOURCE_XXSC_XXSCANA_ELEMENTS_en.rtf \
+# dbdrv: UPLOAD \
+# dbdrv: -DB_USERNAME  &un_apps \
+# dbdrv: -DB_PASSWORD  &pw_apps \
+# dbdrv: -JDBC_CONNECTION  &jdbc_db_addr \
+# dbdrv: -LOB_TYPE TEMPLATE_SOURCE \
+# dbdrv: -APPS_SHORT_NAME ~PROD \
+# dbdrv: -LOB_CODE XXSCANA_ELEMENTS \
+# dbdrv: -LANGUAGE en \
+# dbdrv: -TERRITORY 00 \
+# dbdrv: -XDO_FILE_TYPE RTF \
+# dbdrv: -FILE_NAME &fullpath:~PROD:patch/115/publisher/templates:TEMPLATE_SOURCE_XXSC_XXSCANA_ELEMENTS_en.rtf 
+
+# dbdrv: exec java oracle/apps/xdo/oa/util XDOLoader.class \
+# dbdrv: java &phase=dat \
+# dbdrv: checkfile:~PROD:patch/115/publisher/templates:TEMPLATE_XXSC_XXSCAPANA_APER_en.xsl \
+# dbdrv: UPLOAD \
+# dbdrv: -DB_USERNAME  &un_apps \
+# dbdrv: -DB_PASSWORD  &pw_apps \
+# dbdrv: -JDBC_CONNECTION  &jdbc_db_addr \
+# dbdrv: -LOB_TYPE TEMPLATE \
+# dbdrv: -APPS_SHORT_NAME ~PROD \
+# dbdrv: -LOB_CODE XXSCAPANA_APER \
+# dbdrv: -LANGUAGE en \
+# dbdrv: -TERRITORY 00 \
+# dbdrv: -XDO_FILE_TYPE XSL-FO \
+# dbdrv: -FILE_NAME &fullpath:~PROD:patch/115/publisher/templates:TEMPLATE_XXSC_XXSCAPANA_APER_en.xsl 
+
+# dbdrv: exec java oracle/apps/xdo/oa/util XDOLoader.class \
+# dbdrv: java &phase=dat \
+# dbdrv: checkfile:~PROD:patch/115/publisher/templates:TEMPLATE_SOURCE_XXSC_XXSCAPANA_APER_en.rtf \
+# dbdrv: UPLOAD \
+# dbdrv: -DB_USERNAME  &un_apps \
+# dbdrv: -DB_PASSWORD  &pw_apps \
+# dbdrv: -JDBC_CONNECTION  &jdbc_db_addr \
+# dbdrv: -LOB_TYPE TEMPLATE_SOURCE \
+# dbdrv: -APPS_SHORT_NAME ~PROD \
+# dbdrv: -LOB_CODE XXSCAPANA_APER \
+# dbdrv: -LANGUAGE en \
+# dbdrv: -TERRITORY 00 \
+# dbdrv: -XDO_FILE_TYPE RTF \
+# dbdrv: -FILE_NAME &fullpath:~PROD:patch/115/publisher/templates:TEMPLATE_SOURCE_XXSC_XXSCAPANA_APER_en.rtf 
+
+# dbdrv: exec java oracle/apps/xdo/oa/util XDOLoader.class \
+# dbdrv: java &phase=dat \
+# dbdrv: checkfile:~PROD:patch/115/publisher/templates:TEMPLATE_XXSC_XXSCFINANA_COA_en.xls \
+# dbdrv: UPLOAD \
+# dbdrv: -DB_USERNAME  &un_apps \
+# dbdrv: -DB_PASSWORD  &pw_apps \
+# dbdrv: -JDBC_CONNECTION  &jdbc_db_addr \
+# dbdrv: -LOB_TYPE TEMPLATE \
+# dbdrv: -APPS_SHORT_NAME ~PROD \
+# dbdrv: -LOB_CODE XXSCFINANA_COA \
+# dbdrv: -LANGUAGE en \
+# dbdrv: -TERRITORY 00 \
+# dbdrv: -XDO_FILE_TYPE XLS \
+# dbdrv: -FILE_NAME &fullpath:~PROD:patch/115/publisher/templates:TEMPLATE_XXSC_XXSCFINANA_COA_en.xls 
+
+# dbdrv: exec java oracle/apps/xdo/oa/util XDOLoader.class \
+# dbdrv: java &phase=dat \
+# dbdrv: checkfile:~PROD:patch/115/publisher/templates:TEMPLATE_XXSC_XXSCFINANA_DEPP_en.xsl \
+# dbdrv: UPLOAD \
+# dbdrv: -DB_USERNAME  &un_apps \
+# dbdrv: -DB_PASSWORD  &pw_apps \
+# dbdrv: -JDBC_CONNECTION  &jdbc_db_addr \
+# dbdrv: -LOB_TYPE TEMPLATE \
+# dbdrv: -APPS_SHORT_NAME ~PROD \
+# dbdrv: -LOB_CODE XXSCFINANA_DEPP \
+# dbdrv: -LANGUAGE en \
+# dbdrv: -TERRITORY 00 \
+# dbdrv: -XDO_FILE_TYPE XSL-FO \
+# dbdrv: -FILE_NAME &fullpath:~PROD:patch/115/publisher/templates:TEMPLATE_XXSC_XXSCFINANA_DEPP_en.xsl 
+
+# dbdrv: exec java oracle/apps/xdo/oa/util XDOLoader.class \
+# dbdrv: java &phase=dat \
+# dbdrv: checkfile:~PROD:patch/115/publisher/templates:TEMPLATE_SOURCE_XXSC_XXSCFINANA_DEPP_en.rtf \
+# dbdrv: UPLOAD \
+# dbdrv: -DB_USERNAME  &un_apps \
+# dbdrv: -DB_PASSWORD  &pw_apps \
+# dbdrv: -JDBC_CONNECTION  &jdbc_db_addr \
+# dbdrv: -LOB_TYPE TEMPLATE_SOURCE \
+# dbdrv: -APPS_SHORT_NAME ~PROD \
+# dbdrv: -LOB_CODE XXSCFINANA_DEPP \
+# dbdrv: -LANGUAGE en \
+# dbdrv: -TERRITORY 00 \
+# dbdrv: -XDO_FILE_TYPE RTF \
+# dbdrv: -FILE_NAME &fullpath:~PROD:patch/115/publisher/templates:TEMPLATE_SOURCE_XXSC_XXSCFINANA_DEPP_en.rtf 
+
+# dbdrv: exec java oracle/apps/xdo/oa/util XDOLoader.class \
+# dbdrv: java &phase=dat \
+# dbdrv: checkfile:~PROD:patch/115/publisher/templates:TEMPLATE_XXSC_XXSCFINANA_EMASAD_en.xsl \
+# dbdrv: UPLOAD \
+# dbdrv: -DB_USERNAME  &un_apps \
+# dbdrv: -DB_PASSWORD  &pw_apps \
+# dbdrv: -JDBC_CONNECTION  &jdbc_db_addr \
+# dbdrv: -LOB_TYPE TEMPLATE \
+# dbdrv: -APPS_SHORT_NAME ~PROD \
+# dbdrv: -LOB_CODE XXSCFINANA_EMASAD \
+# dbdrv: -LANGUAGE en \
+# dbdrv: -TERRITORY 00 \
+# dbdrv: -XDO_FILE_TYPE XSL-FO \
+# dbdrv: -FILE_NAME &fullpath:~PROD:patch/115/publisher/templates:TEMPLATE_XXSC_XXSCFINANA_EMASAD_en.xsl 
+
+# dbdrv: exec java oracle/apps/xdo/oa/util XDOLoader.class \
+# dbdrv: java &phase=dat \
+# dbdrv: checkfile:~PROD:patch/115/publisher/templates:TEMPLATE_SOURCE_XXSC_XXSCFINANA_EMASAD_en.rtf \
+# dbdrv: UPLOAD \
+# dbdrv: -DB_USERNAME  &un_apps \
+# dbdrv: -DB_PASSWORD  &pw_apps \
+# dbdrv: -JDBC_CONNECTION  &jdbc_db_addr \
+# dbdrv: -LOB_TYPE TEMPLATE_SOURCE \
+# dbdrv: -APPS_SHORT_NAME ~PROD \
+# dbdrv: -LOB_CODE XXSCFINANA_EMASAD \
+# dbdrv: -LANGUAGE en \
+# dbdrv: -TERRITORY 00 \
+# dbdrv: -XDO_FILE_TYPE RTF \
+# dbdrv: -FILE_NAME &fullpath:~PROD:patch/115/publisher/templates:TEMPLATE_SOURCE_XXSC_XXSCFINANA_EMASAD_en.rtf 
+
+# dbdrv: exec java oracle/apps/xdo/oa/util XDOLoader.class \
+# dbdrv: java &phase=dat \
+# dbdrv: checkfile:~PROD:patch/115/publisher/templates:TEMPLATE_XXSC_XXSCFINANA_ERGL_en.xsl \
+# dbdrv: UPLOAD \
+# dbdrv: -DB_USERNAME  &un_apps \
+# dbdrv: -DB_PASSWORD  &pw_apps \
+# dbdrv: -JDBC_CONNECTION  &jdbc_db_addr \
+# dbdrv: -LOB_TYPE TEMPLATE \
+# dbdrv: -APPS_SHORT_NAME ~PROD \
+# dbdrv: -LOB_CODE XXSCFINANA_ERGL \
+# dbdrv: -LANGUAGE en \
+# dbdrv: -TERRITORY 00 \
+# dbdrv: -XDO_FILE_TYPE XSL-FO \
+# dbdrv: -FILE_NAME &fullpath:~PROD:patch/115/publisher/templates:TEMPLATE_XXSC_XXSCFINANA_ERGL_en.xsl 
+
+# dbdrv: exec java oracle/apps/xdo/oa/util XDOLoader.class \
+# dbdrv: java &phase=dat \
+# dbdrv: checkfile:~PROD:patch/115/publisher/templates:TEMPLATE_SOURCE_XXSC_XXSCFINANA_ERGL_en.rtf \
+# dbdrv: UPLOAD \
+# dbdrv: -DB_USERNAME  &un_apps \
+# dbdrv: -DB_PASSWORD  &pw_apps \
+# dbdrv: -JDBC_CONNECTION  &jdbc_db_addr \
+# dbdrv: -LOB_TYPE TEMPLATE_SOURCE \
+# dbdrv: -APPS_SHORT_NAME ~PROD \
+# dbdrv: -LOB_CODE XXSCFINANA_ERGL \
+# dbdrv: -LANGUAGE en \
+# dbdrv: -TERRITORY 00 \
+# dbdrv: -XDO_FILE_TYPE RTF \
+# dbdrv: -FILE_NAME &fullpath:~PROD:patch/115/publisher/templates:TEMPLATE_SOURCE_XXSC_XXSCFINANA_ERGL_en.rtf 
+
+# dbdrv: exec java oracle/apps/xdo/oa/util XDOLoader.class \
+# dbdrv: java &phase=dat \
+# dbdrv: checkfile:~PROD:patch/115/publisher/templates:TEMPLATE_XXSC_XXSCFINANA_FARSD_en.xsl \
+# dbdrv: UPLOAD \
+# dbdrv: -DB_USERNAME  &un_apps \
+# dbdrv: -DB_PASSWORD  &pw_apps \
+# dbdrv: -JDBC_CONNECTION  &jdbc_db_addr \
+# dbdrv: -LOB_TYPE TEMPLATE \
+# dbdrv: -APPS_SHORT_NAME ~PROD \
+# dbdrv: -LOB_CODE XXSCFINANA_FARSD \
+# dbdrv: -LANGUAGE en \
+# dbdrv: -TERRITORY 00 \
+# dbdrv: -XDO_FILE_TYPE XSL-FO \
+# dbdrv: -FILE_NAME &fullpath:~PROD:patch/115/publisher/templates:TEMPLATE_XXSC_XXSCFINANA_FARSD_en.xsl 
+
+# dbdrv: exec java oracle/apps/xdo/oa/util XDOLoader.class \
+# dbdrv: java &phase=dat \
+# dbdrv: checkfile:~PROD:patch/115/publisher/templates:TEMPLATE_SOURCE_XXSC_XXSCFINANA_FARSD_en.rtf \
+# dbdrv: UPLOAD \
+# dbdrv: -DB_USERNAME  &un_apps \
+# dbdrv: -DB_PASSWORD  &pw_apps \
+# dbdrv: -JDBC_CONNECTION  &jdbc_db_addr \
+# dbdrv: -LOB_TYPE TEMPLATE_SOURCE \
+# dbdrv: -APPS_SHORT_NAME ~PROD \
+# dbdrv: -LOB_CODE XXSCFINANA_FARSD \
+# dbdrv: -LANGUAGE en \
+# dbdrv: -TERRITORY 00 \
+# dbdrv: -XDO_FILE_TYPE RTF \
+# dbdrv: -FILE_NAME &fullpath:~PROD:patch/115/publisher/templates:TEMPLATE_SOURCE_XXSC_XXSCFINANA_FARSD_en.rtf 
+
+# dbdrv: exec java oracle/apps/xdo/oa/util XDOLoader.class \
+# dbdrv: java &phase=dat \
+# dbdrv: checkfile:~PROD:patch/115/publisher/templates:TEMPLATE_XXSC_XXSCFINANA_INAPR_en.xsl \
+# dbdrv: UPLOAD \
+# dbdrv: -DB_USERNAME  &un_apps \
+# dbdrv: -DB_PASSWORD  &pw_apps \
+# dbdrv: -JDBC_CONNECTION  &jdbc_db_addr \
+# dbdrv: -LOB_TYPE TEMPLATE \
+# dbdrv: -APPS_SHORT_NAME ~PROD \
+# dbdrv: -LOB_CODE XXSCFINANA_INAPR \
+# dbdrv: -LANGUAGE en \
+# dbdrv: -TERRITORY 00 \
+# dbdrv: -XDO_FILE_TYPE XSL-FO \
+# dbdrv: -FILE_NAME &fullpath:~PROD:patch/115/publisher/templates:TEMPLATE_XXSC_XXSCFINANA_INAPR_en.xsl 
+
+# dbdrv: exec java oracle/apps/xdo/oa/util XDOLoader.class \
+# dbdrv: java &phase=dat \
+# dbdrv: checkfile:~PROD:patch/115/publisher/templates:TEMPLATE_SOURCE_XXSC_XXSCFINANA_INAPR_en.rtf \
+# dbdrv: UPLOAD \
+# dbdrv: -DB_USERNAME  &un_apps \
+# dbdrv: -DB_PASSWORD  &pw_apps \
+# dbdrv: -JDBC_CONNECTION  &jdbc_db_addr \
+# dbdrv: -LOB_TYPE TEMPLATE_SOURCE \
+# dbdrv: -APPS_SHORT_NAME ~PROD \
+# dbdrv: -LOB_CODE XXSCFINANA_INAPR \
+# dbdrv: -LANGUAGE en \
+# dbdrv: -TERRITORY 00 \
+# dbdrv: -XDO_FILE_TYPE RTF \
+# dbdrv: -FILE_NAME &fullpath:~PROD:patch/115/publisher/templates:TEMPLATE_SOURCE_XXSC_XXSCFINANA_INAPR_en.rtf 
+
+# dbdrv: exec java oracle/apps/xdo/oa/util XDOLoader.class \
+# dbdrv: java &phase=dat \
+# dbdrv: checkfile:~PROD:patch/115/publisher/templates:TEMPLATE_XXSC_XXSCFINANA_INVD_en.xsl \
+# dbdrv: UPLOAD \
+# dbdrv: -DB_USERNAME  &un_apps \
+# dbdrv: -DB_PASSWORD  &pw_apps \
+# dbdrv: -JDBC_CONNECTION  &jdbc_db_addr \
+# dbdrv: -LOB_TYPE TEMPLATE \
+# dbdrv: -APPS_SHORT_NAME ~PROD \
+# dbdrv: -LOB_CODE XXSCFINANA_INVD \
+# dbdrv: -LANGUAGE en \
+# dbdrv: -TERRITORY 00 \
+# dbdrv: -XDO_FILE_TYPE XSL-FO \
+# dbdrv: -FILE_NAME &fullpath:~PROD:patch/115/publisher/templates:TEMPLATE_XXSC_XXSCFINANA_INVD_en.xsl 
+
+# dbdrv: exec java oracle/apps/xdo/oa/util XDOLoader.class \
+# dbdrv: java &phase=dat \
+# dbdrv: checkfile:~PROD:patch/115/publisher/templates:TEMPLATE_SOURCE_XXSC_XXSCFINANA_INVD_en.rtf \
+# dbdrv: UPLOAD \
+# dbdrv: -DB_USERNAME  &un_apps \
+# dbdrv: -DB_PASSWORD  &pw_apps \
+# dbdrv: -JDBC_CONNECTION  &jdbc_db_addr \
+# dbdrv: -LOB_TYPE TEMPLATE_SOURCE \
+# dbdrv: -APPS_SHORT_NAME ~PROD \
+# dbdrv: -LOB_CODE XXSCFINANA_INVD \
+# dbdrv: -LANGUAGE en \
+# dbdrv: -TERRITORY 00 \
+# dbdrv: -XDO_FILE_TYPE RTF \
+# dbdrv: -FILE_NAME &fullpath:~PROD:patch/115/publisher/templates:TEMPLATE_SOURCE_XXSC_XXSCFINANA_INVD_en.rtf 
+
+# dbdrv: exec java oracle/apps/xdo/oa/util XDOLoader.class \
+# dbdrv: java &phase=dat \
+# dbdrv: checkfile:~PROD:patch/115/publisher/templates:TEMPLATE_XXSC_XXSCFINANA_PPEXP_en.xsl \
+# dbdrv: UPLOAD \
+# dbdrv: -DB_USERNAME  &un_apps \
+# dbdrv: -DB_PASSWORD  &pw_apps \
+# dbdrv: -JDBC_CONNECTION  &jdbc_db_addr \
+# dbdrv: -LOB_TYPE TEMPLATE \
+# dbdrv: -APPS_SHORT_NAME ~PROD \
+# dbdrv: -LOB_CODE XXSCFINANA_PPEXP \
+# dbdrv: -LANGUAGE en \
+# dbdrv: -TERRITORY 00 \
+# dbdrv: -XDO_FILE_TYPE XSL-FO \
+# dbdrv: -FILE_NAME &fullpath:~PROD:patch/115/publisher/templates:TEMPLATE_XXSC_XXSCFINANA_PPEXP_en.xsl 
+
+# dbdrv: exec java oracle/apps/xdo/oa/util XDOLoader.class \
+# dbdrv: java &phase=dat \
+# dbdrv: checkfile:~PROD:patch/115/publisher/templates:TEMPLATE_SOURCE_XXSC_XXSCFINANA_PPEXP_en.rtf \
+# dbdrv: UPLOAD \
+# dbdrv: -DB_USERNAME  &un_apps \
+# dbdrv: -DB_PASSWORD  &pw_apps \
+# dbdrv: -JDBC_CONNECTION  &jdbc_db_addr \
+# dbdrv: -LOB_TYPE TEMPLATE_SOURCE \
+# dbdrv: -APPS_SHORT_NAME ~PROD \
+# dbdrv: -LOB_CODE XXSCFINANA_PPEXP \
+# dbdrv: -LANGUAGE en \
+# dbdrv: -TERRITORY 00 \
+# dbdrv: -XDO_FILE_TYPE RTF \
+# dbdrv: -FILE_NAME &fullpath:~PROD:patch/115/publisher/templates:TEMPLATE_SOURCE_XXSC_XXSCFINANA_PPEXP_en.rtf 
+
+# dbdrv: exec java oracle/apps/xdo/oa/util XDOLoader.class \
+# dbdrv: java &phase=dat \
+# dbdrv: checkfile:~PROD:patch/115/publisher/templates:TEMPLATE_XXSC_XXSCFINANA_SIP_en_US.xsl \
+# dbdrv: UPLOAD \
+# dbdrv: -DB_USERNAME  &un_apps \
+# dbdrv: -DB_PASSWORD  &pw_apps \
+# dbdrv: -JDBC_CONNECTION  &jdbc_db_addr \
+# dbdrv: -LOB_TYPE TEMPLATE \
+# dbdrv: -APPS_SHORT_NAME ~PROD \
+# dbdrv: -LOB_CODE XXSCFINANA_SIP \
+# dbdrv: -LANGUAGE en \
+# dbdrv: -TERRITORY US \
+# dbdrv: -XDO_FILE_TYPE XSL-FO \
+# dbdrv: -FILE_NAME &fullpath:~PROD:patch/115/publisher/templates:TEMPLATE_XXSC_XXSCFINANA_SIP_en_US.xsl 
+
+# dbdrv: exec java oracle/apps/xdo/oa/util XDOLoader.class \
+# dbdrv: java &phase=dat \
+# dbdrv: checkfile:~PROD:patch/115/publisher/templates:TEMPLATE_SOURCE_XXSC_XXSCFINANA_SIP_en_US.rtf \
+# dbdrv: UPLOAD \
+# dbdrv: -DB_USERNAME  &un_apps \
+# dbdrv: -DB_PASSWORD  &pw_apps \
+# dbdrv: -JDBC_CONNECTION  &jdbc_db_addr \
+# dbdrv: -LOB_TYPE TEMPLATE_SOURCE \
+# dbdrv: -APPS_SHORT_NAME ~PROD \
+# dbdrv: -LOB_CODE XXSCFINANA_SIP \
+# dbdrv: -LANGUAGE en \
+# dbdrv: -TERRITORY US \
+# dbdrv: -XDO_FILE_TYPE RTF \
+# dbdrv: -FILE_NAME &fullpath:~PROD:patch/115/publisher/templates:TEMPLATE_SOURCE_XXSC_XXSCFINANA_SIP_en_US.rtf 
+
+# dbdrv: exec java oracle/apps/xdo/oa/util XDOLoader.class \
+# dbdrv: java &phase=dat \
+# dbdrv: checkfile:~PROD:patch/115/publisher/templates:TEMPLATE_XXSC_XXSCFINANA_TBAL_en.xsl \
+# dbdrv: UPLOAD \
+# dbdrv: -DB_USERNAME  &un_apps \
+# dbdrv: -DB_PASSWORD  &pw_apps \
+# dbdrv: -JDBC_CONNECTION  &jdbc_db_addr \
+# dbdrv: -LOB_TYPE TEMPLATE \
+# dbdrv: -APPS_SHORT_NAME ~PROD \
+# dbdrv: -LOB_CODE XXSCFINANA_TBAL \
+# dbdrv: -LANGUAGE en \
+# dbdrv: -TERRITORY 00 \
+# dbdrv: -XDO_FILE_TYPE XSL-FO \
+# dbdrv: -FILE_NAME &fullpath:~PROD:patch/115/publisher/templates:TEMPLATE_XXSC_XXSCFINANA_TBAL_en.xsl 
+
+# dbdrv: exec java oracle/apps/xdo/oa/util XDOLoader.class \
+# dbdrv: java &phase=dat \
+# dbdrv: checkfile:~PROD:patch/115/publisher/templates:TEMPLATE_SOURCE_XXSC_XXSCFINANA_TBAL_en.rtf \
+# dbdrv: UPLOAD \
+# dbdrv: -DB_USERNAME  &un_apps \
+# dbdrv: -DB_PASSWORD  &pw_apps \
+# dbdrv: -JDBC_CONNECTION  &jdbc_db_addr \
+# dbdrv: -LOB_TYPE TEMPLATE_SOURCE \
+# dbdrv: -APPS_SHORT_NAME ~PROD \
+# dbdrv: -LOB_CODE XXSCFINANA_TBAL \
+# dbdrv: -LANGUAGE en \
+# dbdrv: -TERRITORY 00 \
+# dbdrv: -XDO_FILE_TYPE RTF \
+# dbdrv: -FILE_NAME &fullpath:~PROD:patch/115/publisher/templates:TEMPLATE_SOURCE_XXSC_XXSCFINANA_TBAL_en.rtf 
+
+# dbdrv: exec java oracle/apps/xdo/oa/util XDOLoader.class \
+# dbdrv: java &phase=dat \
+# dbdrv: checkfile:~PROD:patch/115/publisher/templates:TEMPLATE_XXSC_XXSCFINANA_TBARB_en_US.xsl \
+# dbdrv: UPLOAD \
+# dbdrv: -DB_USERNAME  &un_apps \
+# dbdrv: -DB_PASSWORD  &pw_apps \
+# dbdrv: -JDBC_CONNECTION  &jdbc_db_addr \
+# dbdrv: -LOB_TYPE TEMPLATE \
+# dbdrv: -APPS_SHORT_NAME ~PROD \
+# dbdrv: -LOB_CODE XXSCFINANA_TBARB \
+# dbdrv: -LANGUAGE en \
+# dbdrv: -TERRITORY US \
+# dbdrv: -XDO_FILE_TYPE XSL-FO \
+# dbdrv: -FILE_NAME &fullpath:~PROD:patch/115/publisher/templates:TEMPLATE_XXSC_XXSCFINANA_TBARB_en_US.xsl 
+
+# dbdrv: exec java oracle/apps/xdo/oa/util XDOLoader.class \
+# dbdrv: java &phase=dat \
+# dbdrv: checkfile:~PROD:patch/115/publisher/templates:TEMPLATE_SOURCE_XXSC_XXSCFINANA_TBARB_en_US.rtf \
+# dbdrv: UPLOAD \
+# dbdrv: -DB_USERNAME  &un_apps \
+# dbdrv: -DB_PASSWORD  &pw_apps \
+# dbdrv: -JDBC_CONNECTION  &jdbc_db_addr \
+# dbdrv: -LOB_TYPE TEMPLATE_SOURCE \
+# dbdrv: -APPS_SHORT_NAME ~PROD \
+# dbdrv: -LOB_CODE XXSCFINANA_TBARB \
+# dbdrv: -LANGUAGE en \
+# dbdrv: -TERRITORY US \
+# dbdrv: -XDO_FILE_TYPE RTF \
+# dbdrv: -FILE_NAME &fullpath:~PROD:patch/115/publisher/templates:TEMPLATE_SOURCE_XXSC_XXSCFINANA_TBARB_en_US.rtf 
+
+# dbdrv: exec java oracle/apps/xdo/oa/util XDOLoader.class \
+# dbdrv: java &phase=dat \
+# dbdrv: checkfile:~PROD:patch/115/publisher/templates:TEMPLATE_XXSC_XXSCFINPRN_INVU_en.xsl \
+# dbdrv: UPLOAD \
+# dbdrv: -DB_USERNAME  &un_apps \
+# dbdrv: -DB_PASSWORD  &pw_apps \
+# dbdrv: -JDBC_CONNECTION  &jdbc_db_addr \
+# dbdrv: -LOB_TYPE TEMPLATE \
+# dbdrv: -APPS_SHORT_NAME ~PROD \
+# dbdrv: -LOB_CODE XXSCFINPRN_INVU \
+# dbdrv: -LANGUAGE en \
+# dbdrv: -TERRITORY 00 \
+# dbdrv: -XDO_FILE_TYPE XSL-FO \
+# dbdrv: -FILE_NAME &fullpath:~PROD:patch/115/publisher/templates:TEMPLATE_XXSC_XXSCFINPRN_INVU_en.xsl 
+
+# dbdrv: exec java oracle/apps/xdo/oa/util XDOLoader.class \
+# dbdrv: java &phase=dat \
+# dbdrv: checkfile:~PROD:patch/115/publisher/templates:TEMPLATE_SOURCE_XXSC_XXSCFINPRN_INVU_en.rtf \
+# dbdrv: UPLOAD \
+# dbdrv: -DB_USERNAME  &un_apps \
+# dbdrv: -DB_PASSWORD  &pw_apps \
+# dbdrv: -JDBC_CONNECTION  &jdbc_db_addr \
+# dbdrv: -LOB_TYPE TEMPLATE_SOURCE \
+# dbdrv: -APPS_SHORT_NAME ~PROD \
+# dbdrv: -LOB_CODE XXSCFINPRN_INVU \
+# dbdrv: -LANGUAGE en \
+# dbdrv: -TERRITORY 00 \
+# dbdrv: -XDO_FILE_TYPE RTF \
+# dbdrv: -FILE_NAME &fullpath:~PROD:patch/115/publisher/templates:TEMPLATE_SOURCE_XXSC_XXSCFINPRN_INVU_en.rtf 
+
+# dbdrv: exec java oracle/apps/xdo/oa/util XDOLoader.class \
+# dbdrv: java &phase=dat \
+# dbdrv: checkfile:~PROD:patch/115/publisher/templates:TEMPLATE_XXSC_XXSCFINPRN_PAYV_en.xsl \
+# dbdrv: UPLOAD \
+# dbdrv: -DB_USERNAME  &un_apps \
+# dbdrv: -DB_PASSWORD  &pw_apps \
+# dbdrv: -JDBC_CONNECTION  &jdbc_db_addr \
+# dbdrv: -LOB_TYPE TEMPLATE \
+# dbdrv: -APPS_SHORT_NAME ~PROD \
+# dbdrv: -LOB_CODE XXSCFINPRN_PAYV \
+# dbdrv: -LANGUAGE en \
+# dbdrv: -TERRITORY 00 \
+# dbdrv: -XDO_FILE_TYPE XSL-FO \
+# dbdrv: -FILE_NAME &fullpath:~PROD:patch/115/publisher/templates:TEMPLATE_XXSC_XXSCFINPRN_PAYV_en.xsl 
+
+# dbdrv: exec java oracle/apps/xdo/oa/util XDOLoader.class \
+# dbdrv: java &phase=dat \
+# dbdrv: checkfile:~PROD:patch/115/publisher/templates:TEMPLATE_SOURCE_XXSC_XXSCFINPRN_PAYV_en.rtf \
+# dbdrv: UPLOAD \
+# dbdrv: -DB_USERNAME  &un_apps \
+# dbdrv: -DB_PASSWORD  &pw_apps \
+# dbdrv: -JDBC_CONNECTION  &jdbc_db_addr \
+# dbdrv: -LOB_TYPE TEMPLATE_SOURCE \
+# dbdrv: -APPS_SHORT_NAME ~PROD \
+# dbdrv: -LOB_CODE XXSCFINPRN_PAYV \
+# dbdrv: -LANGUAGE en \
+# dbdrv: -TERRITORY 00 \
+# dbdrv: -XDO_FILE_TYPE RTF \
+# dbdrv: -FILE_NAME &fullpath:~PROD:patch/115/publisher/templates:TEMPLATE_SOURCE_XXSC_XXSCFINPRN_PAYV_en.rtf 
+
+# dbdrv: exec java oracle/apps/xdo/oa/util XDOLoader.class \
+# dbdrv: java &phase=dat \
+# dbdrv: checkfile:~PROD:patch/115/publisher/templates:TEMPLATE_XXSC_XXSCFINPRN_PCVU_en.xsl \
+# dbdrv: UPLOAD \
+# dbdrv: -DB_USERNAME  &un_apps \
+# dbdrv: -DB_PASSWORD  &pw_apps \
+# dbdrv: -JDBC_CONNECTION  &jdbc_db_addr \
+# dbdrv: -LOB_TYPE TEMPLATE \
+# dbdrv: -APPS_SHORT_NAME ~PROD \
+# dbdrv: -LOB_CODE XXSCFINPRN_PCVU \
+# dbdrv: -LANGUAGE en \
+# dbdrv: -TERRITORY 00 \
+# dbdrv: -XDO_FILE_TYPE XSL-FO \
+# dbdrv: -FILE_NAME &fullpath:~PROD:patch/115/publisher/templates:TEMPLATE_XXSC_XXSCFINPRN_PCVU_en.xsl 
+
+# dbdrv: exec java oracle/apps/xdo/oa/util XDOLoader.class \
+# dbdrv: java &phase=dat \
+# dbdrv: checkfile:~PROD:patch/115/publisher/templates:TEMPLATE_SOURCE_XXSC_XXSCFINPRN_PCVU_en.rtf \
+# dbdrv: UPLOAD \
+# dbdrv: -DB_USERNAME  &un_apps \
+# dbdrv: -DB_PASSWORD  &pw_apps \
+# dbdrv: -JDBC_CONNECTION  &jdbc_db_addr \
+# dbdrv: -LOB_TYPE TEMPLATE_SOURCE \
+# dbdrv: -APPS_SHORT_NAME ~PROD \
+# dbdrv: -LOB_CODE XXSCFINPRN_PCVU \
+# dbdrv: -LANGUAGE en \
+# dbdrv: -TERRITORY 00 \
+# dbdrv: -XDO_FILE_TYPE RTF \
+# dbdrv: -FILE_NAME &fullpath:~PROD:patch/115/publisher/templates:TEMPLATE_SOURCE_XXSC_XXSCFINPRN_PCVU_en.rtf 
+
+# dbdrv: exec java oracle/apps/xdo/oa/util XDOLoader.class \
+# dbdrv: java &phase=dat \
+# dbdrv: checkfile:~PROD:patch/115/publisher/templates:TEMPLATE_XXSC_XXSCGLANA_GLFL_en.xsl \
+# dbdrv: UPLOAD \
+# dbdrv: -DB_USERNAME  &un_apps \
+# dbdrv: -DB_PASSWORD  &pw_apps \
+# dbdrv: -JDBC_CONNECTION  &jdbc_db_addr \
+# dbdrv: -LOB_TYPE TEMPLATE \
+# dbdrv: -APPS_SHORT_NAME ~PROD \
+# dbdrv: -LOB_CODE XXSCGLANA_GLFL \
+# dbdrv: -LANGUAGE en \
+# dbdrv: -TERRITORY 00 \
+# dbdrv: -XDO_FILE_TYPE XSL-FO \
+# dbdrv: -FILE_NAME &fullpath:~PROD:patch/115/publisher/templates:TEMPLATE_XXSC_XXSCGLANA_GLFL_en.xsl 
+
+# dbdrv: exec java oracle/apps/xdo/oa/util XDOLoader.class \
+# dbdrv: java &phase=dat \
+# dbdrv: checkfile:~PROD:patch/115/publisher/templates:TEMPLATE_SOURCE_XXSC_XXSCGLANA_GLFL_en.rtf \
+# dbdrv: UPLOAD \
+# dbdrv: -DB_USERNAME  &un_apps \
+# dbdrv: -DB_PASSWORD  &pw_apps \
+# dbdrv: -JDBC_CONNECTION  &jdbc_db_addr \
+# dbdrv: -LOB_TYPE TEMPLATE_SOURCE \
+# dbdrv: -APPS_SHORT_NAME ~PROD \
+# dbdrv: -LOB_CODE XXSCGLANA_GLFL \
+# dbdrv: -LANGUAGE en \
+# dbdrv: -TERRITORY 00 \
+# dbdrv: -XDO_FILE_TYPE RTF \
+# dbdrv: -FILE_NAME &fullpath:~PROD:patch/115/publisher/templates:TEMPLATE_SOURCE_XXSC_XXSCGLANA_GLFL_en.rtf 
+
+# dbdrv: exec java oracle/apps/xdo/oa/util XDOLoader.class \
+# dbdrv: java &phase=dat \
+# dbdrv: checkfile:~PROD:patch/115/publisher/templates:TEMPLATE_XXSC_XXSCGLANA_INT_en.xsl \
+# dbdrv: UPLOAD \
+# dbdrv: -DB_USERNAME  &un_apps \
+# dbdrv: -DB_PASSWORD  &pw_apps \
+# dbdrv: -JDBC_CONNECTION  &jdbc_db_addr \
+# dbdrv: -LOB_TYPE TEMPLATE \
+# dbdrv: -APPS_SHORT_NAME ~PROD \
+# dbdrv: -LOB_CODE XXSCGLANA_INT \
+# dbdrv: -LANGUAGE en \
+# dbdrv: -TERRITORY 00 \
+# dbdrv: -XDO_FILE_TYPE XSL-FO \
+# dbdrv: -FILE_NAME &fullpath:~PROD:patch/115/publisher/templates:TEMPLATE_XXSC_XXSCGLANA_INT_en.xsl 
+
+# dbdrv: exec java oracle/apps/xdo/oa/util XDOLoader.class \
+# dbdrv: java &phase=dat \
+# dbdrv: checkfile:~PROD:patch/115/publisher/templates:TEMPLATE_SOURCE_XXSC_XXSCGLANA_INT_en.rtf \
+# dbdrv: UPLOAD \
+# dbdrv: -DB_USERNAME  &un_apps \
+# dbdrv: -DB_PASSWORD  &pw_apps \
+# dbdrv: -JDBC_CONNECTION  &jdbc_db_addr \
+# dbdrv: -LOB_TYPE TEMPLATE_SOURCE \
+# dbdrv: -APPS_SHORT_NAME ~PROD \
+# dbdrv: -LOB_CODE XXSCGLANA_INT \
+# dbdrv: -LANGUAGE en \
+# dbdrv: -TERRITORY 00 \
+# dbdrv: -XDO_FILE_TYPE RTF \
+# dbdrv: -FILE_NAME &fullpath:~PROD:patch/115/publisher/templates:TEMPLATE_SOURCE_XXSC_XXSCGLANA_INT_en.rtf 
+
+# dbdrv: exec java oracle/apps/xdo/oa/util XDOLoader.class \
+# dbdrv: java &phase=dat \
+# dbdrv: checkfile:~PROD:patch/115/publisher/templates:TEMPLATE_XXSC_XXSCGLANA_JVD_en.xsl \
+# dbdrv: UPLOAD \
+# dbdrv: -DB_USERNAME  &un_apps \
+# dbdrv: -DB_PASSWORD  &pw_apps \
+# dbdrv: -JDBC_CONNECTION  &jdbc_db_addr \
+# dbdrv: -LOB_TYPE TEMPLATE \
+# dbdrv: -APPS_SHORT_NAME ~PROD \
+# dbdrv: -LOB_CODE XXSCGLANA_JVD \
+# dbdrv: -LANGUAGE en \
+# dbdrv: -TERRITORY 00 \
+# dbdrv: -XDO_FILE_TYPE XSL-FO \
+# dbdrv: -FILE_NAME &fullpath:~PROD:patch/115/publisher/templates:TEMPLATE_XXSC_XXSCGLANA_JVD_en.xsl 
+
+# dbdrv: exec java oracle/apps/xdo/oa/util XDOLoader.class \
+# dbdrv: java &phase=dat \
+# dbdrv: checkfile:~PROD:patch/115/publisher/templates:TEMPLATE_SOURCE_XXSC_XXSCGLANA_JVD_en.rtf \
+# dbdrv: UPLOAD \
+# dbdrv: -DB_USERNAME  &un_apps \
+# dbdrv: -DB_PASSWORD  &pw_apps \
+# dbdrv: -JDBC_CONNECTION  &jdbc_db_addr \
+# dbdrv: -LOB_TYPE TEMPLATE_SOURCE \
+# dbdrv: -APPS_SHORT_NAME ~PROD \
+# dbdrv: -LOB_CODE XXSCGLANA_JVD \
+# dbdrv: -LANGUAGE en \
+# dbdrv: -TERRITORY 00 \
+# dbdrv: -XDO_FILE_TYPE RTF \
+# dbdrv: -FILE_NAME &fullpath:~PROD:patch/115/publisher/templates:TEMPLATE_SOURCE_XXSC_XXSCGLANA_JVD_en.rtf 
+
+# dbdrv: exec java oracle/apps/xdo/oa/util XDOLoader.class \
+# dbdrv: java &phase=dat \
+# dbdrv: checkfile:~PROD:patch/115/publisher/templates:TEMPLATE_XXSC_XXSCHRANA_DOCR_en.xsl \
+# dbdrv: UPLOAD \
+# dbdrv: -DB_USERNAME  &un_apps \
+# dbdrv: -DB_PASSWORD  &pw_apps \
+# dbdrv: -JDBC_CONNECTION  &jdbc_db_addr \
+# dbdrv: -LOB_TYPE TEMPLATE \
+# dbdrv: -APPS_SHORT_NAME ~PROD \
+# dbdrv: -LOB_CODE XXSCHRANA_DOCR \
+# dbdrv: -LANGUAGE en \
+# dbdrv: -TERRITORY 00 \
+# dbdrv: -XDO_FILE_TYPE XSL-FO \
+# dbdrv: -FILE_NAME &fullpath:~PROD:patch/115/publisher/templates:TEMPLATE_XXSC_XXSCHRANA_DOCR_en.xsl 
+
+# dbdrv: exec java oracle/apps/xdo/oa/util XDOLoader.class \
+# dbdrv: java &phase=dat \
+# dbdrv: checkfile:~PROD:patch/115/publisher/templates:TEMPLATE_SOURCE_XXSC_XXSCHRANA_DOCR_en.rtf \
+# dbdrv: UPLOAD \
+# dbdrv: -DB_USERNAME  &un_apps \
+# dbdrv: -DB_PASSWORD  &pw_apps \
+# dbdrv: -JDBC_CONNECTION  &jdbc_db_addr \
+# dbdrv: -LOB_TYPE TEMPLATE_SOURCE \
+# dbdrv: -APPS_SHORT_NAME ~PROD \
+# dbdrv: -LOB_CODE XXSCHRANA_DOCR \
+# dbdrv: -LANGUAGE en \
+# dbdrv: -TERRITORY 00 \
+# dbdrv: -XDO_FILE_TYPE RTF \
+# dbdrv: -FILE_NAME &fullpath:~PROD:patch/115/publisher/templates:TEMPLATE_SOURCE_XXSC_XXSCHRANA_DOCR_en.rtf 
+
+# dbdrv: exec java oracle/apps/xdo/oa/util XDOLoader.class \
+# dbdrv: java &phase=dat \
+# dbdrv: checkfile:~PROD:patch/115/publisher/templates:TEMPLATE_XXSC_XXSCHRANA_EHC_en.xsl \
+# dbdrv: UPLOAD \
+# dbdrv: -DB_USERNAME  &un_apps \
+# dbdrv: -DB_PASSWORD  &pw_apps \
+# dbdrv: -JDBC_CONNECTION  &jdbc_db_addr \
+# dbdrv: -LOB_TYPE TEMPLATE \
+# dbdrv: -APPS_SHORT_NAME ~PROD \
+# dbdrv: -LOB_CODE XXSCHRANA_EHC \
+# dbdrv: -LANGUAGE en \
+# dbdrv: -TERRITORY 00 \
+# dbdrv: -XDO_FILE_TYPE XSL-FO \
+# dbdrv: -FILE_NAME &fullpath:~PROD:patch/115/publisher/templates:TEMPLATE_XXSC_XXSCHRANA_EHC_en.xsl 
+
+# dbdrv: exec java oracle/apps/xdo/oa/util XDOLoader.class \
+# dbdrv: java &phase=dat \
+# dbdrv: checkfile:~PROD:patch/115/publisher/templates:TEMPLATE_SOURCE_XXSC_XXSCHRANA_EHC_en.rtf \
+# dbdrv: UPLOAD \
+# dbdrv: -DB_USERNAME  &un_apps \
+# dbdrv: -DB_PASSWORD  &pw_apps \
+# dbdrv: -JDBC_CONNECTION  &jdbc_db_addr \
+# dbdrv: -LOB_TYPE TEMPLATE_SOURCE \
+# dbdrv: -APPS_SHORT_NAME ~PROD \
+# dbdrv: -LOB_CODE XXSCHRANA_EHC \
+# dbdrv: -LANGUAGE en \
+# dbdrv: -TERRITORY 00 \
+# dbdrv: -XDO_FILE_TYPE RTF \
+# dbdrv: -FILE_NAME &fullpath:~PROD:patch/115/publisher/templates:TEMPLATE_SOURCE_XXSC_XXSCHRANA_EHC_en.rtf 
+
+# dbdrv: exec java oracle/apps/xdo/oa/util XDOLoader.class \
+# dbdrv: java &phase=dat \
+# dbdrv: checkfile:~PROD:patch/115/publisher/templates:TEMPLATE_XXSC_XXSCHRANA_ELVB_en.xsl \
+# dbdrv: UPLOAD \
+# dbdrv: -DB_USERNAME  &un_apps \
+# dbdrv: -DB_PASSWORD  &pw_apps \
+# dbdrv: -JDBC_CONNECTION  &jdbc_db_addr \
+# dbdrv: -LOB_TYPE TEMPLATE \
+# dbdrv: -APPS_SHORT_NAME ~PROD \
+# dbdrv: -LOB_CODE XXSCHRANA_ELVB \
+# dbdrv: -LANGUAGE en \
+# dbdrv: -TERRITORY 00 \
+# dbdrv: -XDO_FILE_TYPE XSL-FO \
+# dbdrv: -FILE_NAME &fullpath:~PROD:patch/115/publisher/templates:TEMPLATE_XXSC_XXSCHRANA_ELVB_en.xsl 
+
+# dbdrv: exec java oracle/apps/xdo/oa/util XDOLoader.class \
+# dbdrv: java &phase=dat \
+# dbdrv: checkfile:~PROD:patch/115/publisher/templates:TEMPLATE_SOURCE_XXSC_XXSCHRANA_ELVB_en.rtf \
+# dbdrv: UPLOAD \
+# dbdrv: -DB_USERNAME  &un_apps \
+# dbdrv: -DB_PASSWORD  &pw_apps \
+# dbdrv: -JDBC_CONNECTION  &jdbc_db_addr \
+# dbdrv: -LOB_TYPE TEMPLATE_SOURCE \
+# dbdrv: -APPS_SHORT_NAME ~PROD \
+# dbdrv: -LOB_CODE XXSCHRANA_ELVB \
+# dbdrv: -LANGUAGE en \
+# dbdrv: -TERRITORY 00 \
+# dbdrv: -XDO_FILE_TYPE RTF \
+# dbdrv: -FILE_NAME &fullpath:~PROD:patch/115/publisher/templates:TEMPLATE_SOURCE_XXSC_XXSCHRANA_ELVB_en.rtf 
+
+# dbdrv: exec java oracle/apps/xdo/oa/util XDOLoader.class \
+# dbdrv: java &phase=dat \
+# dbdrv: checkfile:~PROD:patch/115/publisher/templates:TEMPLATE_XXSC_XXSCHRANA_EMPD_en.xsl \
+# dbdrv: UPLOAD \
+# dbdrv: -DB_USERNAME  &un_apps \
+# dbdrv: -DB_PASSWORD  &pw_apps \
+# dbdrv: -JDBC_CONNECTION  &jdbc_db_addr \
+# dbdrv: -LOB_TYPE TEMPLATE \
+# dbdrv: -APPS_SHORT_NAME ~PROD \
+# dbdrv: -LOB_CODE XXSCHRANA_EMPD \
+# dbdrv: -LANGUAGE en \
+# dbdrv: -TERRITORY 00 \
+# dbdrv: -XDO_FILE_TYPE XSL-FO \
+# dbdrv: -FILE_NAME &fullpath:~PROD:patch/115/publisher/templates:TEMPLATE_XXSC_XXSCHRANA_EMPD_en.xsl 
+
+# dbdrv: exec java oracle/apps/xdo/oa/util XDOLoader.class \
+# dbdrv: java &phase=dat \
+# dbdrv: checkfile:~PROD:patch/115/publisher/templates:TEMPLATE_SOURCE_XXSC_XXSCHRANA_EMPD_en.rtf \
+# dbdrv: UPLOAD \
+# dbdrv: -DB_USERNAME  &un_apps \
+# dbdrv: -DB_PASSWORD  &pw_apps \
+# dbdrv: -JDBC_CONNECTION  &jdbc_db_addr \
+# dbdrv: -LOB_TYPE TEMPLATE_SOURCE \
+# dbdrv: -APPS_SHORT_NAME ~PROD \
+# dbdrv: -LOB_CODE XXSCHRANA_EMPD \
+# dbdrv: -LANGUAGE en \
+# dbdrv: -TERRITORY 00 \
+# dbdrv: -XDO_FILE_TYPE RTF \
+# dbdrv: -FILE_NAME &fullpath:~PROD:patch/115/publisher/templates:TEMPLATE_SOURCE_XXSC_XXSCHRANA_EMPD_en.rtf 
+
+# dbdrv: exec java oracle/apps/xdo/oa/util XDOLoader.class \
+# dbdrv: java &phase=dat \
+# dbdrv: checkfile:~PROD:patch/115/publisher/templates:TEMPLATE_XXSC_XXSCHRANA_HSNW_en.xsl \
+# dbdrv: UPLOAD \
+# dbdrv: -DB_USERNAME  &un_apps \
+# dbdrv: -DB_PASSWORD  &pw_apps \
+# dbdrv: -JDBC_CONNECTION  &jdbc_db_addr \
+# dbdrv: -LOB_TYPE TEMPLATE \
+# dbdrv: -APPS_SHORT_NAME ~PROD \
+# dbdrv: -LOB_CODE XXSCHRANA_HSNW \
+# dbdrv: -LANGUAGE en \
+# dbdrv: -TERRITORY 00 \
+# dbdrv: -XDO_FILE_TYPE XSL-ETEXT \
+# dbdrv: -FILE_NAME &fullpath:~PROD:patch/115/publisher/templates:TEMPLATE_XXSC_XXSCHRANA_HSNW_en.xsl 
+
+# dbdrv: exec java oracle/apps/xdo/oa/util XDOLoader.class \
+# dbdrv: java &phase=dat \
+# dbdrv: checkfile:~PROD:patch/115/publisher/templates:TEMPLATE_SOURCE_XXSC_XXSCHRANA_HSNW_en.rtf \
+# dbdrv: UPLOAD \
+# dbdrv: -DB_USERNAME  &un_apps \
+# dbdrv: -DB_PASSWORD  &pw_apps \
+# dbdrv: -JDBC_CONNECTION  &jdbc_db_addr \
+# dbdrv: -LOB_TYPE TEMPLATE_SOURCE \
+# dbdrv: -APPS_SHORT_NAME ~PROD \
+# dbdrv: -LOB_CODE XXSCHRANA_HSNW \
+# dbdrv: -LANGUAGE en \
+# dbdrv: -TERRITORY 00 \
+# dbdrv: -XDO_FILE_TYPE RTF-ETEXT \
+# dbdrv: -FILE_NAME &fullpath:~PROD:patch/115/publisher/templates:TEMPLATE_SOURCE_XXSC_XXSCHRANA_HSNW_en.rtf 
+
+# dbdrv: exec java oracle/apps/xdo/oa/util XDOLoader.class \
+# dbdrv: java &phase=dat \
+# dbdrv: checkfile:~PROD:patch/115/publisher/templates:TEMPLATE_XXSC_XXSCHRANA_HSWP_en.xsl \
+# dbdrv: UPLOAD \
+# dbdrv: -DB_USERNAME  &un_apps \
+# dbdrv: -DB_PASSWORD  &pw_apps \
+# dbdrv: -JDBC_CONNECTION  &jdbc_db_addr \
+# dbdrv: -LOB_TYPE TEMPLATE \
+# dbdrv: -APPS_SHORT_NAME ~PROD \
+# dbdrv: -LOB_CODE XXSCHRANA_HSWP \
+# dbdrv: -LANGUAGE en \
+# dbdrv: -TERRITORY 00 \
+# dbdrv: -XDO_FILE_TYPE XSL-ETEXT \
+# dbdrv: -FILE_NAME &fullpath:~PROD:patch/115/publisher/templates:TEMPLATE_XXSC_XXSCHRANA_HSWP_en.xsl 
+
+# dbdrv: exec java oracle/apps/xdo/oa/util XDOLoader.class \
+# dbdrv: java &phase=dat \
+# dbdrv: checkfile:~PROD:patch/115/publisher/templates:TEMPLATE_SOURCE_XXSC_XXSCHRANA_HSWP_en.rtf \
+# dbdrv: UPLOAD \
+# dbdrv: -DB_USERNAME  &un_apps \
+# dbdrv: -DB_PASSWORD  &pw_apps \
+# dbdrv: -JDBC_CONNECTION  &jdbc_db_addr \
+# dbdrv: -LOB_TYPE TEMPLATE_SOURCE \
+# dbdrv: -APPS_SHORT_NAME ~PROD \
+# dbdrv: -LOB_CODE XXSCHRANA_HSWP \
+# dbdrv: -LANGUAGE en \
+# dbdrv: -TERRITORY 00 \
+# dbdrv: -XDO_FILE_TYPE RTF-ETEXT \
+# dbdrv: -FILE_NAME &fullpath:~PROD:patch/115/publisher/templates:TEMPLATE_SOURCE_XXSC_XXSCHRANA_HSWP_en.rtf 
+
+# dbdrv: exec java oracle/apps/xdo/oa/util XDOLoader.class \
+# dbdrv: java &phase=dat \
+# dbdrv: checkfile:~PROD:patch/115/publisher/templates:TEMPLATE_XXSC_XXSCHRANA_NWPS_en.xsl \
+# dbdrv: UPLOAD \
+# dbdrv: -DB_USERNAME  &un_apps \
+# dbdrv: -DB_PASSWORD  &pw_apps \
+# dbdrv: -JDBC_CONNECTION  &jdbc_db_addr \
+# dbdrv: -LOB_TYPE TEMPLATE \
+# dbdrv: -APPS_SHORT_NAME ~PROD \
+# dbdrv: -LOB_CODE XXSCHRANA_NWPS \
+# dbdrv: -LANGUAGE en \
+# dbdrv: -TERRITORY 00 \
+# dbdrv: -XDO_FILE_TYPE XSL-ETEXT \
+# dbdrv: -FILE_NAME &fullpath:~PROD:patch/115/publisher/templates:TEMPLATE_XXSC_XXSCHRANA_NWPS_en.xsl 
+
+# dbdrv: exec java oracle/apps/xdo/oa/util XDOLoader.class \
+# dbdrv: java &phase=dat \
+# dbdrv: checkfile:~PROD:patch/115/publisher/templates:TEMPLATE_SOURCE_XXSC_XXSCHRANA_NWPS_en.rtf \
+# dbdrv: UPLOAD \
+# dbdrv: -DB_USERNAME  &un_apps \
+# dbdrv: -DB_PASSWORD  &pw_apps \
+# dbdrv: -JDBC_CONNECTION  &jdbc_db_addr \
+# dbdrv: -LOB_TYPE TEMPLATE_SOURCE \
+# dbdrv: -APPS_SHORT_NAME ~PROD \
+# dbdrv: -LOB_CODE XXSCHRANA_NWPS \
+# dbdrv: -LANGUAGE en \
+# dbdrv: -TERRITORY 00 \
+# dbdrv: -XDO_FILE_TYPE RTF-ETEXT \
+# dbdrv: -FILE_NAME &fullpath:~PROD:patch/115/publisher/templates:TEMPLATE_SOURCE_XXSC_XXSCHRANA_NWPS_en.rtf 
+
+# dbdrv: exec java oracle/apps/xdo/oa/util XDOLoader.class \
+# dbdrv: java &phase=dat \
+# dbdrv: checkfile:~PROD:patch/115/publisher/templates:TEMPLATE_XXSC_XXSCHRANA_SABB_en.xsl \
+# dbdrv: UPLOAD \
+# dbdrv: -DB_USERNAME  &un_apps \
+# dbdrv: -DB_PASSWORD  &pw_apps \
+# dbdrv: -JDBC_CONNECTION  &jdbc_db_addr \
+# dbdrv: -LOB_TYPE TEMPLATE \
+# dbdrv: -APPS_SHORT_NAME ~PROD \
+# dbdrv: -LOB_CODE XXSCHRANA_SABB \
+# dbdrv: -LANGUAGE en \
+# dbdrv: -TERRITORY 00 \
+# dbdrv: -XDO_FILE_TYPE XSL-ETEXT \
+# dbdrv: -FILE_NAME &fullpath:~PROD:patch/115/publisher/templates:TEMPLATE_XXSC_XXSCHRANA_SABB_en.xsl 
+
+# dbdrv: exec java oracle/apps/xdo/oa/util XDOLoader.class \
+# dbdrv: java &phase=dat \
+# dbdrv: checkfile:~PROD:patch/115/publisher/templates:TEMPLATE_SOURCE_XXSC_XXSCHRANA_SABB_en.rtf \
+# dbdrv: UPLOAD \
+# dbdrv: -DB_USERNAME  &un_apps \
+# dbdrv: -DB_PASSWORD  &pw_apps \
+# dbdrv: -JDBC_CONNECTION  &jdbc_db_addr \
+# dbdrv: -LOB_TYPE TEMPLATE_SOURCE \
+# dbdrv: -APPS_SHORT_NAME ~PROD \
+# dbdrv: -LOB_CODE XXSCHRANA_SABB \
+# dbdrv: -LANGUAGE en \
+# dbdrv: -TERRITORY 00 \
+# dbdrv: -XDO_FILE_TYPE RTF-ETEXT \
+# dbdrv: -FILE_NAME &fullpath:~PROD:patch/115/publisher/templates:TEMPLATE_SOURCE_XXSC_XXSCHRANA_SABB_en.rtf 
+
+# dbdrv: exec java oracle/apps/xdo/oa/util XDOLoader.class \
+# dbdrv: java &phase=dat \
+# dbdrv: checkfile:~PROD:patch/115/publisher/templates:TEMPLATE_XXSC_XXSCHRANA_SCNW_en.xsl \
+# dbdrv: UPLOAD \
+# dbdrv: -DB_USERNAME  &un_apps \
+# dbdrv: -DB_PASSWORD  &pw_apps \
+# dbdrv: -JDBC_CONNECTION  &jdbc_db_addr \
+# dbdrv: -LOB_TYPE TEMPLATE \
+# dbdrv: -APPS_SHORT_NAME ~PROD \
+# dbdrv: -LOB_CODE XXSCHRANA_SCNW \
+# dbdrv: -LANGUAGE en \
+# dbdrv: -TERRITORY 00 \
+# dbdrv: -XDO_FILE_TYPE XSL-ETEXT \
+# dbdrv: -FILE_NAME &fullpath:~PROD:patch/115/publisher/templates:TEMPLATE_XXSC_XXSCHRANA_SCNW_en.xsl 
+
+# dbdrv: exec java oracle/apps/xdo/oa/util XDOLoader.class \
+# dbdrv: java &phase=dat \
+# dbdrv: checkfile:~PROD:patch/115/publisher/templates:TEMPLATE_SOURCE_XXSC_XXSCHRANA_SCNW_en.rtf \
+# dbdrv: UPLOAD \
+# dbdrv: -DB_USERNAME  &un_apps \
+# dbdrv: -DB_PASSWORD  &pw_apps \
+# dbdrv: -JDBC_CONNECTION  &jdbc_db_addr \
+# dbdrv: -LOB_TYPE TEMPLATE_SOURCE \
+# dbdrv: -APPS_SHORT_NAME ~PROD \
+# dbdrv: -LOB_CODE XXSCHRANA_SCNW \
+# dbdrv: -LANGUAGE en \
+# dbdrv: -TERRITORY 00 \
+# dbdrv: -XDO_FILE_TYPE RTF-ETEXT \
+# dbdrv: -FILE_NAME &fullpath:~PROD:patch/115/publisher/templates:TEMPLATE_SOURCE_XXSC_XXSCHRANA_SCNW_en.rtf 
+
+# dbdrv: exec java oracle/apps/xdo/oa/util XDOLoader.class \
+# dbdrv: java &phase=dat \
+# dbdrv: checkfile:~PROD:patch/115/publisher/templates:TEMPLATE_XXSC_XXSCHRANA_SCWP_en.xsl \
+# dbdrv: UPLOAD \
+# dbdrv: -DB_USERNAME  &un_apps \
+# dbdrv: -DB_PASSWORD  &pw_apps \
+# dbdrv: -JDBC_CONNECTION  &jdbc_db_addr \
+# dbdrv: -LOB_TYPE TEMPLATE \
+# dbdrv: -APPS_SHORT_NAME ~PROD \
+# dbdrv: -LOB_CODE XXSCHRANA_SCWP \
+# dbdrv: -LANGUAGE en \
+# dbdrv: -TERRITORY 00 \
+# dbdrv: -XDO_FILE_TYPE XSL-ETEXT \
+# dbdrv: -FILE_NAME &fullpath:~PROD:patch/115/publisher/templates:TEMPLATE_XXSC_XXSCHRANA_SCWP_en.xsl 
+
+# dbdrv: exec java oracle/apps/xdo/oa/util XDOLoader.class \
+# dbdrv: java &phase=dat \
+# dbdrv: checkfile:~PROD:patch/115/publisher/templates:TEMPLATE_SOURCE_XXSC_XXSCHRANA_SCWP_en.rtf \
+# dbdrv: UPLOAD \
+# dbdrv: -DB_USERNAME  &un_apps \
+# dbdrv: -DB_PASSWORD  &pw_apps \
+# dbdrv: -JDBC_CONNECTION  &jdbc_db_addr \
+# dbdrv: -LOB_TYPE TEMPLATE_SOURCE \
+# dbdrv: -APPS_SHORT_NAME ~PROD \
+# dbdrv: -LOB_CODE XXSCHRANA_SCWP \
+# dbdrv: -LANGUAGE en \
+# dbdrv: -TERRITORY 00 \
+# dbdrv: -XDO_FILE_TYPE RTF-ETEXT \
+# dbdrv: -FILE_NAME &fullpath:~PROD:patch/115/publisher/templates:TEMPLATE_SOURCE_XXSC_XXSCHRANA_SCWP_en.rtf 
+
+# dbdrv: exec java oracle/apps/xdo/oa/util XDOLoader.class \
+# dbdrv: java &phase=dat \
+# dbdrv: checkfile:~PROD:patch/115/publisher/templates:TEMPLATE_XXSC_XXSCHRANA_WPS_en.xsl \
+# dbdrv: UPLOAD \
+# dbdrv: -DB_USERNAME  &un_apps \
+# dbdrv: -DB_PASSWORD  &pw_apps \
+# dbdrv: -JDBC_CONNECTION  &jdbc_db_addr \
+# dbdrv: -LOB_TYPE TEMPLATE \
+# dbdrv: -APPS_SHORT_NAME ~PROD \
+# dbdrv: -LOB_CODE XXSCHRANA_WPS \
+# dbdrv: -LANGUAGE en \
+# dbdrv: -TERRITORY 00 \
+# dbdrv: -XDO_FILE_TYPE XSL-ETEXT \
+# dbdrv: -FILE_NAME &fullpath:~PROD:patch/115/publisher/templates:TEMPLATE_XXSC_XXSCHRANA_WPS_en.xsl 
+
+# dbdrv: exec java oracle/apps/xdo/oa/util XDOLoader.class \
+# dbdrv: java &phase=dat \
+# dbdrv: checkfile:~PROD:patch/115/publisher/templates:TEMPLATE_SOURCE_XXSC_XXSCHRANA_WPS_en.rtf \
+# dbdrv: UPLOAD \
+# dbdrv: -DB_USERNAME  &un_apps \
+# dbdrv: -DB_PASSWORD  &pw_apps \
+# dbdrv: -JDBC_CONNECTION  &jdbc_db_addr \
+# dbdrv: -LOB_TYPE TEMPLATE_SOURCE \
+# dbdrv: -APPS_SHORT_NAME ~PROD \
+# dbdrv: -LOB_CODE XXSCHRANA_WPS \
+# dbdrv: -LANGUAGE en \
+# dbdrv: -TERRITORY 00 \
+# dbdrv: -XDO_FILE_TYPE RTF-ETEXT \
+# dbdrv: -FILE_NAME &fullpath:~PROD:patch/115/publisher/templates:TEMPLATE_SOURCE_XXSC_XXSCHRANA_WPS_en.rtf 
+
+# dbdrv: exec java oracle/apps/xdo/oa/util XDOLoader.class \
+# dbdrv: java &phase=dat \
+# dbdrv: checkfile:~PROD:patch/115/publisher/templates:TEMPLATE_XXSC_XXSCPAYANA_CSTDET_en.xsl \
+# dbdrv: UPLOAD \
+# dbdrv: -DB_USERNAME  &un_apps \
+# dbdrv: -DB_PASSWORD  &pw_apps \
+# dbdrv: -JDBC_CONNECTION  &jdbc_db_addr \
+# dbdrv: -LOB_TYPE TEMPLATE \
+# dbdrv: -APPS_SHORT_NAME ~PROD \
+# dbdrv: -LOB_CODE XXSCPAYANA_CSTDET \
+# dbdrv: -LANGUAGE en \
+# dbdrv: -TERRITORY 00 \
+# dbdrv: -XDO_FILE_TYPE XSL-FO \
+# dbdrv: -FILE_NAME &fullpath:~PROD:patch/115/publisher/templates:TEMPLATE_XXSC_XXSCPAYANA_CSTDET_en.xsl 
+
+# dbdrv: exec java oracle/apps/xdo/oa/util XDOLoader.class \
+# dbdrv: java &phase=dat \
+# dbdrv: checkfile:~PROD:patch/115/publisher/templates:TEMPLATE_SOURCE_XXSC_XXSCPAYANA_CSTDET_en.rtf \
+# dbdrv: UPLOAD \
+# dbdrv: -DB_USERNAME  &un_apps \
+# dbdrv: -DB_PASSWORD  &pw_apps \
+# dbdrv: -JDBC_CONNECTION  &jdbc_db_addr \
+# dbdrv: -LOB_TYPE TEMPLATE_SOURCE \
+# dbdrv: -APPS_SHORT_NAME ~PROD \
+# dbdrv: -LOB_CODE XXSCPAYANA_CSTDET \
+# dbdrv: -LANGUAGE en \
+# dbdrv: -TERRITORY 00 \
+# dbdrv: -XDO_FILE_TYPE RTF \
+# dbdrv: -FILE_NAME &fullpath:~PROD:patch/115/publisher/templates:TEMPLATE_SOURCE_XXSC_XXSCPAYANA_CSTDET_en.rtf 
+
+# dbdrv: exec java oracle/apps/xdo/oa/util XDOLoader.class \
+# dbdrv: java &phase=dat \
+# dbdrv: checkfile:~PROD:patch/115/publisher/templates:TEMPLATE_XXSC_XXSCPAYANA_EOSB_en.xsl \
+# dbdrv: UPLOAD \
+# dbdrv: -DB_USERNAME  &un_apps \
+# dbdrv: -DB_PASSWORD  &pw_apps \
+# dbdrv: -JDBC_CONNECTION  &jdbc_db_addr \
+# dbdrv: -LOB_TYPE TEMPLATE \
+# dbdrv: -APPS_SHORT_NAME ~PROD \
+# dbdrv: -LOB_CODE XXSCPAYANA_EOSB \
+# dbdrv: -LANGUAGE en \
+# dbdrv: -TERRITORY 00 \
+# dbdrv: -XDO_FILE_TYPE XSL-FO \
+# dbdrv: -FILE_NAME &fullpath:~PROD:patch/115/publisher/templates:TEMPLATE_XXSC_XXSCPAYANA_EOSB_en.xsl 
+
+# dbdrv: exec java oracle/apps/xdo/oa/util XDOLoader.class \
+# dbdrv: java &phase=dat \
+# dbdrv: checkfile:~PROD:patch/115/publisher/templates:TEMPLATE_SOURCE_XXSC_XXSCPAYANA_EOSB_en.rtf \
+# dbdrv: UPLOAD \
+# dbdrv: -DB_USERNAME  &un_apps \
+# dbdrv: -DB_PASSWORD  &pw_apps \
+# dbdrv: -JDBC_CONNECTION  &jdbc_db_addr \
+# dbdrv: -LOB_TYPE TEMPLATE_SOURCE \
+# dbdrv: -APPS_SHORT_NAME ~PROD \
+# dbdrv: -LOB_CODE XXSCPAYANA_EOSB \
+# dbdrv: -LANGUAGE en \
+# dbdrv: -TERRITORY 00 \
+# dbdrv: -XDO_FILE_TYPE RTF \
+# dbdrv: -FILE_NAME &fullpath:~PROD:patch/115/publisher/templates:TEMPLATE_SOURCE_XXSC_XXSCPAYANA_EOSB_en.rtf 
+
+# dbdrv: exec java oracle/apps/xdo/oa/util XDOLoader.class \
+# dbdrv: java &phase=dat \
+# dbdrv: checkfile:~PROD:patch/115/publisher/templates:TEMPLATE_XXSC_XXSCPAYANA_FNSL_en.xsl \
+# dbdrv: UPLOAD \
+# dbdrv: -DB_USERNAME  &un_apps \
+# dbdrv: -DB_PASSWORD  &pw_apps \
+# dbdrv: -JDBC_CONNECTION  &jdbc_db_addr \
+# dbdrv: -LOB_TYPE TEMPLATE \
+# dbdrv: -APPS_SHORT_NAME ~PROD \
+# dbdrv: -LOB_CODE XXSCPAYANA_FNSL \
+# dbdrv: -LANGUAGE en \
+# dbdrv: -TERRITORY 00 \
+# dbdrv: -XDO_FILE_TYPE XSL-FO \
+# dbdrv: -FILE_NAME &fullpath:~PROD:patch/115/publisher/templates:TEMPLATE_XXSC_XXSCPAYANA_FNSL_en.xsl 
+
+# dbdrv: exec java oracle/apps/xdo/oa/util XDOLoader.class \
+# dbdrv: java &phase=dat \
+# dbdrv: checkfile:~PROD:patch/115/publisher/templates:TEMPLATE_SOURCE_XXSC_XXSCPAYANA_FNSL_en.rtf \
+# dbdrv: UPLOAD \
+# dbdrv: -DB_USERNAME  &un_apps \
+# dbdrv: -DB_PASSWORD  &pw_apps \
+# dbdrv: -JDBC_CONNECTION  &jdbc_db_addr \
+# dbdrv: -LOB_TYPE TEMPLATE_SOURCE \
+# dbdrv: -APPS_SHORT_NAME ~PROD \
+# dbdrv: -LOB_CODE XXSCPAYANA_FNSL \
+# dbdrv: -LANGUAGE en \
+# dbdrv: -TERRITORY 00 \
+# dbdrv: -XDO_FILE_TYPE RTF \
+# dbdrv: -FILE_NAME &fullpath:~PROD:patch/115/publisher/templates:TEMPLATE_SOURCE_XXSC_XXSCPAYANA_FNSL_en.rtf 
+
+# dbdrv: exec java oracle/apps/xdo/oa/util XDOLoader.class \
+# dbdrv: java &phase=dat \
+# dbdrv: checkfile:~PROD:patch/115/publisher/templates:TEMPLATE_XXSC_XXSCPAYANA_LOAN_en.xsl \
+# dbdrv: UPLOAD \
+# dbdrv: -DB_USERNAME  &un_apps \
+# dbdrv: -DB_PASSWORD  &pw_apps \
+# dbdrv: -JDBC_CONNECTION  &jdbc_db_addr \
+# dbdrv: -LOB_TYPE TEMPLATE \
+# dbdrv: -APPS_SHORT_NAME ~PROD \
+# dbdrv: -LOB_CODE XXSCPAYANA_LOAN \
+# dbdrv: -LANGUAGE en \
+# dbdrv: -TERRITORY 00 \
+# dbdrv: -XDO_FILE_TYPE XSL-FO \
+# dbdrv: -FILE_NAME &fullpath:~PROD:patch/115/publisher/templates:TEMPLATE_XXSC_XXSCPAYANA_LOAN_en.xsl 
+
+# dbdrv: exec java oracle/apps/xdo/oa/util XDOLoader.class \
+# dbdrv: java &phase=dat \
+# dbdrv: checkfile:~PROD:patch/115/publisher/templates:TEMPLATE_SOURCE_XXSC_XXSCPAYANA_LOAN_en.rtf \
+# dbdrv: UPLOAD \
+# dbdrv: -DB_USERNAME  &un_apps \
+# dbdrv: -DB_PASSWORD  &pw_apps \
+# dbdrv: -JDBC_CONNECTION  &jdbc_db_addr \
+# dbdrv: -LOB_TYPE TEMPLATE_SOURCE \
+# dbdrv: -APPS_SHORT_NAME ~PROD \
+# dbdrv: -LOB_CODE XXSCPAYANA_LOAN \
+# dbdrv: -LANGUAGE en \
+# dbdrv: -TERRITORY 00 \
+# dbdrv: -XDO_FILE_TYPE RTF \
+# dbdrv: -FILE_NAME &fullpath:~PROD:patch/115/publisher/templates:TEMPLATE_SOURCE_XXSC_XXSCPAYANA_LOAN_en.rtf 
+
+# dbdrv: exec java oracle/apps/xdo/oa/util XDOLoader.class \
+# dbdrv: java &phase=dat \
+# dbdrv: checkfile:~PROD:patch/115/publisher/templates:TEMPLATE_XXSC_XXSCPAYANA_MNSL_en.xsl \
+# dbdrv: UPLOAD \
+# dbdrv: -DB_USERNAME  &un_apps \
+# dbdrv: -DB_PASSWORD  &pw_apps \
+# dbdrv: -JDBC_CONNECTION  &jdbc_db_addr \
+# dbdrv: -LOB_TYPE TEMPLATE \
+# dbdrv: -APPS_SHORT_NAME ~PROD \
+# dbdrv: -LOB_CODE XXSCPAYANA_MNSL \
+# dbdrv: -LANGUAGE en \
+# dbdrv: -TERRITORY 00 \
+# dbdrv: -XDO_FILE_TYPE XSL-FO \
+# dbdrv: -FILE_NAME &fullpath:~PROD:patch/115/publisher/templates:TEMPLATE_XXSC_XXSCPAYANA_MNSL_en.xsl 
+
+# dbdrv: exec java oracle/apps/xdo/oa/util XDOLoader.class \
+# dbdrv: java &phase=dat \
+# dbdrv: checkfile:~PROD:patch/115/publisher/templates:TEMPLATE_SOURCE_XXSC_XXSCPAYANA_MNSL_en.rtf \
+# dbdrv: UPLOAD \
+# dbdrv: -DB_USERNAME  &un_apps \
+# dbdrv: -DB_PASSWORD  &pw_apps \
+# dbdrv: -JDBC_CONNECTION  &jdbc_db_addr \
+# dbdrv: -LOB_TYPE TEMPLATE_SOURCE \
+# dbdrv: -APPS_SHORT_NAME ~PROD \
+# dbdrv: -LOB_CODE XXSCPAYANA_MNSL \
+# dbdrv: -LANGUAGE en \
+# dbdrv: -TERRITORY 00 \
+# dbdrv: -XDO_FILE_TYPE RTF \
+# dbdrv: -FILE_NAME &fullpath:~PROD:patch/115/publisher/templates:TEMPLATE_SOURCE_XXSC_XXSCPAYANA_MNSL_en.rtf 
+
+# dbdrv: exec java oracle/apps/xdo/oa/util XDOLoader.class \
+# dbdrv: java &phase=dat \
+# dbdrv: checkfile:~PROD:patch/115/publisher/templates:TEMPLATE_XXSC_XXSCPAYANA_PYVN_en.xsl \
+# dbdrv: UPLOAD \
+# dbdrv: -DB_USERNAME  &un_apps \
+# dbdrv: -DB_PASSWORD  &pw_apps \
+# dbdrv: -JDBC_CONNECTION  &jdbc_db_addr \
+# dbdrv: -LOB_TYPE TEMPLATE \
+# dbdrv: -APPS_SHORT_NAME ~PROD \
+# dbdrv: -LOB_CODE XXSCPAYANA_PYVN \
+# dbdrv: -LANGUAGE en \
+# dbdrv: -TERRITORY 00 \
+# dbdrv: -XDO_FILE_TYPE XSL-FO \
+# dbdrv: -FILE_NAME &fullpath:~PROD:patch/115/publisher/templates:TEMPLATE_XXSC_XXSCPAYANA_PYVN_en.xsl 
+
+# dbdrv: exec java oracle/apps/xdo/oa/util XDOLoader.class \
+# dbdrv: java &phase=dat \
+# dbdrv: checkfile:~PROD:patch/115/publisher/templates:TEMPLATE_SOURCE_XXSC_XXSCPAYANA_PYVN_en.rtf \
+# dbdrv: UPLOAD \
+# dbdrv: -DB_USERNAME  &un_apps \
+# dbdrv: -DB_PASSWORD  &pw_apps \
+# dbdrv: -JDBC_CONNECTION  &jdbc_db_addr \
+# dbdrv: -LOB_TYPE TEMPLATE_SOURCE \
+# dbdrv: -APPS_SHORT_NAME ~PROD \
+# dbdrv: -LOB_CODE XXSCPAYANA_PYVN \
+# dbdrv: -LANGUAGE en \
+# dbdrv: -TERRITORY 00 \
+# dbdrv: -XDO_FILE_TYPE RTF \
+# dbdrv: -FILE_NAME &fullpath:~PROD:patch/115/publisher/templates:TEMPLATE_SOURCE_XXSC_XXSCPAYANA_PYVN_en.rtf 
+
+# dbdrv: exec java oracle/apps/xdo/oa/util XDOLoader.class \
+# dbdrv: java &phase=dat \
+# dbdrv: checkfile:~PROD:patch/115/publisher/templates:BURSTING_FILE_XXSC_XXSCPAYPRN_PAYS.xml \
+# dbdrv: UPLOAD \
+# dbdrv: -DB_USERNAME  &un_apps \
+# dbdrv: -DB_PASSWORD  &pw_apps \
+# dbdrv: -JDBC_CONNECTION  &jdbc_db_addr \
+# dbdrv: -LOB_TYPE BURSTING_FILE \
+# dbdrv: -APPS_SHORT_NAME ~PROD \
+# dbdrv: -LOB_CODE XXSCPAYPRN_PAYS \
+# dbdrv: -LANGUAGE 00 \
+# dbdrv: -TERRITORY 00 \
+# dbdrv: -XDO_FILE_TYPE XML-BURSTING-FILE \
+# dbdrv: -FILE_NAME &fullpath:~PROD:patch/115/publisher/templates:BURSTING_FILE_XXSC_XXSCPAYPRN_PAYS.xml 
+
+# dbdrv: exec java oracle/apps/xdo/oa/util XDOLoader.class \
+# dbdrv: java &phase=dat \
+# dbdrv: checkfile:~PROD:patch/115/publisher/templates:TEMPLATE_XXSC_XXSCPAYPRN_PAYS_en.xsl \
+# dbdrv: UPLOAD \
+# dbdrv: -DB_USERNAME  &un_apps \
+# dbdrv: -DB_PASSWORD  &pw_apps \
+# dbdrv: -JDBC_CONNECTION  &jdbc_db_addr \
+# dbdrv: -LOB_TYPE TEMPLATE \
+# dbdrv: -APPS_SHORT_NAME ~PROD \
+# dbdrv: -LOB_CODE XXSCPAYPRN_PAYS \
+# dbdrv: -LANGUAGE en \
+# dbdrv: -TERRITORY 00 \
+# dbdrv: -XDO_FILE_TYPE XSL-FO \
+# dbdrv: -FILE_NAME &fullpath:~PROD:patch/115/publisher/templates:TEMPLATE_XXSC_XXSCPAYPRN_PAYS_en.xsl 
+
+# dbdrv: exec java oracle/apps/xdo/oa/util XDOLoader.class \
+# dbdrv: java &phase=dat \
+# dbdrv: checkfile:~PROD:patch/115/publisher/templates:TEMPLATE_SOURCE_XXSC_XXSCPAYPRN_PAYS_en.rtf \
+# dbdrv: UPLOAD \
+# dbdrv: -DB_USERNAME  &un_apps \
+# dbdrv: -DB_PASSWORD  &pw_apps \
+# dbdrv: -JDBC_CONNECTION  &jdbc_db_addr \
+# dbdrv: -LOB_TYPE TEMPLATE_SOURCE \
+# dbdrv: -APPS_SHORT_NAME ~PROD \
+# dbdrv: -LOB_CODE XXSCPAYPRN_PAYS \
+# dbdrv: -LANGUAGE en \
+# dbdrv: -TERRITORY 00 \
+# dbdrv: -XDO_FILE_TYPE RTF \
+# dbdrv: -FILE_NAME &fullpath:~PROD:patch/115/publisher/templates:TEMPLATE_SOURCE_XXSC_XXSCPAYPRN_PAYS_en.rtf 
+
+# dbdrv: exec java oracle/apps/xdo/oa/util XDOLoader.class \
+# dbdrv: java &phase=dat \
+# dbdrv: checkfile:~PROD:patch/115/publisher/templates:TEMPLATE_XXSC_XXSCPOANA_PUAR_en_US.xsl \
+# dbdrv: UPLOAD \
+# dbdrv: -DB_USERNAME  &un_apps \
+# dbdrv: -DB_PASSWORD  &pw_apps \
+# dbdrv: -JDBC_CONNECTION  &jdbc_db_addr \
+# dbdrv: -LOB_TYPE TEMPLATE \
+# dbdrv: -APPS_SHORT_NAME ~PROD \
+# dbdrv: -LOB_CODE XXSCPOANA_PUAR \
+# dbdrv: -LANGUAGE en \
+# dbdrv: -TERRITORY US \
+# dbdrv: -XDO_FILE_TYPE XSL-FO \
+# dbdrv: -FILE_NAME &fullpath:~PROD:patch/115/publisher/templates:TEMPLATE_XXSC_XXSCPOANA_PUAR_en_US.xsl 
+
+# dbdrv: exec java oracle/apps/xdo/oa/util XDOLoader.class \
+# dbdrv: java &phase=dat \
+# dbdrv: checkfile:~PROD:patch/115/publisher/templates:TEMPLATE_SOURCE_XXSC_XXSCPOANA_PUAR_en_US.rtf \
+# dbdrv: UPLOAD \
+# dbdrv: -DB_USERNAME  &un_apps \
+# dbdrv: -DB_PASSWORD  &pw_apps \
+# dbdrv: -JDBC_CONNECTION  &jdbc_db_addr \
+# dbdrv: -LOB_TYPE TEMPLATE_SOURCE \
+# dbdrv: -APPS_SHORT_NAME ~PROD \
+# dbdrv: -LOB_CODE XXSCPOANA_PUAR \
+# dbdrv: -LANGUAGE en \
+# dbdrv: -TERRITORY US \
+# dbdrv: -XDO_FILE_TYPE RTF \
+# dbdrv: -FILE_NAME &fullpath:~PROD:patch/115/publisher/templates:TEMPLATE_SOURCE_XXSC_XXSCPOANA_PUAR_en_US.rtf 
+
+# dbdrv: exec java oracle/apps/xdo/oa/util XDOLoader.class \
+# dbdrv: java &phase=dat \
+# dbdrv: checkfile:~PROD:patch/115/publisher/templates:TEMPLATE_XXSC_XXSCPOANA_SGAPR_en_US.xsl \
+# dbdrv: UPLOAD \
+# dbdrv: -DB_USERNAME  &un_apps \
+# dbdrv: -DB_PASSWORD  &pw_apps \
+# dbdrv: -JDBC_CONNECTION  &jdbc_db_addr \
+# dbdrv: -LOB_TYPE TEMPLATE \
+# dbdrv: -APPS_SHORT_NAME ~PROD \
+# dbdrv: -LOB_CODE XXSCPOANA_SGAPR \
+# dbdrv: -LANGUAGE en \
+# dbdrv: -TERRITORY US \
+# dbdrv: -XDO_FILE_TYPE XSL-FO \
+# dbdrv: -FILE_NAME &fullpath:~PROD:patch/115/publisher/templates:TEMPLATE_XXSC_XXSCPOANA_SGAPR_en_US.xsl 
+
+# dbdrv: exec java oracle/apps/xdo/oa/util XDOLoader.class \
+# dbdrv: java &phase=dat \
+# dbdrv: checkfile:~PROD:patch/115/publisher/templates:TEMPLATE_SOURCE_XXSC_XXSCPOANA_SGAPR_en_US.rtf \
+# dbdrv: UPLOAD \
+# dbdrv: -DB_USERNAME  &un_apps \
+# dbdrv: -DB_PASSWORD  &pw_apps \
+# dbdrv: -JDBC_CONNECTION  &jdbc_db_addr \
+# dbdrv: -LOB_TYPE TEMPLATE_SOURCE \
+# dbdrv: -APPS_SHORT_NAME ~PROD \
+# dbdrv: -LOB_CODE XXSCPOANA_SGAPR \
+# dbdrv: -LANGUAGE en \
+# dbdrv: -TERRITORY US \
+# dbdrv: -XDO_FILE_TYPE RTF \
+# dbdrv: -FILE_NAME &fullpath:~PROD:patch/115/publisher/templates:TEMPLATE_SOURCE_XXSC_XXSCPOANA_SGAPR_en_US.rtf 
+
+# dbdrv: exec java oracle/apps/xdo/oa/util XDOLoader.class \
+# dbdrv: java &phase=dat \
+# dbdrv: checkfile:~PROD:patch/115/publisher/templates:TEMPLATE_XXSC_XXSCPOPRN_GPO_en_US.xsl \
+# dbdrv: UPLOAD \
+# dbdrv: -DB_USERNAME  &un_apps \
+# dbdrv: -DB_PASSWORD  &pw_apps \
+# dbdrv: -JDBC_CONNECTION  &jdbc_db_addr \
+# dbdrv: -LOB_TYPE TEMPLATE \
+# dbdrv: -APPS_SHORT_NAME ~PROD \
+# dbdrv: -LOB_CODE XXSCPOPRN_GPO \
+# dbdrv: -LANGUAGE en \
+# dbdrv: -TERRITORY US \
+# dbdrv: -XDO_FILE_TYPE XSL-FO \
+# dbdrv: -FILE_NAME &fullpath:~PROD:patch/115/publisher/templates:TEMPLATE_XXSC_XXSCPOPRN_GPO_en_US.xsl 
+
+# dbdrv: exec java oracle/apps/xdo/oa/util XDOLoader.class \
+# dbdrv: java &phase=dat \
+# dbdrv: checkfile:~PROD:patch/115/publisher/templates:TEMPLATE_SOURCE_XXSC_XXSCPOPRN_GPO_en_US.rtf \
+# dbdrv: UPLOAD \
+# dbdrv: -DB_USERNAME  &un_apps \
+# dbdrv: -DB_PASSWORD  &pw_apps \
+# dbdrv: -JDBC_CONNECTION  &jdbc_db_addr \
+# dbdrv: -LOB_TYPE TEMPLATE_SOURCE \
+# dbdrv: -APPS_SHORT_NAME ~PROD \
+# dbdrv: -LOB_CODE XXSCPOPRN_GPO \
+# dbdrv: -LANGUAGE en \
+# dbdrv: -TERRITORY US \
+# dbdrv: -XDO_FILE_TYPE RTF \
+# dbdrv: -FILE_NAME &fullpath:~PROD:patch/115/publisher/templates:TEMPLATE_SOURCE_XXSC_XXSCPOPRN_GPO_en_US.rtf 
+
+# dbdrv: exec java oracle/apps/xdo/oa/util XDOLoader.class \
+# dbdrv: java &phase=dat \
+# dbdrv: checkfile:~PROD:patch/115/publisher/templates:TEMPLATE_XXSC_XXSCPOPRN_PO_en_US.xsl \
+# dbdrv: UPLOAD \
+# dbdrv: -DB_USERNAME  &un_apps \
+# dbdrv: -DB_PASSWORD  &pw_apps \
+# dbdrv: -JDBC_CONNECTION  &jdbc_db_addr \
+# dbdrv: -LOB_TYPE TEMPLATE \
+# dbdrv: -APPS_SHORT_NAME ~PROD \
+# dbdrv: -LOB_CODE XXSCPOPRN_PO \
+# dbdrv: -LANGUAGE en \
+# dbdrv: -TERRITORY US \
+# dbdrv: -XDO_FILE_TYPE XSL-FO \
+# dbdrv: -FILE_NAME &fullpath:~PROD:patch/115/publisher/templates:TEMPLATE_XXSC_XXSCPOPRN_PO_en_US.xsl 
+
+# dbdrv: exec java oracle/apps/xdo/oa/util XDOLoader.class \
+# dbdrv: java &phase=dat \
+# dbdrv: checkfile:~PROD:patch/115/publisher/templates:TEMPLATE_SOURCE_XXSC_XXSCPOPRN_PO_en_US.rtf \
+# dbdrv: UPLOAD \
+# dbdrv: -DB_USERNAME  &un_apps \
+# dbdrv: -DB_PASSWORD  &pw_apps \
+# dbdrv: -JDBC_CONNECTION  &jdbc_db_addr \
+# dbdrv: -LOB_TYPE TEMPLATE_SOURCE \
+# dbdrv: -APPS_SHORT_NAME ~PROD \
+# dbdrv: -LOB_CODE XXSCPOPRN_PO \
+# dbdrv: -LANGUAGE en \
+# dbdrv: -TERRITORY US \
+# dbdrv: -XDO_FILE_TYPE RTF \
+# dbdrv: -FILE_NAME &fullpath:~PROD:patch/115/publisher/templates:TEMPLATE_SOURCE_XXSC_XXSCPOPRN_PO_en_US.rtf 
+
+# dbdrv: exec java oracle/apps/xdo/oa/util XDOLoader.class \
+# dbdrv: java &phase=dat \
+# dbdrv: checkfile:~PROD:patch/115/publisher/templates:DATA_TEMPLATE_XXSC_XXSC_AR_INVOICE.xml \
+# dbdrv: UPLOAD \
+# dbdrv: -DB_USERNAME  &un_apps \
+# dbdrv: -DB_PASSWORD  &pw_apps \
+# dbdrv: -JDBC_CONNECTION  &jdbc_db_addr \
+# dbdrv: -LOB_TYPE DATA_TEMPLATE \
+# dbdrv: -APPS_SHORT_NAME ~PROD \
+# dbdrv: -LOB_CODE XXSC_AR_INVOICE \
+# dbdrv: -LANGUAGE 00 \
+# dbdrv: -TERRITORY 00 \
+# dbdrv: -XDO_FILE_TYPE XML-DATA-TEMPLATE \
+# dbdrv: -FILE_NAME &fullpath:~PROD:patch/115/publisher/templates:DATA_TEMPLATE_XXSC_XXSC_AR_INVOICE.xml 
+
+# dbdrv: exec java oracle/apps/xdo/oa/util XDOLoader.class \
+# dbdrv: java &phase=dat \
+# dbdrv: checkfile:~PROD:patch/115/publisher/templates:TEMPLATE_XXSC_XXSC_AR_INVOICE_en.xsl \
+# dbdrv: UPLOAD \
+# dbdrv: -DB_USERNAME  &un_apps \
+# dbdrv: -DB_PASSWORD  &pw_apps \
+# dbdrv: -JDBC_CONNECTION  &jdbc_db_addr \
+# dbdrv: -LOB_TYPE TEMPLATE \
+# dbdrv: -APPS_SHORT_NAME ~PROD \
+# dbdrv: -LOB_CODE XXSC_AR_INVOICE \
+# dbdrv: -LANGUAGE en \
+# dbdrv: -TERRITORY 00 \
+# dbdrv: -XDO_FILE_TYPE XSL-FO \
+# dbdrv: -FILE_NAME &fullpath:~PROD:patch/115/publisher/templates:TEMPLATE_XXSC_XXSC_AR_INVOICE_en.xsl 
+
+# dbdrv: exec java oracle/apps/xdo/oa/util XDOLoader.class \
+# dbdrv: java &phase=dat \
+# dbdrv: checkfile:~PROD:patch/115/publisher/templates:TEMPLATE_SOURCE_XXSC_XXSC_AR_INVOICE_en.rtf \
+# dbdrv: UPLOAD \
+# dbdrv: -DB_USERNAME  &un_apps \
+# dbdrv: -DB_PASSWORD  &pw_apps \
+# dbdrv: -JDBC_CONNECTION  &jdbc_db_addr \
+# dbdrv: -LOB_TYPE TEMPLATE_SOURCE \
+# dbdrv: -APPS_SHORT_NAME ~PROD \
+# dbdrv: -LOB_CODE XXSC_AR_INVOICE \
+# dbdrv: -LANGUAGE en \
+# dbdrv: -TERRITORY 00 \
+# dbdrv: -XDO_FILE_TYPE RTF \
+# dbdrv: -FILE_NAME &fullpath:~PROD:patch/115/publisher/templates:TEMPLATE_SOURCE_XXSC_XXSC_AR_INVOICE_en.rtf 
+
+# dbdrv: exec java oracle/apps/xdo/oa/util XDOLoader.class \
+# dbdrv: java &phase=dat \
+# dbdrv: checkfile:~PROD:patch/115/publisher/templates:DATA_TEMPLATE_XXSC_XXSC_AR_INVOICE_GFC.xml \
+# dbdrv: UPLOAD \
+# dbdrv: -DB_USERNAME  &un_apps \
+# dbdrv: -DB_PASSWORD  &pw_apps \
+# dbdrv: -JDBC_CONNECTION  &jdbc_db_addr \
+# dbdrv: -LOB_TYPE DATA_TEMPLATE \
+# dbdrv: -APPS_SHORT_NAME ~PROD \
+# dbdrv: -LOB_CODE XXSC_AR_INVOICE_GFC \
+# dbdrv: -LANGUAGE 00 \
+# dbdrv: -TERRITORY 00 \
+# dbdrv: -XDO_FILE_TYPE XML-DATA-TEMPLATE \
+# dbdrv: -FILE_NAME &fullpath:~PROD:patch/115/publisher/templates:DATA_TEMPLATE_XXSC_XXSC_AR_INVOICE_GFC.xml 
+
+# dbdrv: exec java oracle/apps/xdo/oa/util XDOLoader.class \
+# dbdrv: java &phase=dat \
+# dbdrv: checkfile:~PROD:patch/115/publisher/templates:TEMPLATE_XXSC_XXSC_AR_INVOICE_GFC_en.xsl \
+# dbdrv: UPLOAD \
+# dbdrv: -DB_USERNAME  &un_apps \
+# dbdrv: -DB_PASSWORD  &pw_apps \
+# dbdrv: -JDBC_CONNECTION  &jdbc_db_addr \
+# dbdrv: -LOB_TYPE TEMPLATE \
+# dbdrv: -APPS_SHORT_NAME ~PROD \
+# dbdrv: -LOB_CODE XXSC_AR_INVOICE_GFC \
+# dbdrv: -LANGUAGE en \
+# dbdrv: -TERRITORY 00 \
+# dbdrv: -XDO_FILE_TYPE XSL-FO \
+# dbdrv: -FILE_NAME &fullpath:~PROD:patch/115/publisher/templates:TEMPLATE_XXSC_XXSC_AR_INVOICE_GFC_en.xsl 
+
+# dbdrv: exec java oracle/apps/xdo/oa/util XDOLoader.class \
+# dbdrv: java &phase=dat \
+# dbdrv: checkfile:~PROD:patch/115/publisher/templates:TEMPLATE_SOURCE_XXSC_XXSC_AR_INVOICE_GFC_en.rtf \
+# dbdrv: UPLOAD \
+# dbdrv: -DB_USERNAME  &un_apps \
+# dbdrv: -DB_PASSWORD  &pw_apps \
+# dbdrv: -JDBC_CONNECTION  &jdbc_db_addr \
+# dbdrv: -LOB_TYPE TEMPLATE_SOURCE \
+# dbdrv: -APPS_SHORT_NAME ~PROD \
+# dbdrv: -LOB_CODE XXSC_AR_INVOICE_GFC \
+# dbdrv: -LANGUAGE en \
+# dbdrv: -TERRITORY 00 \
+# dbdrv: -XDO_FILE_TYPE RTF \
+# dbdrv: -FILE_NAME &fullpath:~PROD:patch/115/publisher/templates:TEMPLATE_SOURCE_XXSC_XXSC_AR_INVOICE_GFC_en.rtf 
+
+# dbdrv: exec java oracle/apps/xdo/oa/util XDOLoader.class \
+# dbdrv: java &phase=dat \
+# dbdrv: checkfile:~PROD:patch/115/publisher/templates:DATA_TEMPLATE_XXSC_XXSC_AR_INVOICE_SAUDI.xml \
+# dbdrv: UPLOAD \
+# dbdrv: -DB_USERNAME  &un_apps \
+# dbdrv: -DB_PASSWORD  &pw_apps \
+# dbdrv: -JDBC_CONNECTION  &jdbc_db_addr \
+# dbdrv: -LOB_TYPE DATA_TEMPLATE \
+# dbdrv: -APPS_SHORT_NAME ~PROD \
+# dbdrv: -LOB_CODE XXSC_AR_INVOICE_SAUDI \
+# dbdrv: -LANGUAGE 00 \
+# dbdrv: -TERRITORY 00 \
+# dbdrv: -XDO_FILE_TYPE XML-DATA-TEMPLATE \
+# dbdrv: -FILE_NAME &fullpath:~PROD:patch/115/publisher/templates:DATA_TEMPLATE_XXSC_XXSC_AR_INVOICE_SAUDI.xml 
+
+# dbdrv: exec java oracle/apps/xdo/oa/util XDOLoader.class \
+# dbdrv: java &phase=dat \
+# dbdrv: checkfile:~PROD:patch/115/publisher/templates:TEMPLATE_XXSC_XXSC_AR_INVOICE_SAUDI_en.xsl \
+# dbdrv: UPLOAD \
+# dbdrv: -DB_USERNAME  &un_apps \
+# dbdrv: -DB_PASSWORD  &pw_apps \
+# dbdrv: -JDBC_CONNECTION  &jdbc_db_addr \
+# dbdrv: -LOB_TYPE TEMPLATE \
+# dbdrv: -APPS_SHORT_NAME ~PROD \
+# dbdrv: -LOB_CODE XXSC_AR_INVOICE_SAUDI \
+# dbdrv: -LANGUAGE en \
+# dbdrv: -TERRITORY 00 \
+# dbdrv: -XDO_FILE_TYPE XSL-FO \
+# dbdrv: -FILE_NAME &fullpath:~PROD:patch/115/publisher/templates:TEMPLATE_XXSC_XXSC_AR_INVOICE_SAUDI_en.xsl 
+
+# dbdrv: exec java oracle/apps/xdo/oa/util XDOLoader.class \
+# dbdrv: java &phase=dat \
+# dbdrv: checkfile:~PROD:patch/115/publisher/templates:TEMPLATE_SOURCE_XXSC_XXSC_AR_INVOICE_SAUDI_en.rtf \
+# dbdrv: UPLOAD \
+# dbdrv: -DB_USERNAME  &un_apps \
+# dbdrv: -DB_PASSWORD  &pw_apps \
+# dbdrv: -JDBC_CONNECTION  &jdbc_db_addr \
+# dbdrv: -LOB_TYPE TEMPLATE_SOURCE \
+# dbdrv: -APPS_SHORT_NAME ~PROD \
+# dbdrv: -LOB_CODE XXSC_AR_INVOICE_SAUDI \
+# dbdrv: -LANGUAGE en \
+# dbdrv: -TERRITORY 00 \
+# dbdrv: -XDO_FILE_TYPE RTF \
+# dbdrv: -FILE_NAME &fullpath:~PROD:patch/115/publisher/templates:TEMPLATE_SOURCE_XXSC_XXSC_AR_INVOICE_SAUDI_en.rtf 
+
+# dbdrv: exec java oracle/apps/xdo/oa/util XDOLoader.class \
+# dbdrv: java &phase=dat \
+# dbdrv: checkfile:~PROD:patch/115/publisher/templates:DATA_TEMPLATE_XXSC_XXSC_BRIO_BALANCE_SUMMARY.xml \
+# dbdrv: UPLOAD \
+# dbdrv: -DB_USERNAME  &un_apps \
+# dbdrv: -DB_PASSWORD  &pw_apps \
+# dbdrv: -JDBC_CONNECTION  &jdbc_db_addr \
+# dbdrv: -LOB_TYPE DATA_TEMPLATE \
+# dbdrv: -APPS_SHORT_NAME ~PROD \
+# dbdrv: -LOB_CODE XXSC_BRIO_BALANCE_SUMMARY \
+# dbdrv: -LANGUAGE 00 \
+# dbdrv: -TERRITORY 00 \
+# dbdrv: -XDO_FILE_TYPE XML \
+# dbdrv: -FILE_NAME &fullpath:~PROD:patch/115/publisher/templates:DATA_TEMPLATE_XXSC_XXSC_BRIO_BALANCE_SUMMARY.xml 
+
+# dbdrv: exec java oracle/apps/xdo/oa/util XDOLoader.class \
+# dbdrv: java &phase=dat \
+# dbdrv: checkfile:~PROD:patch/115/publisher/templates:TEMPLATE_XXSC_XXSC_BRIO_BALANCE_SUMMARY_en.xsl \
+# dbdrv: UPLOAD \
+# dbdrv: -DB_USERNAME  &un_apps \
+# dbdrv: -DB_PASSWORD  &pw_apps \
+# dbdrv: -JDBC_CONNECTION  &jdbc_db_addr \
+# dbdrv: -LOB_TYPE TEMPLATE \
+# dbdrv: -APPS_SHORT_NAME ~PROD \
+# dbdrv: -LOB_CODE XXSC_BRIO_BALANCE_SUMMARY \
+# dbdrv: -LANGUAGE en \
+# dbdrv: -TERRITORY 00 \
+# dbdrv: -XDO_FILE_TYPE XSL-FO \
+# dbdrv: -FILE_NAME &fullpath:~PROD:patch/115/publisher/templates:TEMPLATE_XXSC_XXSC_BRIO_BALANCE_SUMMARY_en.xsl 
+
+# dbdrv: exec java oracle/apps/xdo/oa/util XDOLoader.class \
+# dbdrv: java &phase=dat \
+# dbdrv: checkfile:~PROD:patch/115/publisher/templates:TEMPLATE_SOURCE_XXSC_XXSC_BRIO_BALANCE_SUMMARY_en.rtf \
+# dbdrv: UPLOAD \
+# dbdrv: -DB_USERNAME  &un_apps \
+# dbdrv: -DB_PASSWORD  &pw_apps \
+# dbdrv: -JDBC_CONNECTION  &jdbc_db_addr \
+# dbdrv: -LOB_TYPE TEMPLATE_SOURCE \
+# dbdrv: -APPS_SHORT_NAME ~PROD \
+# dbdrv: -LOB_CODE XXSC_BRIO_BALANCE_SUMMARY \
+# dbdrv: -LANGUAGE en \
+# dbdrv: -TERRITORY 00 \
+# dbdrv: -XDO_FILE_TYPE RTF \
+# dbdrv: -FILE_NAME &fullpath:~PROD:patch/115/publisher/templates:TEMPLATE_SOURCE_XXSC_XXSC_BRIO_BALANCE_SUMMARY_en.rtf 
+
+# dbdrv: exec java oracle/apps/xdo/oa/util XDOLoader.class \
+# dbdrv: java &phase=dat \
+# dbdrv: checkfile:~PROD:patch/115/publisher/templates:DATA_TEMPLATE_XXSC_XXSC_BRIO_BALANCE_SUM_LOB_DEP.xml \
+# dbdrv: UPLOAD \
+# dbdrv: -DB_USERNAME  &un_apps \
+# dbdrv: -DB_PASSWORD  &pw_apps \
+# dbdrv: -JDBC_CONNECTION  &jdbc_db_addr \
+# dbdrv: -LOB_TYPE DATA_TEMPLATE \
+# dbdrv: -APPS_SHORT_NAME ~PROD \
+# dbdrv: -LOB_CODE XXSC_BRIO_BALANCE_SUM_LOB_DEP \
+# dbdrv: -LANGUAGE 00 \
+# dbdrv: -TERRITORY 00 \
+# dbdrv: -XDO_FILE_TYPE XML-DATA-TEMPLATE \
+# dbdrv: -FILE_NAME &fullpath:~PROD:patch/115/publisher/templates:DATA_TEMPLATE_XXSC_XXSC_BRIO_BALANCE_SUM_LOB_DEP.xml 
+
+# dbdrv: exec java oracle/apps/xdo/oa/util XDOLoader.class \
+# dbdrv: java &phase=dat \
+# dbdrv: checkfile:~PROD:patch/115/publisher/templates:TEMPLATE_XXSC_XXSC_BRIO_BALANCE_SUM_LOB_DEP_en.xsl \
+# dbdrv: UPLOAD \
+# dbdrv: -DB_USERNAME  &un_apps \
+# dbdrv: -DB_PASSWORD  &pw_apps \
+# dbdrv: -JDBC_CONNECTION  &jdbc_db_addr \
+# dbdrv: -LOB_TYPE TEMPLATE \
+# dbdrv: -APPS_SHORT_NAME ~PROD \
+# dbdrv: -LOB_CODE XXSC_BRIO_BALANCE_SUM_LOB_DEP \
+# dbdrv: -LANGUAGE en \
+# dbdrv: -TERRITORY 00 \
+# dbdrv: -XDO_FILE_TYPE XSL-FO \
+# dbdrv: -FILE_NAME &fullpath:~PROD:patch/115/publisher/templates:TEMPLATE_XXSC_XXSC_BRIO_BALANCE_SUM_LOB_DEP_en.xsl 
+
+# dbdrv: exec java oracle/apps/xdo/oa/util XDOLoader.class \
+# dbdrv: java &phase=dat \
+# dbdrv: checkfile:~PROD:patch/115/publisher/templates:TEMPLATE_SOURCE_XXSC_XXSC_BRIO_BALANCE_SUM_LOB_DEP_en.rtf \
+# dbdrv: UPLOAD \
+# dbdrv: -DB_USERNAME  &un_apps \
+# dbdrv: -DB_PASSWORD  &pw_apps \
+# dbdrv: -JDBC_CONNECTION  &jdbc_db_addr \
+# dbdrv: -LOB_TYPE TEMPLATE_SOURCE \
+# dbdrv: -APPS_SHORT_NAME ~PROD \
+# dbdrv: -LOB_CODE XXSC_BRIO_BALANCE_SUM_LOB_DEP \
+# dbdrv: -LANGUAGE en \
+# dbdrv: -TERRITORY 00 \
+# dbdrv: -XDO_FILE_TYPE RTF \
+# dbdrv: -FILE_NAME &fullpath:~PROD:patch/115/publisher/templates:TEMPLATE_SOURCE_XXSC_XXSC_BRIO_BALANCE_SUM_LOB_DEP_en.rtf 
+
+# dbdrv: exec java oracle/apps/xdo/oa/util XDOLoader.class \
+# dbdrv: java &phase=dat \
+# dbdrv: checkfile:~PROD:patch/115/publisher/templates:DATA_TEMPLATE_XXSC_XXSC_BRIO_JOURNAL_DETAIL.xml \
+# dbdrv: UPLOAD \
+# dbdrv: -DB_USERNAME  &un_apps \
+# dbdrv: -DB_PASSWORD  &pw_apps \
+# dbdrv: -JDBC_CONNECTION  &jdbc_db_addr \
+# dbdrv: -LOB_TYPE DATA_TEMPLATE \
+# dbdrv: -APPS_SHORT_NAME ~PROD \
+# dbdrv: -LOB_CODE XXSC_BRIO_JOURNAL_DETAIL \
+# dbdrv: -LANGUAGE 00 \
+# dbdrv: -TERRITORY 00 \
+# dbdrv: -XDO_FILE_TYPE XML \
+# dbdrv: -FILE_NAME &fullpath:~PROD:patch/115/publisher/templates:DATA_TEMPLATE_XXSC_XXSC_BRIO_JOURNAL_DETAIL.xml 
+
+# dbdrv: exec java oracle/apps/xdo/oa/util XDOLoader.class \
+# dbdrv: java &phase=dat \
+# dbdrv: checkfile:~PROD:patch/115/publisher/templates:TEMPLATE_XXSC_XXSC_BRIO_JOURNAL_DETAIL_en.xsl \
+# dbdrv: UPLOAD \
+# dbdrv: -DB_USERNAME  &un_apps \
+# dbdrv: -DB_PASSWORD  &pw_apps \
+# dbdrv: -JDBC_CONNECTION  &jdbc_db_addr \
+# dbdrv: -LOB_TYPE TEMPLATE \
+# dbdrv: -APPS_SHORT_NAME ~PROD \
+# dbdrv: -LOB_CODE XXSC_BRIO_JOURNAL_DETAIL \
+# dbdrv: -LANGUAGE en \
+# dbdrv: -TERRITORY 00 \
+# dbdrv: -XDO_FILE_TYPE XSL-FO \
+# dbdrv: -FILE_NAME &fullpath:~PROD:patch/115/publisher/templates:TEMPLATE_XXSC_XXSC_BRIO_JOURNAL_DETAIL_en.xsl 
+
+# dbdrv: exec java oracle/apps/xdo/oa/util XDOLoader.class \
+# dbdrv: java &phase=dat \
+# dbdrv: checkfile:~PROD:patch/115/publisher/templates:TEMPLATE_SOURCE_XXSC_XXSC_BRIO_JOURNAL_DETAIL_en.rtf \
+# dbdrv: UPLOAD \
+# dbdrv: -DB_USERNAME  &un_apps \
+# dbdrv: -DB_PASSWORD  &pw_apps \
+# dbdrv: -JDBC_CONNECTION  &jdbc_db_addr \
+# dbdrv: -LOB_TYPE TEMPLATE_SOURCE \
+# dbdrv: -APPS_SHORT_NAME ~PROD \
+# dbdrv: -LOB_CODE XXSC_BRIO_JOURNAL_DETAIL \
+# dbdrv: -LANGUAGE en \
+# dbdrv: -TERRITORY 00 \
+# dbdrv: -XDO_FILE_TYPE RTF \
+# dbdrv: -FILE_NAME &fullpath:~PROD:patch/115/publisher/templates:TEMPLATE_SOURCE_XXSC_XXSC_BRIO_JOURNAL_DETAIL_en.rtf 
+
+# dbdrv: exec java oracle/apps/xdo/oa/util XDOLoader.class \
+# dbdrv: java &phase=dat \
+# dbdrv: checkfile:~PROD:patch/115/publisher/templates:DATA_TEMPLATE_XXSC_XXSC_BRIO_SUMMARY_TRANS_CUR.xml \
+# dbdrv: UPLOAD \
+# dbdrv: -DB_USERNAME  &un_apps \
+# dbdrv: -DB_PASSWORD  &pw_apps \
+# dbdrv: -JDBC_CONNECTION  &jdbc_db_addr \
+# dbdrv: -LOB_TYPE DATA_TEMPLATE \
+# dbdrv: -APPS_SHORT_NAME ~PROD \
+# dbdrv: -LOB_CODE XXSC_BRIO_SUMMARY_TRANS_CUR \
+# dbdrv: -LANGUAGE 00 \
+# dbdrv: -TERRITORY 00 \
+# dbdrv: -XDO_FILE_TYPE XML \
+# dbdrv: -FILE_NAME &fullpath:~PROD:patch/115/publisher/templates:DATA_TEMPLATE_XXSC_XXSC_BRIO_SUMMARY_TRANS_CUR.xml 
+
+# dbdrv: exec java oracle/apps/xdo/oa/util XDOLoader.class \
+# dbdrv: java &phase=dat \
+# dbdrv: checkfile:~PROD:patch/115/publisher/templates:TEMPLATE_XXSC_XXSC_BRIO_SUMMARY_TRANS_CUR_en.xsl \
+# dbdrv: UPLOAD \
+# dbdrv: -DB_USERNAME  &un_apps \
+# dbdrv: -DB_PASSWORD  &pw_apps \
+# dbdrv: -JDBC_CONNECTION  &jdbc_db_addr \
+# dbdrv: -LOB_TYPE TEMPLATE \
+# dbdrv: -APPS_SHORT_NAME ~PROD \
+# dbdrv: -LOB_CODE XXSC_BRIO_SUMMARY_TRANS_CUR \
+# dbdrv: -LANGUAGE en \
+# dbdrv: -TERRITORY 00 \
+# dbdrv: -XDO_FILE_TYPE XSL-FO \
+# dbdrv: -FILE_NAME &fullpath:~PROD:patch/115/publisher/templates:TEMPLATE_XXSC_XXSC_BRIO_SUMMARY_TRANS_CUR_en.xsl 
+
+# dbdrv: exec java oracle/apps/xdo/oa/util XDOLoader.class \
+# dbdrv: java &phase=dat \
+# dbdrv: checkfile:~PROD:patch/115/publisher/templates:TEMPLATE_SOURCE_XXSC_XXSC_BRIO_SUMMARY_TRANS_CUR_en.rtf \
+# dbdrv: UPLOAD \
+# dbdrv: -DB_USERNAME  &un_apps \
+# dbdrv: -DB_PASSWORD  &pw_apps \
+# dbdrv: -JDBC_CONNECTION  &jdbc_db_addr \
+# dbdrv: -LOB_TYPE TEMPLATE_SOURCE \
+# dbdrv: -APPS_SHORT_NAME ~PROD \
+# dbdrv: -LOB_CODE XXSC_BRIO_SUMMARY_TRANS_CUR \
+# dbdrv: -LANGUAGE en \
+# dbdrv: -TERRITORY 00 \
+# dbdrv: -XDO_FILE_TYPE RTF \
+# dbdrv: -FILE_NAME &fullpath:~PROD:patch/115/publisher/templates:TEMPLATE_SOURCE_XXSC_XXSC_BRIO_SUMMARY_TRANS_CUR_en.rtf 
+
+# dbdrv: exec java oracle/apps/xdo/oa/util XDOLoader.class \
+# dbdrv: java &phase=dat \
+# dbdrv: checkfile:~PROD:patch/115/publisher/templates:DATA_TEMPLATE_XXSC_XXSC_ELE_PAY_RUN_RES.xml \
+# dbdrv: UPLOAD \
+# dbdrv: -DB_USERNAME  &un_apps \
+# dbdrv: -DB_PASSWORD  &pw_apps \
+# dbdrv: -JDBC_CONNECTION  &jdbc_db_addr \
+# dbdrv: -LOB_TYPE DATA_TEMPLATE \
+# dbdrv: -APPS_SHORT_NAME ~PROD \
+# dbdrv: -LOB_CODE XXSC_ELE_PAY_RUN_RES \
+# dbdrv: -LANGUAGE 00 \
+# dbdrv: -TERRITORY 00 \
+# dbdrv: -XDO_FILE_TYPE XML-DATA-TEMPLATE \
+# dbdrv: -FILE_NAME &fullpath:~PROD:patch/115/publisher/templates:DATA_TEMPLATE_XXSC_XXSC_ELE_PAY_RUN_RES.xml 
+
+# dbdrv: exec java oracle/apps/xdo/oa/util XDOLoader.class \
+# dbdrv: java &phase=dat \
+# dbdrv: checkfile:~PROD:patch/115/publisher/templates:TEMPLATE_XXSC_XXSC_ELE_PAY_RUN_RES_en.xsl \
+# dbdrv: UPLOAD \
+# dbdrv: -DB_USERNAME  &un_apps \
+# dbdrv: -DB_PASSWORD  &pw_apps \
+# dbdrv: -JDBC_CONNECTION  &jdbc_db_addr \
+# dbdrv: -LOB_TYPE TEMPLATE \
+# dbdrv: -APPS_SHORT_NAME ~PROD \
+# dbdrv: -LOB_CODE XXSC_ELE_PAY_RUN_RES \
+# dbdrv: -LANGUAGE en \
+# dbdrv: -TERRITORY 00 \
+# dbdrv: -XDO_FILE_TYPE XSL-FO \
+# dbdrv: -FILE_NAME &fullpath:~PROD:patch/115/publisher/templates:TEMPLATE_XXSC_XXSC_ELE_PAY_RUN_RES_en.xsl 
+
+# dbdrv: exec java oracle/apps/xdo/oa/util XDOLoader.class \
+# dbdrv: java &phase=dat \
+# dbdrv: checkfile:~PROD:patch/115/publisher/templates:TEMPLATE_SOURCE_XXSC_XXSC_ELE_PAY_RUN_RES_en.rtf \
+# dbdrv: UPLOAD \
+# dbdrv: -DB_USERNAME  &un_apps \
+# dbdrv: -DB_PASSWORD  &pw_apps \
+# dbdrv: -JDBC_CONNECTION  &jdbc_db_addr \
+# dbdrv: -LOB_TYPE TEMPLATE_SOURCE \
+# dbdrv: -APPS_SHORT_NAME ~PROD \
+# dbdrv: -LOB_CODE XXSC_ELE_PAY_RUN_RES \
+# dbdrv: -LANGUAGE en \
+# dbdrv: -TERRITORY 00 \
+# dbdrv: -XDO_FILE_TYPE RTF \
+# dbdrv: -FILE_NAME &fullpath:~PROD:patch/115/publisher/templates:TEMPLATE_SOURCE_XXSC_XXSC_ELE_PAY_RUN_RES_en.rtf 
+
+# dbdrv: exec java oracle/apps/xdo/oa/util XDOLoader.class \
+# dbdrv: java &phase=dat \
+# dbdrv: checkfile:~PROD:patch/115/publisher/templates:TEMPLATE_XXSC_XXSC_EMPLOYEE_DETAILS_SPREADSHEET_en.xsl \
+# dbdrv: UPLOAD \
+# dbdrv: -DB_USERNAME  &un_apps \
+# dbdrv: -DB_PASSWORD  &pw_apps \
+# dbdrv: -JDBC_CONNECTION  &jdbc_db_addr \
+# dbdrv: -LOB_TYPE TEMPLATE \
+# dbdrv: -APPS_SHORT_NAME ~PROD \
+# dbdrv: -LOB_CODE XXSC_EMPLOYEE_DETAILS_SPREADSHEET \
+# dbdrv: -LANGUAGE en \
+# dbdrv: -TERRITORY 00 \
+# dbdrv: -XDO_FILE_TYPE XSL-FO \
+# dbdrv: -FILE_NAME &fullpath:~PROD:patch/115/publisher/templates:TEMPLATE_XXSC_XXSC_EMPLOYEE_DETAILS_SPREADSHEET_en.xsl 
+
+# dbdrv: exec java oracle/apps/xdo/oa/util XDOLoader.class \
+# dbdrv: java &phase=dat \
+# dbdrv: checkfile:~PROD:patch/115/publisher/templates:TEMPLATE_SOURCE_XXSC_XXSC_EMPLOYEE_DETAILS_SPREADSHEET_en.rtf \
+# dbdrv: UPLOAD \
+# dbdrv: -DB_USERNAME  &un_apps \
+# dbdrv: -DB_PASSWORD  &pw_apps \
+# dbdrv: -JDBC_CONNECTION  &jdbc_db_addr \
+# dbdrv: -LOB_TYPE TEMPLATE_SOURCE \
+# dbdrv: -APPS_SHORT_NAME ~PROD \
+# dbdrv: -LOB_CODE XXSC_EMPLOYEE_DETAILS_SPREADSHEET \
+# dbdrv: -LANGUAGE en \
+# dbdrv: -TERRITORY 00 \
+# dbdrv: -XDO_FILE_TYPE RTF \
+# dbdrv: -FILE_NAME &fullpath:~PROD:patch/115/publisher/templates:TEMPLATE_SOURCE_XXSC_XXSC_EMPLOYEE_DETAILS_SPREADSHEET_en.rtf 
+
+# dbdrv: exec java oracle/apps/xdo/oa/util XDOLoader.class \
+# dbdrv: java &phase=dat \
+# dbdrv: checkfile:~PROD:patch/115/publisher/templates:DATA_TEMPLATE_XXSC_XXSC_HR_EMP_ABS_DET.xml \
+# dbdrv: UPLOAD \
+# dbdrv: -DB_USERNAME  &un_apps \
+# dbdrv: -DB_PASSWORD  &pw_apps \
+# dbdrv: -JDBC_CONNECTION  &jdbc_db_addr \
+# dbdrv: -LOB_TYPE DATA_TEMPLATE \
+# dbdrv: -APPS_SHORT_NAME ~PROD \
+# dbdrv: -LOB_CODE XXSC_HR_EMP_ABS_DET \
+# dbdrv: -LANGUAGE 00 \
+# dbdrv: -TERRITORY 00 \
+# dbdrv: -XDO_FILE_TYPE XML-DATA-TEMPLATE \
+# dbdrv: -FILE_NAME &fullpath:~PROD:patch/115/publisher/templates:DATA_TEMPLATE_XXSC_XXSC_HR_EMP_ABS_DET.xml 
+
+# dbdrv: exec java oracle/apps/xdo/oa/util XDOLoader.class \
+# dbdrv: java &phase=dat \
+# dbdrv: checkfile:~PROD:patch/115/publisher/templates:TEMPLATE_XXSC_XXSC_HR_EMP_ABS_DET_en.xsl \
+# dbdrv: UPLOAD \
+# dbdrv: -DB_USERNAME  &un_apps \
+# dbdrv: -DB_PASSWORD  &pw_apps \
+# dbdrv: -JDBC_CONNECTION  &jdbc_db_addr \
+# dbdrv: -LOB_TYPE TEMPLATE \
+# dbdrv: -APPS_SHORT_NAME ~PROD \
+# dbdrv: -LOB_CODE XXSC_HR_EMP_ABS_DET \
+# dbdrv: -LANGUAGE en \
+# dbdrv: -TERRITORY 00 \
+# dbdrv: -XDO_FILE_TYPE XSL-FO \
+# dbdrv: -FILE_NAME &fullpath:~PROD:patch/115/publisher/templates:TEMPLATE_XXSC_XXSC_HR_EMP_ABS_DET_en.xsl 
+
+# dbdrv: exec java oracle/apps/xdo/oa/util XDOLoader.class \
+# dbdrv: java &phase=dat \
+# dbdrv: checkfile:~PROD:patch/115/publisher/templates:TEMPLATE_SOURCE_XXSC_XXSC_HR_EMP_ABS_DET_en.rtf \
+# dbdrv: UPLOAD \
+# dbdrv: -DB_USERNAME  &un_apps \
+# dbdrv: -DB_PASSWORD  &pw_apps \
+# dbdrv: -JDBC_CONNECTION  &jdbc_db_addr \
+# dbdrv: -LOB_TYPE TEMPLATE_SOURCE \
+# dbdrv: -APPS_SHORT_NAME ~PROD \
+# dbdrv: -LOB_CODE XXSC_HR_EMP_ABS_DET \
+# dbdrv: -LANGUAGE en \
+# dbdrv: -TERRITORY 00 \
+# dbdrv: -XDO_FILE_TYPE RTF \
+# dbdrv: -FILE_NAME &fullpath:~PROD:patch/115/publisher/templates:TEMPLATE_SOURCE_XXSC_XXSC_HR_EMP_ABS_DET_en.rtf 
+
+# dbdrv: exec java oracle/apps/xdo/oa/util XDOLoader.class \
+# dbdrv: java &phase=dat \
+# dbdrv: checkfile:~PROD:patch/115/publisher/templates:DATA_TEMPLATE_XXSC_XXSC_HR_EMP_LETTERS.xml \
+# dbdrv: UPLOAD \
+# dbdrv: -DB_USERNAME  &un_apps \
+# dbdrv: -DB_PASSWORD  &pw_apps \
+# dbdrv: -JDBC_CONNECTION  &jdbc_db_addr \
+# dbdrv: -LOB_TYPE DATA_TEMPLATE \
+# dbdrv: -APPS_SHORT_NAME ~PROD \
+# dbdrv: -LOB_CODE XXSC_HR_EMP_LETTERS \
+# dbdrv: -LANGUAGE 00 \
+# dbdrv: -TERRITORY 00 \
+# dbdrv: -XDO_FILE_TYPE XML-DATA-TEMPLATE \
+# dbdrv: -FILE_NAME &fullpath:~PROD:patch/115/publisher/templates:DATA_TEMPLATE_XXSC_XXSC_HR_EMP_LETTERS.xml 
+
+# dbdrv: exec java oracle/apps/xdo/oa/util XDOLoader.class \
+# dbdrv: java &phase=dat \
+# dbdrv: checkfile:~PROD:patch/115/publisher/templates:DATA_TEMPLATE_XXSC_XXSC_INV_DET.xml \
+# dbdrv: UPLOAD \
+# dbdrv: -DB_USERNAME  &un_apps \
+# dbdrv: -DB_PASSWORD  &pw_apps \
+# dbdrv: -JDBC_CONNECTION  &jdbc_db_addr \
+# dbdrv: -LOB_TYPE DATA_TEMPLATE \
+# dbdrv: -APPS_SHORT_NAME ~PROD \
+# dbdrv: -LOB_CODE XXSC_INV_DET \
+# dbdrv: -LANGUAGE 00 \
+# dbdrv: -TERRITORY 00 \
+# dbdrv: -XDO_FILE_TYPE XML-DATA-TEMPLATE \
+# dbdrv: -FILE_NAME &fullpath:~PROD:patch/115/publisher/templates:DATA_TEMPLATE_XXSC_XXSC_INV_DET.xml 
+
+# dbdrv: exec java oracle/apps/xdo/oa/util XDOLoader.class \
+# dbdrv: java &phase=dat \
+# dbdrv: checkfile:~PROD:patch/115/publisher/templates:TEMPLATE_XXSC_XXSC_INV_DET_en.xsl \
+# dbdrv: UPLOAD \
+# dbdrv: -DB_USERNAME  &un_apps \
+# dbdrv: -DB_PASSWORD  &pw_apps \
+# dbdrv: -JDBC_CONNECTION  &jdbc_db_addr \
+# dbdrv: -LOB_TYPE TEMPLATE \
+# dbdrv: -APPS_SHORT_NAME ~PROD \
+# dbdrv: -LOB_CODE XXSC_INV_DET \
+# dbdrv: -LANGUAGE en \
+# dbdrv: -TERRITORY 00 \
+# dbdrv: -XDO_FILE_TYPE XSL-FO \
+# dbdrv: -FILE_NAME &fullpath:~PROD:patch/115/publisher/templates:TEMPLATE_XXSC_XXSC_INV_DET_en.xsl 
+
+# dbdrv: exec java oracle/apps/xdo/oa/util XDOLoader.class \
+# dbdrv: java &phase=dat \
+# dbdrv: checkfile:~PROD:patch/115/publisher/templates:TEMPLATE_SOURCE_XXSC_XXSC_INV_DET_en.rtf \
+# dbdrv: UPLOAD \
+# dbdrv: -DB_USERNAME  &un_apps \
+# dbdrv: -DB_PASSWORD  &pw_apps \
+# dbdrv: -JDBC_CONNECTION  &jdbc_db_addr \
+# dbdrv: -LOB_TYPE TEMPLATE_SOURCE \
+# dbdrv: -APPS_SHORT_NAME ~PROD \
+# dbdrv: -LOB_CODE XXSC_INV_DET \
+# dbdrv: -LANGUAGE en \
+# dbdrv: -TERRITORY 00 \
+# dbdrv: -XDO_FILE_TYPE RTF \
+# dbdrv: -FILE_NAME &fullpath:~PROD:patch/115/publisher/templates:TEMPLATE_SOURCE_XXSC_XXSC_INV_DET_en.rtf 
+
+# dbdrv: exec java oracle/apps/xdo/oa/util XDOLoader.class \
+# dbdrv: java &phase=dat \
+# dbdrv: checkfile:~PROD:patch/115/publisher/templates:TEMPLATE_XXSC_XXSC_NEW_JOINEE_REPORT_en.xsl \
+# dbdrv: UPLOAD \
+# dbdrv: -DB_USERNAME  &un_apps \
+# dbdrv: -DB_PASSWORD  &pw_apps \
+# dbdrv: -JDBC_CONNECTION  &jdbc_db_addr \
+# dbdrv: -LOB_TYPE TEMPLATE \
+# dbdrv: -APPS_SHORT_NAME ~PROD \
+# dbdrv: -LOB_CODE XXSC_NEW_JOINEE_REPORT \
+# dbdrv: -LANGUAGE en \
+# dbdrv: -TERRITORY 00 \
+# dbdrv: -XDO_FILE_TYPE XSL-FO \
+# dbdrv: -FILE_NAME &fullpath:~PROD:patch/115/publisher/templates:TEMPLATE_XXSC_XXSC_NEW_JOINEE_REPORT_en.xsl 
+
+# dbdrv: exec java oracle/apps/xdo/oa/util XDOLoader.class \
+# dbdrv: java &phase=dat \
+# dbdrv: checkfile:~PROD:patch/115/publisher/templates:TEMPLATE_SOURCE_XXSC_XXSC_NEW_JOINEE_REPORT_en.rtf \
+# dbdrv: UPLOAD \
+# dbdrv: -DB_USERNAME  &un_apps \
+# dbdrv: -DB_PASSWORD  &pw_apps \
+# dbdrv: -JDBC_CONNECTION  &jdbc_db_addr \
+# dbdrv: -LOB_TYPE TEMPLATE_SOURCE \
+# dbdrv: -APPS_SHORT_NAME ~PROD \
+# dbdrv: -LOB_CODE XXSC_NEW_JOINEE_REPORT \
+# dbdrv: -LANGUAGE en \
+# dbdrv: -TERRITORY 00 \
+# dbdrv: -XDO_FILE_TYPE RTF \
+# dbdrv: -FILE_NAME &fullpath:~PROD:patch/115/publisher/templates:TEMPLATE_SOURCE_XXSC_XXSC_NEW_JOINEE_REPORT_en.rtf 
+
+# dbdrv: exec java oracle/apps/xdo/oa/util XDOLoader.class \
+# dbdrv: java &phase=dat \
+# dbdrv: checkfile:~PROD:patch/115/publisher/templates:TEMPLATE_XXSC_XXSC_NO_OBJECTION_en.xsl \
+# dbdrv: UPLOAD \
+# dbdrv: -DB_USERNAME  &un_apps \
+# dbdrv: -DB_PASSWORD  &pw_apps \
+# dbdrv: -JDBC_CONNECTION  &jdbc_db_addr \
+# dbdrv: -LOB_TYPE TEMPLATE \
+# dbdrv: -APPS_SHORT_NAME ~PROD \
+# dbdrv: -LOB_CODE XXSC_NO_OBJECTION \
+# dbdrv: -LANGUAGE en \
+# dbdrv: -TERRITORY 00 \
+# dbdrv: -XDO_FILE_TYPE XSL-FO \
+# dbdrv: -FILE_NAME &fullpath:~PROD:patch/115/publisher/templates:TEMPLATE_XXSC_XXSC_NO_OBJECTION_en.xsl 
+
+# dbdrv: exec java oracle/apps/xdo/oa/util XDOLoader.class \
+# dbdrv: java &phase=dat \
+# dbdrv: checkfile:~PROD:patch/115/publisher/templates:TEMPLATE_SOURCE_XXSC_XXSC_NO_OBJECTION_en.rtf \
+# dbdrv: UPLOAD \
+# dbdrv: -DB_USERNAME  &un_apps \
+# dbdrv: -DB_PASSWORD  &pw_apps \
+# dbdrv: -JDBC_CONNECTION  &jdbc_db_addr \
+# dbdrv: -LOB_TYPE TEMPLATE_SOURCE \
+# dbdrv: -APPS_SHORT_NAME ~PROD \
+# dbdrv: -LOB_CODE XXSC_NO_OBJECTION \
+# dbdrv: -LANGUAGE en \
+# dbdrv: -TERRITORY 00 \
+# dbdrv: -XDO_FILE_TYPE RTF \
+# dbdrv: -FILE_NAME &fullpath:~PROD:patch/115/publisher/templates:TEMPLATE_SOURCE_XXSC_XXSC_NO_OBJECTION_en.rtf 
+
+# dbdrv: exec java oracle/apps/xdo/oa/util XDOLoader.class \
+# dbdrv: java &phase=dat \
+# dbdrv: checkfile:~PROD:patch/115/publisher/templates:TEMPLATE_XXSC_XXSC_PROBATION_END_LETTER_en.xsl \
+# dbdrv: UPLOAD \
+# dbdrv: -DB_USERNAME  &un_apps \
+# dbdrv: -DB_PASSWORD  &pw_apps \
+# dbdrv: -JDBC_CONNECTION  &jdbc_db_addr \
+# dbdrv: -LOB_TYPE TEMPLATE \
+# dbdrv: -APPS_SHORT_NAME ~PROD \
+# dbdrv: -LOB_CODE XXSC_PROBATION_END_LETTER \
+# dbdrv: -LANGUAGE en \
+# dbdrv: -TERRITORY 00 \
+# dbdrv: -XDO_FILE_TYPE XSL-FO \
+# dbdrv: -FILE_NAME &fullpath:~PROD:patch/115/publisher/templates:TEMPLATE_XXSC_XXSC_PROBATION_END_LETTER_en.xsl 
+
+# dbdrv: exec java oracle/apps/xdo/oa/util XDOLoader.class \
+# dbdrv: java &phase=dat \
+# dbdrv: checkfile:~PROD:patch/115/publisher/templates:TEMPLATE_SOURCE_XXSC_XXSC_PROBATION_END_LETTER_en.rtf \
+# dbdrv: UPLOAD \
+# dbdrv: -DB_USERNAME  &un_apps \
+# dbdrv: -DB_PASSWORD  &pw_apps \
+# dbdrv: -JDBC_CONNECTION  &jdbc_db_addr \
+# dbdrv: -LOB_TYPE TEMPLATE_SOURCE \
+# dbdrv: -APPS_SHORT_NAME ~PROD \
+# dbdrv: -LOB_CODE XXSC_PROBATION_END_LETTER \
+# dbdrv: -LANGUAGE en \
+# dbdrv: -TERRITORY 00 \
+# dbdrv: -XDO_FILE_TYPE RTF \
+# dbdrv: -FILE_NAME &fullpath:~PROD:patch/115/publisher/templates:TEMPLATE_SOURCE_XXSC_XXSC_PROBATION_END_LETTER_en.rtf 
+
+# dbdrv: exec java oracle/apps/xdo/oa/util XDOLoader.class \
+# dbdrv: java &phase=dat \
+# dbdrv: checkfile:~PROD:patch/115/publisher/templates:TEMPLATE_XXSC_XXSC_SALARY_CERTIFICATE_en.xsl \
+# dbdrv: UPLOAD \
+# dbdrv: -DB_USERNAME  &un_apps \
+# dbdrv: -DB_PASSWORD  &pw_apps \
+# dbdrv: -JDBC_CONNECTION  &jdbc_db_addr \
+# dbdrv: -LOB_TYPE TEMPLATE \
+# dbdrv: -APPS_SHORT_NAME ~PROD \
+# dbdrv: -LOB_CODE XXSC_SALARY_CERTIFICATE \
+# dbdrv: -LANGUAGE en \
+# dbdrv: -TERRITORY 00 \
+# dbdrv: -XDO_FILE_TYPE XSL-FO \
+# dbdrv: -FILE_NAME &fullpath:~PROD:patch/115/publisher/templates:TEMPLATE_XXSC_XXSC_SALARY_CERTIFICATE_en.xsl 
+
+# dbdrv: exec java oracle/apps/xdo/oa/util XDOLoader.class \
+# dbdrv: java &phase=dat \
+# dbdrv: checkfile:~PROD:patch/115/publisher/templates:TEMPLATE_SOURCE_XXSC_XXSC_SALARY_CERTIFICATE_en.rtf \
+# dbdrv: UPLOAD \
+# dbdrv: -DB_USERNAME  &un_apps \
+# dbdrv: -DB_PASSWORD  &pw_apps \
+# dbdrv: -JDBC_CONNECTION  &jdbc_db_addr \
+# dbdrv: -LOB_TYPE TEMPLATE_SOURCE \
+# dbdrv: -APPS_SHORT_NAME ~PROD \
+# dbdrv: -LOB_CODE XXSC_SALARY_CERTIFICATE \
+# dbdrv: -LANGUAGE en \
+# dbdrv: -TERRITORY 00 \
+# dbdrv: -XDO_FILE_TYPE RTF \
+# dbdrv: -FILE_NAME &fullpath:~PROD:patch/115/publisher/templates:TEMPLATE_SOURCE_XXSC_XXSC_SALARY_CERTIFICATE_en.rtf 
+
+# dbdrv: exec java oracle/apps/xdo/oa/util XDOLoader.class \
+# dbdrv: java &phase=dat \
+# dbdrv: checkfile:~PROD:patch/115/publisher/templates:TEMPLATE_XXSC_XXSC_SALARY_TRANSFER_LETTER_en.xsl \
+# dbdrv: UPLOAD \
+# dbdrv: -DB_USERNAME  &un_apps \
+# dbdrv: -DB_PASSWORD  &pw_apps \
+# dbdrv: -JDBC_CONNECTION  &jdbc_db_addr \
+# dbdrv: -LOB_TYPE TEMPLATE \
+# dbdrv: -APPS_SHORT_NAME ~PROD \
+# dbdrv: -LOB_CODE XXSC_SALARY_TRANSFER_LETTER \
+# dbdrv: -LANGUAGE en \
+# dbdrv: -TERRITORY 00 \
+# dbdrv: -XDO_FILE_TYPE XSL-FO \
+# dbdrv: -FILE_NAME &fullpath:~PROD:patch/115/publisher/templates:TEMPLATE_XXSC_XXSC_SALARY_TRANSFER_LETTER_en.xsl 
+
+# dbdrv: exec java oracle/apps/xdo/oa/util XDOLoader.class \
+# dbdrv: java &phase=dat \
+# dbdrv: checkfile:~PROD:patch/115/publisher/templates:TEMPLATE_SOURCE_XXSC_XXSC_SALARY_TRANSFER_LETTER_en.rtf \
+# dbdrv: UPLOAD \
+# dbdrv: -DB_USERNAME  &un_apps \
+# dbdrv: -DB_PASSWORD  &pw_apps \
+# dbdrv: -JDBC_CONNECTION  &jdbc_db_addr \
+# dbdrv: -LOB_TYPE TEMPLATE_SOURCE \
+# dbdrv: -APPS_SHORT_NAME ~PROD \
+# dbdrv: -LOB_CODE XXSC_SALARY_TRANSFER_LETTER \
+# dbdrv: -LANGUAGE en \
+# dbdrv: -TERRITORY 00 \
+# dbdrv: -XDO_FILE_TYPE RTF \
+# dbdrv: -FILE_NAME &fullpath:~PROD:patch/115/publisher/templates:TEMPLATE_SOURCE_XXSC_XXSC_SALARY_TRANSFER_LETTER_en.rtf 
+
+# dbdrv: exec java oracle/apps/xdo/oa/util XDOLoader.class \
+# dbdrv: java &phase=dat \
+# dbdrv: checkfile:~PROD:patch/115/publisher/templates:TEMPLATE_XXSC_XXSC_STATEMENT_OF_SERVICE_en.xsl \
+# dbdrv: UPLOAD \
+# dbdrv: -DB_USERNAME  &un_apps \
+# dbdrv: -DB_PASSWORD  &pw_apps \
+# dbdrv: -JDBC_CONNECTION  &jdbc_db_addr \
+# dbdrv: -LOB_TYPE TEMPLATE \
+# dbdrv: -APPS_SHORT_NAME ~PROD \
+# dbdrv: -LOB_CODE XXSC_STATEMENT_OF_SERVICE \
+# dbdrv: -LANGUAGE en \
+# dbdrv: -TERRITORY 00 \
+# dbdrv: -XDO_FILE_TYPE XSL-FO \
+# dbdrv: -FILE_NAME &fullpath:~PROD:patch/115/publisher/templates:TEMPLATE_XXSC_XXSC_STATEMENT_OF_SERVICE_en.xsl 
+
+# dbdrv: exec java oracle/apps/xdo/oa/util XDOLoader.class \
+# dbdrv: java &phase=dat \
+# dbdrv: checkfile:~PROD:patch/115/publisher/templates:TEMPLATE_SOURCE_XXSC_XXSC_STATEMENT_OF_SERVICE_en.rtf \
+# dbdrv: UPLOAD \
+# dbdrv: -DB_USERNAME  &un_apps \
+# dbdrv: -DB_PASSWORD  &pw_apps \
+# dbdrv: -JDBC_CONNECTION  &jdbc_db_addr \
+# dbdrv: -LOB_TYPE TEMPLATE_SOURCE \
+# dbdrv: -APPS_SHORT_NAME ~PROD \
+# dbdrv: -LOB_CODE XXSC_STATEMENT_OF_SERVICE \
+# dbdrv: -LANGUAGE en \
+# dbdrv: -TERRITORY 00 \
+# dbdrv: -XDO_FILE_TYPE RTF \
+# dbdrv: -FILE_NAME &fullpath:~PROD:patch/115/publisher/templates:TEMPLATE_SOURCE_XXSC_XXSC_STATEMENT_OF_SERVICE_en.rtf 
+

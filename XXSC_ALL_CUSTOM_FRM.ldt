@@ -1,0 +1,78 @@
+# $Header$
+
+# dbdrv: exec fnd bin FNDLOAD bin &phase=daa+51 checkfile:~PROD:~PATH:~FILE &ui_apps 0 Y UPLOAD @FND:patch/115/import/afsload.lct @~PROD:~PATH/~FILE
+LANGUAGE = "US"
+LDRCONFIG = "afsload.lct 120.5.12020000.1"
+
+#Source Database ERPDEV
+
+#RELEASE_NAME 12.2.4
+
+# -- Begin Entity Definitions -- 
+
+DEFINE FORM
+  KEY   APPLICATION_SHORT_NAME          VARCHAR2(4000)
+  KEY   FORM_NAME                       VARCHAR2(4000)
+  BASE  AUDIT_ENABLED_FLAG              VARCHAR2(1)
+  BASE  LAST_UPDATE_DATE                VARCHAR2(10)
+  TRANS USER_FORM_NAME                  VARCHAR2(80)
+  TRANS DESCRIPTION                     VARCHAR2(240)
+  CTX   OWNER                           VARCHAR2(4000)
+END FORM
+
+# -- End Entity Definitions -- 
+
+
+BEGIN FORM "XXSC" "XXSCAPTX_DREX"
+  AUDIT_ENABLED_FLAG = "N"
+  LAST_UPDATE_DATE = "2015/03/02"
+  USER_FORM_NAME = "XXSC: Amortize Prepaid Expenses"
+  DESCRIPTION = "XXSC: Amortize Prepaid Expenses"
+  OWNER = "PRANEETH"
+END FORM
+
+BEGIN FORM "XXSC" "XXSCFINSE_ACCT"
+  AUDIT_ENABLED_FLAG = "N"
+  LAST_UPDATE_DATE = "2015/04/06"
+  USER_FORM_NAME = "XXSC: Accounting Setup Form"
+  DESCRIPTION = "Accounting Setup Form"
+  OWNER = "PRANEETH"
+END FORM
+
+BEGIN FORM "XXSC" "XXSCEPSE_EDEL"
+  AUDIT_ENABLED_FLAG = "N"
+  LAST_UPDATE_DATE = "2015/04/06"
+  USER_FORM_NAME = "XXSC:Expense Entry Delegation Form"
+  OWNER = "PRANEETH"
+END FORM
+
+BEGIN FORM "XXSC" "XXSCEPTX_STRC"
+  AUDIT_ENABLED_FLAG = "N"
+  LAST_UPDATE_DATE = "2015/04/06"
+  USER_FORM_NAME = "XXSC: Staff Recoveries"
+  DESCRIPTION = "XXSC: Staff Recoveries"
+  OWNER = "PRANEETH"
+END FORM
+
+BEGIN FORM "XXSC" "XXSCEPTX_EEXP"
+  AUDIT_ENABLED_FLAG = "N"
+  LAST_UPDATE_DATE = "2015/04/06"
+  USER_FORM_NAME = "XXSC : Employee Expenses and Reimbursement"
+  OWNER = "PRANEETH"
+END FORM
+
+BEGIN FORM "XXSC" "XXSCEPSE_CCSE"
+  AUDIT_ENABLED_FLAG = "N"
+  LAST_UPDATE_DATE = "2015/04/06"
+  USER_FORM_NAME = "XXSC:Credit Card Setup Form"
+  OWNER = "PRANEETH"
+END FORM
+
+BEGIN FORM "XXSC" "XXSCEPSE_APS"
+  AUDIT_ENABLED_FLAG = "N"
+  LAST_UPDATE_DATE = "2015/04/06"
+  USER_FORM_NAME = "XXSC:Approval Hierarchy"
+  DESCRIPTION = "XXSC:Approval Hierarchy"
+  OWNER = "PRANEETH"
+END FORM
+
