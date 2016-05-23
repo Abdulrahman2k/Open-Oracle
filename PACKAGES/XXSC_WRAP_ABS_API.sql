@@ -1,0 +1,92 @@
+--------------------------------------------------------
+--  File created - Wednesday-February-10-2016   
+--------------------------------------------------------
+--------------------------------------------------------
+--  DDL for Procedure XXSC_WRAP_ABS_API
+--------------------------------------------------------
+set define off;
+
+  CREATE OR REPLACE PROCEDURE "APPS"."XXSC_WRAP_ABS_API" (
+ERRBUF    OUT VARCHAR2,
+RETCODE   OUT NUMBER,
+P_PERSON_ID  NUMBER,
+P_BUSINESS_GROUP_ID  NUMBER,
+P_ABSENCE_ATTENDANCE_TYPE_ID  NUMBER,
+P_ATTRIBUTE_CATEGORY VARCHAR2,
+P_COMMENT        VARCHAR2, --CLOB,
+P_NOTIFIED_DATE  VARCHAR2, --DATE,
+P_START_DATE     VARCHAR2, --DATE,
+P_END_DATE       VARCHAR2, --DATE,
+P_SESSION_START_DATE VARCHAR2,
+P_SESSION_END_DATE   VARCHAR2
+
+) IS
+v_layout BOOLEAN;
+v_phase VARCHAR2 (2000);
+v_wait_status VARCHAR2 (2000);
+V_MESSAGE VARCHAR2 (2000);
+  L_ABSENCE_DAYS               NUMBER;
+  L_ABSENCE_HOURS              NUMBER;
+  L_ABSENCE_ATTENDANCE_ID      NUMBER;
+  L_OBJECT_VERSION_NUMBER      NUMBER;
+  L_OCCURRENCE                 NUMBER;
+  L_DUR_DYS_LESS_WARNING       BOOLEAN;
+  L_DUR_HRS_LESS_WARNING       BOOLEAN;
+  L_EXCEEDS_PTO_ENTIT_WARNING  BOOLEAN;
+  L_EXCEEDS_RUN_TOTAL_WARNING  BOOLEAN;
+  L_ABS_OVERLAP_WARNING        BOOLEAN;
+  L_ABS_DAY_AFTER_WARNING      BOOLEAN;
+  L_DUR_OVERWRITTEN_WARNING    BOOLEAN;
+  L_DEL_ELEMENT_ENTRY_WARNING  BOOLEAN;
+  L_ERR_MESSAGE                VARCHAR2(2000);
+  l_NOTIFIED_DATE DATE;
+  l_START_DATE    DATE;
+  l_END_DATE      DATE;
+BEGIN
+l_NOTIFIED_DATE:=fnd_conc_date.string_to_date(P_NOTIFIED_DATE);
+l_START_DATE:=fnd_conc_date.string_to_date(P_START_DATE);
+l_END_DATE:=fnd_conc_date.string_to_date(P_END_DATE);
+
+        HR_PERSON_ABSENCE_API.CREATE_PERSON_ABSENCE ( 
+        P_VALIDATE       => FALSE, 
+        P_EFFECTIVE_DATE => TRUNC (SYSDATE),
+        P_PERSON_ID => P_PERSON_ID,
+        P_BUSINESS_GROUP_ID => P_BUSINESS_GROUP_ID,
+        P_ABSENCE_ATTENDANCE_TYPE_ID => P_ABSENCE_ATTENDANCE_TYPE_ID,
+        P_COMMENTS=>P_COMMENT, --Added by Phani on 21-JAN-2016 as per request from Abdulrahman
+        P_DATE_NOTIFICATION => l_NOTIFIED_DATE, --fnd_conc_date.string_to_date(P_NOTIFIED_DATE),
+        P_DATE_START => l_START_DATE , --fnd_conc_date.string_to_date(P_START_DATE),
+        P_DATE_END =>l_END_DATE , --fnd_conc_date.string_to_date(P_END_DATE),
+        P_ABS_INFORMATION_CATEGORY => P_ATTRIBUTE_CATEGORY,
+        P_ABS_INFORMATION1 => P_SESSION_START_DATE,
+        P_ABS_INFORMATION2 => P_SESSION_END_DATE,
+        P_ABSENCE_DAYS => L_ABSENCE_DAYS, 
+        P_ABSENCE_HOURS => L_ABSENCE_HOURS,
+        P_CREATE_ELEMENT_ENTRY => TRUE, 
+        P_ABSENCE_ATTENDANCE_ID => L_ABSENCE_ATTENDANCE_ID,
+        P_OBJECT_VERSION_NUMBER => L_OBJECT_VERSION_NUMBER, 
+        P_OCCURRENCE => L_OCCURRENCE,
+        P_DUR_DYS_LESS_WARNING => L_DUR_DYS_LESS_WARNING, 
+        P_DUR_HRS_LESS_WARNING => L_DUR_HRS_LESS_WARNING, 
+        P_EXCEEDS_PTO_ENTIT_WARNING => L_EXCEEDS_PTO_ENTIT_WARNING,
+        P_EXCEEDS_RUN_TOTAL_WARNING => L_EXCEEDS_RUN_TOTAL_WARNING, 
+        P_ABS_OVERLAP_WARNING => L_ABS_OVERLAP_WARNING,
+        P_ABS_DAY_AFTER_WARNING => L_ABS_DAY_AFTER_WARNING,
+        P_DUR_OVERWRITTEN_WARNING => L_DUR_OVERWRITTEN_WARNING
+        );
+        
+        
+        ERRBUF := 'Request submitted!';
+        RETCODE := 0 ;
+      EXCEPTION
+      WHEN OTHERS THEN
+
+        L_ERR_MESSAGE := 'Error while inserting:-'|| SQLERRM;
+        
+          RETCODE             := 2  ;             --P_STATUS            := 'E';  2--Error
+          ERRBUF              := L_ERR_MESSAGE;  --P_ERROR_MESSAGE     := L_ERR_MESSAGE;
+
+END XXSC_WRAP_ABS_API;
+
+/
+
