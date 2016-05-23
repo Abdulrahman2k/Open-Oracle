@@ -1,0 +1,119 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!-- $Header: DATA_TEMPLATE_XXSC_XXSC_HR_EMP_ABS_DET.xml 115.0 2016/05/23 09:25:40 xdouser noship $ -->
+<!-- dbdrv: none -->
+
+<dataTemplate name="XXSC_HR_EMP_DETAILS" defaultPackage="XXSC_HR_PKG" version="1.0">
+<properties>
+<property name="xml_tag_case" value="upper" /> 
+</properties>
+<parameters>
+  <parameter name="P_CONC_REQUEST_ID" dataType="number" /> 
+  <parameter name="P_PERSON_ID" dataType="number" /> 
+  <parameter name="P_BUSINESS_GROUP_ID" dataType="number" /> 
+  <parameter name="P_DEP_ORG_ID" dataType="number" />
+  <parameter name="P_BU_ORG_ID" dataType="number" />
+  <parameter name="P_START_DATE" dataType="DATE" />
+  <parameter name="P_END_DATE"   dataType="DATE" />
+  </parameters>
+  <lexicals /> 
+ <dataQuery>
+<sqlStatement name="Q_EMP_DETAILS">
+<![CDATA[  SELECT ppf.person_id PERSON_ID ,
+  PPF.EMPLOYEE_NUMBER EMPLOYEE_NUMBER ,
+  paf.organization_id ,
+  paf.assignment_id ,
+  PAF.EFFECTIVE_END_DATE ,
+  ppf.full_name PERSON_NAME ,
+  XXSC_HR_PKG.GET_BUSINESS_UNIT (PAF.ORGANIZATION_ID) BUSINESS_UNIT ,
+  XXSC_HR_PKG.get_department (paf.organization_id) DEPARTMENT ,
+  TO_CHAR(paa.date_start,'DD-MON-RRRR') DATE_START ,
+  TO_CHAR(PAA.DATE_END ,'DD-MON-RRRR') DATE_END ,
+  TO_CHAR(paa.date_notification ,'DD-MON-RRRR') DATE_NOTIFICATION ,
+  (SELECT user_name FROM fnd_user WHERE user_id = paa.last_updated_by
+  ) APPROVED_BY ,
+  TO_CHAR(paa.last_update_date ,'DD-MON-RRRR') DATE_APPROVED,
+  paa.absence_days ABSENCE_DAYS ,
+  PAA.REASON ,
+  PAA.ABSENCE_TYPE ,
+  paa.comments REMARKS
+FROM PER_PEOPLE_F PPF ,
+  PER_ASSIGNMENTS_F PAF ,
+  (SELECT PAA.PERSON_ID ,
+    PAA.ABSENCE_DAYS ABSENCE_DAYS ,
+    PAA.DATE_START,
+    PAA.DATE_END ,
+    paa.date_notification,
+    paar.name REASON ,
+    PASTV.NAME ABSENCE_TYPE ,
+    PAA.COMMENTS REMARKS ,
+    PAA.LAST_UPDATE_DATE ,
+    PAA.LAST_UPDATED_BY,
+    paa.comments
+  FROM per_absence_attendances paa ,
+    PER_ABS_ATTENDANCE_TYPES_V PASTV ,
+    PER_ABS_ATTENDANCE_REASONS PAAR
+  WHERE PAA.ABS_ATTENDANCE_REASON_ID = PAAR.ABS_ATTENDANCE_REASON_ID(+)
+  AND PAA.ABSENCE_ATTENDANCE_TYPE_ID = PASTV.ABSENCE_ATTENDANCE_TYPE_ID(+)
+  ) paa
+WHERE ppf.person_id(+)            = paa.person_id
+AND ppf.person_id                 = paf.person_id(+)
+AND paf.assignment_type           = 'E'
+AND paf.primary_flag              = 'Y'
+AND paf.assignment_status_type_id = 1
+AND PPF.CURRENT_EMPLOYEE_FLAG     ='Y'
+AND PAF.EFFECTIVE_END_DATE        =
+  (SELECT MAX(paaf.effective_end_date)
+  FROM PER_ASSIGNMENTS_F paaf
+  WHERE PAF.ASSIGNMENT_ID =paaf.assignment_id
+  )
+AND PPF.EFFECTIVE_END_DATE =
+  (SELECT MAX(pAPf.effective_end_date)
+  FROM PER_PEOPLE_F PAPF
+  WHERE PAPF.PERSON_ID =PPF.PERSON_ID
+  )
+AND ( paa.date_start BETWEEN :P_START_DATE AND :P_END_DATE
+OR paa.date_end BETWEEN :P_START_DATE AND :P_END_DATE )
+AND ( PAA.DATE_START        >=:P_START_DATE
+OR PAA.DATE_END             <= :P_END_DATE)
+AND ( ( NVL(:P_DEP_ORG_ID,0) =0
+AND NVL(:P_BU_ORG_ID,0)      =0 )
+OR paf.organization_id      IN
+  (SELECT POSE.organization_id_CHILD
+  FROM PER_ORG_STRUCTURE_ELEMENTS POSE
+    START WITH pose.organization_id_CHILD IN (
+    CASE
+      WHEN NVL(:P_DEP_ORG_ID,0) =0
+      THEN TO_NUMBER(:P_BU_ORG_ID)
+      ELSE TO_NUMBER(:P_DEP_ORG_ID)
+    END )
+    CONNECT BY PRIOR POSE.organization_id_CHILD =POSE.organization_id_PARENT
+  ) )
+AND PPF.PERSON_ID = NVL(:P_PERSON_ID , PPF.PERSON_ID)
+ORDER BY PPF.EMPLOYEE_NUMBER ,paa.date_start
+  ]]> 
+  </sqlStatement>
+  </dataQuery>
+  <dataStructure>
+<group name="G_EMP_DETAILS_GROUP" dataType="varchar2" source="Q_EMP_DETAILS">
+  <element name="BUSINESS_UNIT"   dataType="varchar2"    value="BUSINESS_UNIT"/>
+  <element name="DEPARTMENT"   dataType="varchar2"    value="DEPARTMENT"/>
+  <element name="EMPLOYEE_NUMBER"   dataType="varchar2"    value="EMPLOYEE_NUMBER"/>
+  <element name="PERSON_NAME"   dataType="varchar2"    value="PERSON_NAME"/>
+  <element name="ABSENCE_DAYS"   dataType="number"    value="ABSENCE_DAYS"/>
+  <element name="DATE_START"   dataType="varchar2"    value="DATE_START"/>
+  <element name="DATE_END"   dataType="varchar2"    value="DATE_END"/>
+  <element name="DATE_NOTIFICATION"   dataType="varchar2"    value="DATE_NOTIFICATION"/>
+  <element name="APPROVED_BY"   dataType="varchar2"    value="APPROVED_BY"/>
+  <element name="DATE_APPROVED"   dataType="varchar2"    value="DATE_APPROVED"/>
+  <element name="REASON"   dataType="varchar2"    value="REASON"/>
+  <element name="ABSENCE_TYPE"   dataType="varchar2"    value="ABSENCE_TYPE"/>
+  <element name="REMARKS"   dataType="varchar2"    value="REMARKS"/>
+  <element name="TODAY_DATE"   dataType="varchar2"    value="TODAY_DATE"/>
+</group>
+  <element name="CURRENT_DATE"			dataType="date"		value="XXSC_HR_PKG.GET_CURRENT_DATE" /> 
+  <element name="OPERATING_UNIT"		dataType="varchar2" value="XXSC_HR_PKG.GET_OPERATING_UNIT" /> 
+  <element name="COMPANY_P"		        dataType="varchar2" value="XXSC_HR_PKG.GET_COMPANY_PARAM" /> 
+  <element name="DEPARTMENT_P"    		dataType="varchar2" value="XXSC_HR_PKG.GET_DEPARTMENT_PARAM" /> 
+  <element name="EMPLOYEE_NAME_P"	        	dataType="varchar2" value="XXSC_HR_PKG.GET_EMPLOYEE_PARAM" />  
+  </dataStructure>
+   </dataTemplate>

@@ -1,0 +1,361 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!-- $Header: DATA_TEMPLATE_XXSC_XXSC_HR_EMP_LETTERS.xml 115.0 2016/05/23 09:25:40 xdouser noship $ -->
+<!-- dbdrv: none -->
+
+<dataTemplate name="XXSC_HR_EMP_DETAILS" defaultPackage="XXSC_HR_PKG" version="1.0">
+<properties>
+<property name="xml_tag_case" value="upper" /> 
+</properties>
+<parameters>
+  <parameter name="P_CONC_REQUEST_ID" dataType="number" /> 
+  <parameter name="P_PERSON_ID" dataType="number" /> 
+  <parameter name="P_BUSINESS_GROUP_ID" dataType="number" /> 
+  <parameter name="P_DEP_ORG_ID" dataType="number" />
+  <parameter name="P_BU_ORG_ID" dataType="number" />
+  <!--parameter name="P_EMPLOYER" dataType="number" /-->
+  <parameter name="P_DATE"     dataType="DATE" />
+  </parameters>
+  <lexicals /> 
+ <dataQuery>
+<sqlStatement name="Q_EMP_DETAILS">
+<![CDATA[  
+SELECT --PA.DATE_FROM,
+  hr_general.decode_lookup ('EMPLOYEE_CATG',PAF.EMPLOYEE_CATEGORY) TRADE_CATEGORY,
+  PAF.EMPLOYMENT_CATEGORY,
+  ppf.person_id,
+  paf.assignment_id,
+  paf.assignment_sequence,
+  ppf.business_group_id,
+  TO_CHAR (ppf.effective_start_date, 'DD-MON-RRRR') effective_start_date,
+  TO_CHAR (ppf.effective_end_date, 'DD-MON-RRRR') effective_end_date,
+  -- ''''||
+  ppf.employee_number EMPLOYEE_NUMBER,
+  (SELECT DOCUMENT_NUMBER
+  FROM HR_DOCUMENT_EXTRA_INFO
+  WHERE DOCUMENT_TYPE_ID= 21
+  AND date_from         =
+    (SELECT MAX(date_from)
+    FROM HR_DOCUMENT_EXTRA_INFO
+    WHERE person_id     = paf.person_id
+    AND DOCUMENT_TYPE_ID= 21
+    )
+  AND PERSON_ID = ppf.PERSON_ID
+  ) NATIONAL_IDENTIFIER,
+  INITCAP (ppf.title) title,
+  ppf.first_name,
+  ppf.last_name,
+  INITCAP (ppf.title)
+  || ' '
+  || ppf.full_name PERSON_NAME,
+  PER_INFORMATION2 PASSPORT_NAME,
+  ppf.known_as,
+  ppf.previous_last_name,
+  per_information3 mother_name,
+  ppf.honors,
+  TO_CHAR (paf.period_of_placement_date_start, 'DD-MON-RRRR' ) period_of_placement_date_start,
+  TO_CHAR (paf.date_probation_end, 'DD-MON-RRRR') date_probation_end,
+  pay.payroll_name,
+  paf.assignment_status_type_id,
+  paf.assignment_type,
+  paf.primary_flag,
+  pa.address_line1 flat_door_block,
+  pa.address_line2 building,
+  pa.address_line3 post_office,
+  pa.add_information13 area,
+  pa.add_information14 town_city,
+  pa.postal_code pin_code,
+  TO_CHAR (ppf.start_date, 'DD-MON-RRRR') joining_date,
+  TO_CHAR (ppf.original_date_of_hire, 'DD-MON-RRRR' ) original_date_of_hire,
+  (SELECT COUNT (1)
+  FROM per_contact_relationships pcr
+  WHERE pcr.person_id    = ppf.person_id
+  AND pcr.dependent_flag = 'Y'
+  ) dependent_count,
+  hr_general.decode_lookup ('SEX', ppf.sex) sex,
+  hr_person_type_usage_info.get_user_person_type (ppf.effective_end_date, ppf.person_id ) person_type,
+  hr_general.decode_lookup ('REGISTERED_DISABLED', ppf.registered_disabled_flag ) registered_disabled,
+  hr_general.decode_lookup ('HOME_OFFICE', ppf.expense_check_send_to_address ) expense_cheque,
+  hr_general.decode_lookup ('MAR_STATUS', ppf.marital_status ) marital_status,
+  hr_general.decode_lookup ('AE_NATIONALITY', ppf.per_information18 ) nationality,
+  hr_general.decode_lookup ('AE_NATIONALITY', ppf.per_information9 ) previous_nationality,
+  hr_general.decode_lookup ('AE_NATIONALITY', ppf.per_information12 ) country_of_birth,
+  ppf.region_of_birth,
+  ppf.town_of_birth,
+  TO_CHAR (ppf.date_of_birth, 'DD-MON-RRRR') date_of_birth,
+  ppf.email_address,
+  hr_general.get_work_phone (ppf.person_id) work_phone,
+  hr_general.get_home_phone (ppf.person_id) home_phone,
+  HR_GENERAL.get_phone_number
+         (p_person_id  =>ppf.person_id
+         ,p_phone_type =>'M'
+         ,p_effective_date  =>sysdate) mobile_phone,
+  XXSC_HR_PKG.get_business_unit (paf.organization_id) department,
+  --       XXSC_HR_PKG.get_division (paf.organization_id) division,
+  XXSC_HR_PKG.get_department (paf.organization_id) business_unit,
+  --       XXSC_HR_PKG.get_cost_centre (paf.organization_id) cost_centre,
+  paf.location_id,
+  hla.location_code LOCATION,
+  hla.address_line_1 off_address_line1,
+  hla.address_line_2 off_address_line2,
+  hla.address_line_3 off_address_line3,
+  hr_general.decode_position_current_name (paf.position_id) POSITION,
+  hr_general.decode_job (paf.job_id) job_name,
+  hr_general.decode_grade (paf.GRADE_id) GRADE,
+  hr_general.decode_people_group (paf.people_group_id) people_group,
+  hr_general.decode_person_name (paf.recruiter_id) recruiter_name,
+  hr_general.decode_person_name (paf.supervisor_id) supervisor_name,
+  hr_general.decode_position_current_name (supervisor_assignment_id) supervisor_assignment,
+  popm.org_payment_method_name,
+  hr_general.decode_lookup ('AE_BANK_NAMES', pea.segment1) bank_name,
+  HR_GENERAL.DECODE_LOOKUP ('AE_BRANCH_NAMES', PEA.SEGMENT2) BRANCH_NAME,
+  HR_GENERAL.DECODE_PAY_BASIS (PAF.PAY_BASIS_ID) SALARY_BASIS,
+  HR_GENERAL.DECODE_ASS_STATUS_TYPE (paf.assignment_status_type_id,paf.BUSINESS_GROUP_ID) ASSIGNMENT_STATUS,
+  PEA.SEGMENT3 ACCOUNT_NAME,
+  PEA.SEGMENT5 ACCOUNT_NUMBER,
+  NVL(:P_DATE,TO_CHAR (sysdate, 'DD-MON-RRRR')) TODAY_DATE,
+  --   to_char(sysdate,'dd month yyyy','nls_calendar=''arabic hijrah''')  TODAY_DATE_AR,
+  haou1.NAME LEGAL_EMPLOYER,
+  --   ppf.attribute1  EMP_NAME_ARABIC,
+  PPF.ATTRIBUTE2 EMP_NUMBER_OLD,
+  XXSC_HR_PKG.GET_SALARY(PPF.PERSON_ID) SALARY,
+  PAF.NOTICE_PERIOD
+  ||' '
+  || HR_GENERAL.DECODE_LOOKUP ('FREQUENCY', PAF.NOTICE_PERIOD_UOM ) NOTICE_PERIOD,
+  PAF.PROBATION_PERIOD
+  ||' '
+  || HR_GENERAL.DECODE_LOOKUP ('FREQUENCY', PAF.PROBATION_UNIT ) PROBATION_PERIOD,
+  --     HR_GENERAL.DECODE_LOOKUP(
+  (
+  SELECT SEGMENT3
+  FROM PAY_COST_ALLOCATION_KEYFLEX
+  WHERE COST_ALLOCATION_KEYFLEX_ID=HAOU.COST_ALLOCATION_KEYFLEX_ID
+  ) DEPARTMENT_ACCOUNT_CODE,
+  ROUND((SYSDATE - PPF.DATE_OF_BIRTH)/365) AGE,
+  (SELECT DOCUMENT_NUMBER
+  FROM HR_DOCUMENT_EXTRA_INFO
+  WHERE DOCUMENT_TYPE_ID= 21
+    --AND SYSDATE BETWEEN DATE_FROM AND DATE_TO
+  AND date_from =
+    (SELECT MAX(date_from)
+    FROM HR_DOCUMENT_EXTRA_INFO
+    WHERE person_id     = paf.person_id
+    AND DOCUMENT_TYPE_ID= 21
+    )
+  AND PERSON_ID = PPF.PERSON_ID
+  ) PASSPORT_NUMBER,
+  (SELECT TO_CHAR (DATE_TO,'DD-MON-RRRR')
+  FROM HR_DOCUMENT_EXTRA_INFO
+  WHERE DOCUMENT_TYPE_ID= 21
+    --AND SYSDATE BETWEEN DATE_FROM AND DATE_TO
+  AND date_from =
+    (SELECT MAX(date_from)
+    FROM HR_DOCUMENT_EXTRA_INFO
+    WHERE person_id     = paf.person_id
+    AND DOCUMENT_TYPE_ID= 21
+    )
+  AND PERSON_ID = PPF.PERSON_ID
+  ) PASSPORT_EXPIRY_DATE,
+  (SELECT DOCUMENT_NUMBER
+  FROM HR_DOCUMENT_EXTRA_INFO
+  WHERE DOCUMENT_TYPE_ID= 22
+    --AND SYSDATE BETWEEN DATE_FROM AND DATE_TO
+  AND date_from =
+    (SELECT MAX(date_from)
+    FROM HR_DOCUMENT_EXTRA_INFO
+    WHERE person_id     = paf.person_id
+    AND DOCUMENT_TYPE_ID= 22
+    )
+  AND PERSON_ID = PPF.PERSON_ID
+  ) VISA_NUMBER,
+  (SELECT TO_CHAR (DATE_TO,'DD-MON-RRRR')
+  FROM HR_DOCUMENT_EXTRA_INFO
+  WHERE DOCUMENT_TYPE_ID= 22
+    --AND SYSDATE BETWEEN DATE_FROM AND DATE_TO
+  AND date_from =
+    (SELECT MAX(date_from)
+    FROM HR_DOCUMENT_EXTRA_INFO
+    WHERE person_id     = paf.person_id
+    AND DOCUMENT_TYPE_ID= 22
+    )
+  AND PERSON_ID = PPF.PERSON_ID
+  ) VISA_EXPIRY_DATE,
+  --        ( select LISTAGG(HR_GENERAL.DECODE_LOOKUP ('CONTACT', CONTACT_TYPE),'/') within group  ( order by PCR1.CONTACT_TYPE)  from PER_CONTACT_RELATIONSHIPS PCR1
+  --where PCR1.PERSON_ID = ppf.PERSON_ID  and exists(select 1 from PER_CONTACT_RELATIONSHIPS PCR2 where  PCR2.CONTACT_PERSON_ID=PCR1.CONTACT_PERSON_ID and PCR2.CONTACT_TYPE='EMRG')
+  --        ) CONTACT_TYPE,
+  --        (select   LISTAGG(PP.PHONE_NUMBER, ' / ') within group  (order by PP.PHONE_TYPE)
+  -- from PER_PHONES PP, PER_CONTACT_RELATIONSHIPS PCR
+  -- where PP.PARENT_ID = PCR.CONTACT_PERSON_ID
+  -- and PP.PARENT_TABLE='PER_ALL_PEOPLE_F' --and PP.PARENT_ID = 577
+  -- and PCR.CONTACT_TYPE='EMRG'
+  -- and PCR.PERSON_ID = ppf.PERSON_ID
+  --        )
+  PCR.CONTACT_TYPE,
+  PCR.CONTACT_PHONE,
+  PCR.FULL_NAME CONTACT_FULL_NAME,
+  PCR.EMAIL_ADDRESS_CONTACT
+FROM per_people_f ppf,
+  per_assignments_f paf,
+  hr_all_organization_units haou,
+  hr_locations_all hla,
+  per_addresses pa,
+  pay_payrolls_f pay,
+  pay_personal_payment_methods_f pppm,
+  PAY_ORG_PAYMENT_METHODS_F POPM,
+  PAY_EXTERNAL_ACCOUNTS PEA,
+  HR_SOFT_CODING_KEYFLEX HSCK ,
+  HR_ALL_ORGANIZATION_UNITS HAOU1,
+  (SELECT PAPF1.FULL_NAME ,
+    PAPF1.ATTRIBUTE10 EMAIL_ADDRESS_CONTACT ,
+    PCR.PERSON_ID ,
+    (SELECT LISTAGG(PP.PHONE_NUMBER, ' / ') WITHIN GROUP (
+    ORDER BY PP.PHONE_TYPE)
+    FROM PER_PHONES PP
+    WHERE PP.PARENT_TABLE='PER_ALL_PEOPLE_F'
+    AND PP.PARENT_ID     = PCR.CONTACT_PERSON_ID
+    ) CONTACT_PHONE,
+    (SELECT LISTAGG(HR_GENERAL.DECODE_LOOKUP ('CONTACT', PCR2.CONTACT_TYPE),'/') WITHIN GROUP (
+    ORDER BY PCR2.CONTACT_TYPE)
+    FROM PER_CONTACT_RELATIONSHIPS PCR2
+    WHERE PCR2.CONTACT_PERSON_ID =PCR.CONTACT_PERSON_ID
+    ) CONTACT_TYPE
+  FROM PER_ALL_PEOPLE_F PAPF1 ,
+    PER_CONTACT_RELATIONSHIPS PCR
+  WHERE PAPF1.PERSON_ID     = PCR.CONTACT_PERSON_ID
+  AND PCR.CONTACT_TYPE      ='EMRG'
+  AND PCR.CONTACT_PERSON_ID =
+    (SELECT MAX(PCR1.CONTACT_PERSON_ID)
+    FROM PER_CONTACT_RELATIONSHIPS PCR1
+    WHERE PCR1.CONTACT_TYPE='EMRG'
+    AND PCR1.PERSON_ID     =PCR.PERSON_ID
+    )
+  ) PCR
+WHERE ppf.person_id               = paf.person_id(+)
+AND (paf.assignment_status_type_id is null or paf.assignment_status_type_id= 1 )-- 6 stands for Applicant Accepted
+AND haou.organization_id(+)          = paf.organization_id
+AND hla.location_id(+)            = paf.location_id
+AND pa.person_id(+)               = ppf.person_id
+AND pay.payroll_id(+)             = paf.payroll_id
+AND pppm.assignment_id(+)         = paf.assignment_id
+AND popm.org_payment_method_id(+) = pppm.org_payment_method_id
+AND PPPM.EXTERNAL_ACCOUNT_ID      = PEA.EXTERNAL_ACCOUNT_ID(+)
+AND PAF.SOFT_CODING_KEYFLEX_ID    = HSCK.SOFT_CODING_KEYFLEX_ID(+)
+AND TO_NUMBER(HSCK.SEGMENT1)      = HAOU1.ORGANIZATION_ID(+)
+AND PCR.PERSON_ID(+)              = PPF.PERSON_ID
+AND (PPPM.effective_start_date is null or NVL(:P_DATE,sysdate) BETWEEN PPPM.effective_start_date AND NVL (PPPM.effective_end_date, TO_DATE ('31/12/4712', 'DD/MM/YYYY') ))
+AND ( NVL(:P_DATE,sysdate) BETWEEN ppf.effective_start_date AND NVL (ppf.effective_end_date, TO_DATE ('31/12/4712', 'DD/MM/YYYY') )
+AND NVL(:P_DATE,sysdate) BETWEEN paf.effective_start_date AND NVL (paf.effective_end_date, TO_DATE ('31/12/4712', 'DD/MM/YYYY') )
+AND paf.assignment_type           = 'E'
+AND paf.primary_flag              = 'Y'
+AND paf.assignment_status_type_id = 1 )
+AND (pa.primary_flag is null or  pa.primary_flag    = 'Y')
+AND (PA.DATE_FROM  is  null or PA.DATE_FROM                   =
+  (SELECT MAX (DATE_FROM)
+  FROM per_addresses PA1
+  WHERE NVL (pa1.primary_flag, 'Y') = 'Y'
+  AND PA1.PERSON_ID                 = PPF.PERSON_ID
+  )
+     )
+AND ( ( NVL(:P_DEP_ORG_ID,0) =0
+AND NVL(:P_BU_ORG_ID,0)      =0 )
+OR paf.organization_id      IN
+  (SELECT POSE.organization_id_CHILD
+  FROM PER_ORG_STRUCTURE_ELEMENTS POSE
+    START WITH pose.organization_id_child IN (
+    CASE
+      WHEN NVL(:P_DEP_ORG_ID,0) =0
+      THEN TO_NUMBER(:P_BU_ORG_ID)
+      ELSE TO_NUMBER(:P_DEP_ORG_ID)
+    END )
+    CONNECT BY PRIOR POSE.organization_id_child = POSE.organization_id_parent
+  ) )
+AND PPF.PERSON_ID = NVL(:P_PERSON_ID , PPF.PERSON_ID)
+  ]]> 
+  </sqlStatement>
+  </dataQuery>
+  <dataStructure>
+<group name="G_EMP_DETAILS_GROUP" dataType="varchar2" source="Q_EMP_DETAILS">
+  <element name="TRADE_CATEGORY"   dataType="VARCHAR2"    value="TRADE_CATEGORY"/>
+  <element name="EMPLOYMENT_CATEGORY"   dataType="VARCHAR2"    value="EMPLOYMENT_CATEGORY"/>
+  <element name="PERSON_ID"   dataType="NUMBER"    value="PERSON_ID"/>
+  <element name="ASSIGNMENT_ID"   dataType="NUMBER"    value="ASSIGNMENT_ID"/>
+  <element name="ASSIGNMENT_SEQUENCE"   dataType="NUMBER"    value="ASSIGNMENT_SEQUENCE"/>
+  <element name="BUSINESS_GROUP_ID"   dataType="NUMBER"    value="BUSINESS_GROUP_ID"/>
+  <element name="EFFECTIVE_START_DATE"   dataType="VARCHAR2"    value="EFFECTIVE_START_DATE"/>
+  <element name="EFFECTIVE_END_DATE"   dataType="VARCHAR2"    value="EFFECTIVE_END_DATE"/>
+  <element name="EMPLOYEE_NUMBER"   dataType="VARCHAR2"    value="EMPLOYEE_NUMBER"/>
+  <element name="TITLE"   dataType="VARCHAR2"    value="TITLE"/>
+  <element name="FIRST_NAME"   dataType="VARCHAR2"    value="FIRST_NAME"/>
+  <element name="LAST_NAME"   dataType="VARCHAR2"    value="LAST_NAME"/>
+  <element name="PERSON_NAME"   dataType="VARCHAR2"    value="PERSON_NAME"/>
+  <element name="PASSPORT_NAME"   dataType="VARCHAR2"    value="PASSPORT_NAME"/>
+  <element name="KNOWN_AS"   dataType="VARCHAR2"    value="KNOWN_AS"/>
+  <element name="PREVIOUS_LAST_NAME"   dataType="VARCHAR2"    value="PREVIOUS_LAST_NAME"/>
+  <element name="MOTHER_NAME"   dataType="VARCHAR2"    value="MOTHER_NAME"/>
+  <element name="HONORS"   dataType="VARCHAR2"    value="HONORS"/>
+  <element name="PERIOD_OF_PLACEMENT_DATE_START"   dataType="VARCHAR2"    value="PERIOD_OF_PLACEMENT_DATE_START"/>
+  <element name="DATE_PROBATION_END"   dataType="VARCHAR2"    value="DATE_PROBATION_END"/>
+  <element name="PAYROLL_NAME"   dataType="VARCHAR2"    value="PAYROLL_NAME"/>
+  <element name="ASSIGNMENT_STATUS_TYPE_ID"   dataType="NUMBER"    value="ASSIGNMENT_STATUS_TYPE_ID"/>
+  <element name="ASSIGNMENT_TYPE"   dataType="VARCHAR2"    value="ASSIGNMENT_TYPE"/>
+  <element name="PRIMARY_FLAG"   dataType="VARCHAR2"    value="PRIMARY_FLAG"/>
+  <element name="FLAT_DOOR_BLOCK"   dataType="VARCHAR2"    value="FLAT_DOOR_BLOCK"/>
+  <element name="BUILDING"   dataType="VARCHAR2"    value="BUILDING"/>
+  <element name="POST_OFFICE"   dataType="VARCHAR2"    value="POST_OFFICE"/>
+  <element name="AREA"   dataType="VARCHAR2"    value="AREA"/>
+  <element name="TOWN_CITY"   dataType="VARCHAR2"    value="TOWN_CITY"/>
+  <element name="PIN_CODE"   dataType="VARCHAR2"    value="PIN_CODE"/>
+  <element name="JOINING_DATE"   dataType="VARCHAR2"    value="JOINING_DATE"/>
+  <element name="ORIGINAL_DATE_OF_HIRE"   dataType="VARCHAR2"    value="ORIGINAL_DATE_OF_HIRE"/>
+  <element name="SEX"   dataType="VARCHAR2"    value="SEX"/>
+  <element name="PERSON_TYPE"   dataType="VARCHAR2"    value="PERSON_TYPE"/>
+  <element name="MARITAL_STATUS"   dataType="VARCHAR2"    value="MARITAL_STATUS"/>
+  <element name="NATIONALITY"   dataType="VARCHAR2"    value="NATIONALITY"/>
+  <element name="PREVIOUS_NATIONALITY"   dataType="VARCHAR2"    value="PREVIOUS_NATIONALITY"/>
+  <element name="COUNTRY_OF_BIRTH"   dataType="VARCHAR2"    value="COUNTRY_OF_BIRTH"/>
+  <element name="REGION_OF_BIRTH"   dataType="VARCHAR2"    value="REGION_OF_BIRTH"/>
+  <element name="TOWN_OF_BIRTH"   dataType="VARCHAR2"    value="TOWN_OF_BIRTH"/>
+  <element name="DATE_OF_BIRTH"   dataType="VARCHAR2"    value="DATE_OF_BIRTH"/>
+  <element name="EMAIL_ADDRESS"   dataType="VARCHAR2"    value="EMAIL_ADDRESS"/>
+  <element name="WORK_PHONE"   dataType="VARCHAR2"    value="WORK_PHONE"/>
+  <element name="HOME_PHONE"   dataType="VARCHAR2"    value="HOME_PHONE"/>
+  <element name="MOBILE_PHONE"   dataType="VARCHAR2"    value="MOBILE_PHONE"/>
+  <element name="BUSINESS_UNIT"   dataType="VARCHAR2"    value="BUSINESS_UNIT"/>
+  <element name="DEPARTMENT"   dataType="VARCHAR2"    value="DEPARTMENT"/>
+  <element name="LOCATION"   dataType="VARCHAR2"    value="LOCATION"/>
+  <element name="POSITION"   dataType="VARCHAR2"    value="POSITION"/>
+  <element name="JOB_NAME"   dataType="VARCHAR2"    value="JOB_NAME"/>
+  <element name="GRADE"   dataType="VARCHAR2"    value="GRADE"/>
+  <element name="PEOPLE_GROUP"   dataType="VARCHAR2"    value="PEOPLE_GROUP"/>
+  <element name="SUPERVISOR_NAME"   dataType="VARCHAR2"    value="SUPERVISOR_NAME"/>
+  <element name="SUPERVISOR_ASSIGNMENT"   dataType="VARCHAR2"    value="SUPERVISOR_ASSIGNMENT"/>
+  <element name="ORG_PAYMENT_METHOD_NAME"   dataType="VARCHAR2"    value="ORG_PAYMENT_METHOD_NAME"/>
+  <element name="BANK_NAME"   dataType="VARCHAR2"    value="BANK_NAME"/>
+  <element name="BRANCH_NAME"   dataType="VARCHAR2"    value="BRANCH_NAME"/>
+  <element name="ACCOUNT_NAME"   dataType="VARCHAR2"    value="ACCOUNT_NAME"/>
+  <element name="ACCOUNT_NUMBER"   dataType="VARCHAR2"    value="ACCOUNT_NUMBER"/>
+  <element name="TODAY_DATE"   dataType="VARCHAR2"    value="TODAY_DATE"/>
+  <element name="LEGAL_EMPLOYER"   dataType="VARCHAR2"    value="LEGAL_EMPLOYER"/>
+  <element name="EMP_NUMBER_OLD"   dataType="VARCHAR2"    value="EMP_NUMBER_OLD"/>
+  <element name="SALARY"           dataType="NUMBER"    value="SALARY"/>
+  <element name="NATIONAL_IDENTIFIER"   dataType="VARCHAR2"    value="NATIONAL_IDENTIFIER"/>
+  <element name="NOTICE_PERIOD"   dataType="VARCHAR2"    value="NOTICE_PERIOD"/>
+  <element name="DEPARTMENT_ACCOUNT_CODE"   dataType="VARCHAR2"    value="DEPARTMENT_ACCOUNT_CODE"/>
+  <element name="PASSPORT_NUMBER"   dataType="VARCHAR2"    value="PASSPORT_NUMBER"/>
+  <element name="PASSPORT_EXPIRY_DATE"   dataType="VARCHAR2"    value="PASSPORT_EXPIRY_DATE"/>
+  <element name="VISA_NUMBER"   dataType="VARCHAR2"    value="VISA_NUMBER"/>
+  <element name="VISA_EXPIRY_DATE"   dataType="VARCHAR2"    value="VISA_EXPIRY_DATE"/>
+  <element name="AGE"   dataType="VARCHAR2"    value="AGE"/>
+  <element name="SALARY_BASIS"	    dataType="VARCHAR2" value="SALARY_BASIS" /> 
+  <element name="PROBATION_PERIOD"	    dataType="VARCHAR2" value="PROBATION_PERIOD" /> 
+  <element name="CONTACT_TYPE"	    dataType="VARCHAR2" value="CONTACT_TYPE" /> 
+  <element name="CONTACT_PHONE"	    dataType="VARCHAR2" value="CONTACT_PHONE" /> 
+  <element name="CONTACT_FULL_NAME"	    dataType="VARCHAR2" value="CONTACT_FULL_NAME" /> 
+  <element name="EMAIL_ADDRESS_CONTACT"	    dataType="VARCHAR2" value="EMAIL_ADDRESS_CONTACT" /> 
+</group>
+  <element name="CURRENT_DATE"			dataType="date"		value="XXSC_HR_PKG.GET_CURRENT_DATE" /> 
+  <element name="OPERATING_UNIT"		dataType="varchar2" value="XXSC_HR_PKG.GET_OPERATING_UNIT" /> 
+  <element name="COMPANY_P"		        dataType="varchar2" value="XXSC_HR_PKG.GET_COMPANY_PARAM" /> 
+  <element name="DEPARTMENT_P"    		dataType="varchar2" value="XXSC_HR_PKG.GET_DEPARTMENT_PARAM" /> 
+  <element name="EMPLOYEE_NAME_P"	        	dataType="varchar2" value="XXSC_HR_PKG.GET_EMPLOYEE_PARAM" />  
+  </dataStructure>
+   </dataTemplate>

@@ -1,0 +1,174 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!-- $Header: DATA_TEMPLATE_XXSC_XXSC_ELE_PAY_RUN_RES.xml 115.0 2016/05/23 09:25:40 xdouser noship $ -->
+<!-- dbdrv: none -->
+
+<dataTemplate name="XXHR_ELE_PAY" defaultPackage="XXSC_HR_PKG" version="1.0">
+<properties>
+<property name="xml_tag_case" value="upper" /> 
+</properties>
+<parameters>
+  <parameter name="P_CONC_REQUEST_ID" dataType="number" /> 
+  <parameter name="P_PERSON_ID" dataType="number" /> 
+  <parameter name="P_BUSINESS_GROUP_ID" dataType="number" /> 
+  <parameter name="P_DEP_ORG_ID" dataType="number" />
+  <parameter name="P_BU_ORG_ID" dataType="number" />
+  <parameter name="P_PAYROLL_ID" dataType="number" />
+  <parameter name="P_TIME_PERIOD_ID" dataType="number" />
+  </parameters>
+  <lexicals /> 
+ <dataQuery>
+<sqlStatement name="Q_EMP_DETAILS">
+<![CDATA[
+SELECT
+  ASG.BUSINESS_UNIT,
+  ASG.DEPARTMENT,
+  pact.payroll_id,
+  asg.employee_number ,
+  asg.full_name NAME ,
+  TO_CHAR(asg.original_date_of_hire,'DD-MON-RRRR') original_date_of_hire ,
+  ASG.POSITION ,
+ asg.payment_method|| (SELECT ' WPS ' FROM DUAL 
+                           WHERE EXISTS 
+                          (SELECT 1 FROM  
+                          HR_DOCUMENT_EXTRA_INFO DOCSOFRECORDEO,
+                          HR_DOCUMENT_TYPES_V HDT 
+                          WHERE  HDT.DOCUMENT_TYPE_ID     = DOCSOFRECORDEO.DOCUMENT_TYPE_ID
+                          AND HDT.SYSTEM_DOCUMENT_TYPE (+)= 'Work Permit Information'
+                          AND DOCSOFRECORDEO.PERSON_ID   =ASG.PERSON_ID
+                          AND TRUNC( PTP.START_DATE ) BETWEEN DOCSOFRECORDEO.DATE_FROM AND DOCSOFRECORDEO.DATE_TO 
+                          )
+                          ) 
+                        || (SELECT ' Non WPS ' FROM DUAL 
+                           WHERE NOT EXISTS 
+                          (SELECT 1 FROM  
+                          HR_DOCUMENT_EXTRA_INFO DOCSOFRECORDEO,
+                          HR_DOCUMENT_TYPES_V HDT 
+                          WHERE  HDT.DOCUMENT_TYPE_ID     = DOCSOFRECORDEO.DOCUMENT_TYPE_ID
+                          AND HDT.SYSTEM_DOCUMENT_TYPE (+)= 'Work Permit Information'
+                          AND DOCSOFRECORDEO.PERSON_ID   =ASG.person_id
+                          AND TRUNC( PTP.START_DATE ) BETWEEN DOCSOFRECORDEO.DATE_FROM AND DOCSOFRECORDEO.DATE_TO 
+                          )
+                          )
+    PAYMENT_METHOD , 
+  ptp.period_name ,
+  PEC.CLASSIFICATION_NAME ,
+  PET.ELEMENT_NAME ,
+  PIV.name INPUT_NAME ,
+  PRV.RESULT_VALUE ,
+  PRR.ASSIGNMENT_ACTION_ID ,
+  PTP.TIME_PERIOD_ID ,
+  PRR.RUN_RESULT_ID ,
+  TO_CHAR(PACT.DATE_EARNED,'DD-MON-RRRR') DATE_EARNED
+FROM pay_payroll_actions PACT ,
+  PER_TIME_PERIODS PTP ,
+  PAY_ALL_PAYROLLS_F PAY ,
+  PAY_ASSIGNMENT_ACTIONS ASACT ,
+  PAY_CONSOLIDATION_SETS CONS ,
+  PAY_RUN_RESULTS PRR ,
+  PAY_ELEMENT_TYPES_F PET ,
+  PAY_INPUT_VALUES_F PIV ,
+  PAY_ELEMENT_CLASSIFICATIONS PEC ,
+  PAY_RUN_RESULT_VALUES PRV ,
+  (SELECT ass.assignment_id ,
+    per.employee_number ,
+    per.full_name,
+    per.original_date_of_hire ,
+    ass.effective_start_date,
+    ass.effective_end_date ,
+    ASS.ORGANIZATION_ID ,
+    popm.org_payment_method_name payment_method,
+    hr_general.decode_position_current_name (ass.position_id) POSITION,
+    per.person_id ,
+    ass.business_group_id,
+	       XXSC_HR_PKG.get_business_unit (ASS.ORGANIZATION_ID) BUSINESS_UNIT,
+       XXSC_HR_PKG.get_department (ASS.ORGANIZATION_ID) DEPARTMENT
+  FROM PER_ALL_PEOPLE_F PER ,
+    per_all_assignments_f ass ,
+      PAY_PERSONAL_PAYMENT_METHODS_F PPPM,
+       PAY_ORG_PAYMENT_METHODS_F POPM,
+       PER_TIME_PERIODS PTP1
+  WHERE PER.PERSON_ID = ASS.PERSON_ID
+   AND PPPM.ASSIGNMENT_ID(+) = ASS.ASSIGNMENT_ID
+   AND POPM.ORG_PAYMENT_METHOD_ID(+) = PPPM.ORG_PAYMENT_METHOD_ID
+  AND PTP1.END_DATE BETWEEN PER.EFFECTIVE_START_DATE AND PER.EFFECTIVE_END_DATE
+  AND PTP1.END_DATE BETWEEN PPPM.EFFECTIVE_START_DATE AND PPPM.EFFECTIVE_END_DATE
+  AND PTP1.END_DATE BETWEEN POPM.EFFECTIVE_START_DATE AND POPM.EFFECTIVE_END_DATE  
+  AND PTP1.TIME_PERIOD_ID = :P_TIME_PERIOD_ID
+  AND ass.EFFECTIVE_END_DATE =
+    (SELECT MAX(asg2.effective_end_date)
+    FROM per_all_assignments_f asg2
+    WHERE asg2.assignment_id = ass.assignment_id
+    )
+  ) ASG
+WHERE PACT.action_status = 'C' -- Completed
+AND (PACT.action_type    = 'R'
+OR PACT.action_type      = 'Q')
+AND PACT.PAYROLL_ID      = PAY.PAYROLL_ID
+AND TRUNC(PTP.END_DATE) BETWEEN pay.effective_start_date AND pay.effective_end_date
+AND PACT.TIME_PERIOD_ID        = PTP.TIME_PERIOD_ID
+AND PACT.CONSOLIDATION_SET_ID  = CONS.CONSOLIDATION_SET_ID
+AND PACT.PAYROLL_ACTION_ID     = ASACT.PAYROLL_ACTION_ID
+AND ASACT.ASSIGNMENT_ACTION_ID = PRR.ASSIGNMENT_ACTION_ID
+AND (PRR.SOURCE_TYPE           = 'E'
+OR PRR.SOURCE_TYPE             = 'I')
+AND PRR.element_type_id        = PET.element_type_id
+AND PET.classification_id      = PEC.CLASSIFICATION_ID
+AND pact.payroll_id = :p_payroll_id -- 61 SC, 121 SCSC, 101 GFC
+and pact.time_period_id =  NVL(:P_TIME_PERIOD_ID,pact.time_period_id)
+AND PIV.INPUT_VALUE_ID  = PRV.INPUT_VALUE_ID
+AND PIV.element_type_id = PRR.element_type_id
+AND PRR.RUN_RESULT_ID   = PRV.RUN_RESULT_ID
+AND ASACT.ASSIGNMENT_ID = asg.assignment_id
+AND PACT.DATE_EARNED BETWEEN ASG.EFFECTIVE_START_DATE AND ASG.EFFECTIVE_END_DATE
+AND piv.name                 ='Pay Value'
+--and ((:P_ELEMENT_NAME1 IS NULL AND :P_ELEMENT_NAME2 IS NULL AND :P_ELEMENT_NAME3 IS NULL) OR ( PET.ELEMENT_TYPE_ID IN( :P_ELEMENT_NAME1
+--         ,:P_ELEMENT_NAME2
+--         ,:P_ELEMENT_NAME3
+--       ) ) )
+AND (
+(       NVL(:P_DEP_ORG_ID,0) =0
+  AND  NVL(:P_BU_ORG_ID,0) =0
+ ) 
+    OR 
+ASG.organization_id 
+IN (  SELECT POSE.organization_id_CHILD
+ FROM PER_ORG_STRUCTURE_ELEMENTS POSE
+ START WITH pose.organization_id_child in 
+  ( CASE WHEN  NVL(:P_DEP_ORG_ID,0) =0 THEN TO_NUMBER(:P_BU_ORG_ID) 
+ ELSE TO_NUMBER(:P_DEP_ORG_ID) END )
+CONNECT BY PRIOR  POSE.organization_id_child = POSE.organization_id_parent  
+  )
+)
+AND   ASG.PERSON_ID         = NVL(:P_PERSON_ID , ASG.PERSON_ID)
+
+]]> 
+  </sqlStatement>
+  </dataQuery>
+  <dataStructure>
+<group name="G_EMP_DETAILS_GROUP" dataType="varchar2" source="Q_EMP_DETAILS">
+  <element name="BUSINESS_UNIT"    dataType="varchar2"    value="BUSINESS_UNIT"               /> 
+  <element name="DEPARTMENT" dataType="varchar2"    value="DEPARTMENT"            /> 
+  <element name="NAME"       dataType="varchar2"    value="NAME"				  /> 
+  <element name="ORIGINAL_DATE_OF_HIRE" dataType="varchar2"		value="ORIGINAL_DATE_OF_HIRE" /> 
+  <element name="EMPLOYEE_NUMBER"      dataType="number"	value="EMPLOYEE_NUMBER" /> 
+  <element name="POSITION"			   dataType="varchar2"	value="POSITION" /> 
+  <element name="CLASSIFICATION_NAME"  dataType="varchar2"	value="CLASSIFICATION_NAME" /> 
+  <element name="ELEMENT_NAME"         dataType="varchar2"	value="ELEMENT_NAME" /> 
+  <element name="INPUT_NAME"          dataType="varchar2"	value="INPUT_NAME" /> 
+  <element name="PERIOD_NAME"			dataType="varchar2" value="PERIOD_NAME" /> 
+  <element name="RESULT_VALUE"			dataType="varchar2" value="RESULT_VALUE" /> 
+  <element name="ASSIGNMENT_ACTION_ID"	dataType="number" value="ASSIGNMENT_ACTION_ID" />
+  <element name="TIME_PERIOD_ID"	    dataType="number" value="TIME_PERIOD_ID" />
+  <element name="DATE_EARNED"	        dataType="varchar2"	value="DATE_EARNED" /> 
+  <element name="RUN_RESULT_ID"	        dataType="number" value="RUN_RESULT_ID" /> 
+  <element name="PAYMENT_METHOD"	    dataType="number" value="PAYMENT_METHOD" /> 
+  </group>
+  <element name="CURRENT_DATE"			dataType="date"		value="XXHR_ELE_PAY_PKG.GET_CURRENT_DATE" /> 
+  <element name="OPERATING_UNIT"		dataType="varchar2" value="XXHR_ELE_PAY_PKG.GET_OPERATING_UNIT" /> 
+  <element name="COMPANY_P"		        dataType="varchar2" value="XXHR_ELE_PAY_PKG.GET_COMPANY_PARAM" /> 
+  <element name="DIVISION_P"      		dataType="varchar2" value="XXHR_ELE_PAY_PKG.GET_DIVISION_PARAM" /> 
+  <element name="DEPARTMENT_P"    		dataType="varchar2" value="XXHR_ELE_PAY_PKG.GET_DEPARTMENT_PARAM" /> 
+  <element name="SECTION_P"	        	dataType="varchar2" value="XXHR_ELE_PAY_PKG.GET_SECTION_PARAM" />
+  <element name="EMPLOYEE_NAME_P"	        	dataType="varchar2" value="XXHR_ELE_PAY_PKG.GET_EMPLOYEE_PARAM" />  
+  </dataStructure>
+   </dataTemplate>

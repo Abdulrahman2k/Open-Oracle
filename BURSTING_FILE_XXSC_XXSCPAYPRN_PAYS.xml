@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- $Header: BURSTING_FILE_XXSC_XXSCPAYPRN_PAYS.xml 115.0 2016/05/23 09:25:39 xdouser noship $ -->
+<!-- dbdrv: none -->
+
+<xapi:requestset xmlns:xapi="http://xmlns.oracle.com/oxp/xapi" type="bursting">
+<xapi:request select="/XXSCPAYPRN_PAYS/LIST_G_ASSIGNMENT_ID/G_ASSIGNMENT_ID">
+<xapi:delivery>
+<xapi:email server="192.168.156.199" port="25" from="EWorkflowSystem@shuaa.com">
+<xapi:message id="123" to="${EMAIL_ADDRESS}" attachment="true" subject="${CF_PAYPERIOD} Payslip ${EMPLOYEE_NUMBER}">
+Dear ${FULL_NAME}, 
+
+${CF_MAILBODY}.
+
+This is an auto-generated e-mail. Please do not respond to this e-mail.
+
+EBS Workflow System
+
+</xapi:message>
+</xapi:email>
+</xapi:delivery>
+<xapi:document output="${CF_PAYPERIOD} Payslip_${EMPLOYEE_NUMBER}" output-type="pdf" delivery="123">
+<xapi:template type="rtf" locale = "esa-MX" location="/u01/PROD/fs2/EBSapps/appl/xxsc/12.0.0/bin/XXSCPAYPRN_PAYS.rtf" filter ="">
+</xapi:template>
+</xapi:document>
+</xapi:request>
+</xapi:requestset>
