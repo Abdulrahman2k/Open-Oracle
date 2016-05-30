@@ -1,0 +1,249 @@
+﻿begindelays
+DataDelay=0
+CellDelay=0
+FormDelay=0.25
+KeyHold=50
+SystemHold=50
+HourGlass=250
+TAB=0.25
+ENT=0.25
+*UP=1
+*DN=0.25
+*LT=0
+*RT=0
+*SP=0
+*SAVE=0.25
+*NB=0
+*PB=0
+*NF=0
+*PF=0
+*NR=0
+*PR=0
+*FR=0
+*LR=0
+*ER=0
+*DR=0
+*SB=0
+*ST=0
+*BM=0
+*QE=0
+*QR=0
+*FI=0
+*FA=0
+*IR=0
+*CL=0
+*FE=0
+*AA=0
+*AB=0
+*AC=0
+*AD=0
+*AE=0
+*AF=0
+*AG=0
+*AH=0
+*AI=0
+*AJ=0
+*AK=0
+*AL=0
+*AM=0
+*AN=0
+*AO=0
+*AP=0
+*AQ=0
+*AR=0
+*AS=0
+*AT=0
+*AU=0
+*AV=0
+*AW=0
+*AX=0
+*AY=0
+*AZ=0
+enddelays
+beginheader
+Data	TAB	TAB	Data	TAB	Data	TAB	Data	TAB	TAB	TAB	Data	*SAVE	*DN																																																																																																				
+
+000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
+endheader
+beginother
+Window=Oracle Applications - SHUAA ERPDEV cloned from PROD on 27-Oct-2015
+Description=
+CommandGroup=EBS - R12
+PasteCtrlV=1
+endother
+begindata
+S1000	TAB	TAB	1	TAB	1-Jan-16	TAB	Day in lieu added for New Years Day	TAB	TAB	TAB	31-Jan-16	*SAVE	*DN
+S1002	TAB	TAB	1	TAB	1-Jan-16	TAB	Day in lieu added for New Years Day	TAB	TAB	TAB	31-Jan-16	*SAVE	*DN
+S1003	TAB	TAB	1	TAB	1-Jan-16	TAB	Day in lieu added for New Years Day	TAB	TAB	TAB	31-Jan-16	*SAVE	*DN
+S1004	TAB	TAB	1	TAB	1-Jan-16	TAB	Day in lieu added for New Years Day	TAB	TAB	TAB	31-Jan-16	*SAVE	*DN
+S1005	TAB	TAB	1	TAB	1-Jan-16	TAB	Day in lieu added for New Years Day	TAB	TAB	TAB	31-Jan-16	*SAVE	*DN
+S1006	TAB	TAB	1	TAB	1-Jan-16	TAB	Day in lieu added for New Years Day	TAB	TAB	TAB	31-Jan-16	*SAVE	*DN
+S1007	TAB	TAB	1	TAB	1-Jan-16	TAB	Day in lieu added for New Years Day	TAB	TAB	TAB	31-Jan-16	*SAVE	*DN
+S1008	TAB	TAB	1	TAB	1-Jan-16	TAB	Day in lieu added for New Years Day	TAB	TAB	TAB	31-Jan-16	*SAVE	*DN
+S1009	TAB	TAB	1	TAB	1-Jan-16	TAB	Day in lieu added for New Years Day	TAB	TAB	TAB	31-Jan-16	*SAVE	*DN
+S1010	TAB	TAB	1	TAB	1-Jan-16	TAB	Day in lieu added for New Years Day	TAB	TAB	TAB	31-Jan-16	*SAVE	*DN
+S1011	TAB	TAB	1	TAB	1-Jan-16	TAB	Day in lieu added for New Years Day	TAB	TAB	TAB	31-Jan-16	*SAVE	*DN
+S1012	TAB	TAB	1	TAB	1-Jan-16	TAB	Day in lieu added for New Years Day	TAB	TAB	TAB	31-Jan-16	*SAVE	*DN
+S1013	TAB	TAB	1	TAB	1-Jan-16	TAB	Day in lieu added for New Years Day	TAB	TAB	TAB	31-Jan-16	*SAVE	*DN
+S1014	TAB	TAB	1	TAB	1-Jan-16	TAB	Day in lieu added for New Years Day	TAB	TAB	TAB	31-Jan-16	*SAVE	*DN
+S1015	TAB	TAB	1	TAB	1-Jan-16	TAB	Day in lieu added for New Years Day	TAB	TAB	TAB	31-Jan-16	*SAVE	*DN
+S1016	TAB	TAB	1	TAB	1-Jan-16	TAB	Day in lieu added for New Years Day	TAB	TAB	TAB	31-Jan-16	*SAVE	*DN
+S1017	TAB	TAB	1	TAB	1-Jan-16	TAB	Day in lieu added for New Years Day	TAB	TAB	TAB	31-Jan-16	*SAVE	*DN
+S1018	TAB	TAB	1	TAB	1-Jan-16	TAB	Day in lieu added for New Years Day	TAB	TAB	TAB	31-Jan-16	*SAVE	*DN
+S1019	TAB	TAB	1	TAB	1-Jan-16	TAB	Day in lieu added for New Years Day	TAB	TAB	TAB	31-Jan-16	*SAVE	*DN
+S1020	TAB	TAB	1	TAB	1-Jan-16	TAB	Day in lieu added for New Years Day	TAB	TAB	TAB	31-Jan-16	*SAVE	*DN
+S1023	TAB	TAB	1	TAB	1-Jan-16	TAB	Day in lieu added for New Years Day	TAB	TAB	TAB	31-Jan-16	*SAVE	*DN
+S1025	TAB	TAB	1	TAB	1-Jan-16	TAB	Day in lieu added for New Years Day	TAB	TAB	TAB	31-Jan-16	*SAVE	*DN
+S1026	TAB	TAB	1	TAB	1-Jan-16	TAB	Day in lieu added for New Years Day	TAB	TAB	TAB	31-Jan-16	*SAVE	*DN
+S1027	TAB	TAB	1	TAB	1-Jan-16	TAB	Day in lieu added for New Years Day	TAB	TAB	TAB	31-Jan-16	*SAVE	*DN
+S1028	TAB	TAB	1	TAB	1-Jan-16	TAB	Day in lieu added for New Years Day	TAB	TAB	TAB	31-Jan-16	*SAVE	*DN
+S1029	TAB	TAB	1	TAB	1-Jan-16	TAB	Day in lieu added for New Years Day	TAB	TAB	TAB	31-Jan-16	*SAVE	*DN
+S1030	TAB	TAB	1	TAB	1-Jan-16	TAB	Day in lieu added for New Years Day	TAB	TAB	TAB	31-Jan-16	*SAVE	*DN
+S1031	TAB	TAB	1	TAB	1-Jan-16	TAB	Day in lieu added for New Years Day	TAB	TAB	TAB	31-Jan-16	*SAVE	*DN
+S1032	TAB	TAB	1	TAB	1-Jan-16	TAB	Day in lieu added for New Years Day	TAB	TAB	TAB	31-Jan-16	*SAVE	*DN
+S1034	TAB	TAB	1	TAB	1-Jan-16	TAB	Day in lieu added for New Years Day	TAB	TAB	TAB	31-Jan-16	*SAVE	*DN
+S1036	TAB	TAB	1	TAB	1-Jan-16	TAB	Day in lieu added for New Years Day	TAB	TAB	TAB	31-Jan-16	*SAVE	*DN
+S1037	TAB	TAB	1	TAB	1-Jan-16	TAB	Day in lieu added for New Years Day	TAB	TAB	TAB	31-Jan-16	*SAVE	*DN
+S1038	TAB	TAB	1	TAB	1-Jan-16	TAB	Day in lieu added for New Years Day	TAB	TAB	TAB	31-Jan-16	*SAVE	*DN
+S1039	TAB	TAB	1	TAB	1-Jan-16	TAB	Day in lieu added for New Years Day	TAB	TAB	TAB	31-Jan-16	*SAVE	*DN
+S1040	TAB	TAB	1	TAB	1-Jan-16	TAB	Day in lieu added for New Years Day	TAB	TAB	TAB	31-Jan-16	*SAVE	*DN
+S1042	TAB	TAB	1	TAB	1-Jan-16	TAB	Day in lieu added for New Years Day	TAB	TAB	TAB	31-Jan-16	*SAVE	*DN
+S1043	TAB	TAB	1	TAB	1-Jan-16	TAB	Day in lieu added for New Years Day	TAB	TAB	TAB	31-Jan-16	*SAVE	*DN
+S1044	TAB	TAB	1	TAB	1-Jan-16	TAB	Day in lieu added for New Years Day	TAB	TAB	TAB	31-Jan-16	*SAVE	*DN
+S1045	TAB	TAB	1	TAB	1-Jan-16	TAB	Day in lieu added for New Years Day	TAB	TAB	TAB	31-Jan-16	*SAVE	*DN
+S1046	TAB	TAB	1	TAB	1-Jan-16	TAB	Day in lieu added for New Years Day	TAB	TAB	TAB	31-Jan-16	*SAVE	*DN
+S1048	TAB	TAB	1	TAB	1-Jan-16	TAB	Day in lieu added for New Years Day	TAB	TAB	TAB	31-Jan-16	*SAVE	*DN
+S1050	TAB	TAB	1	TAB	1-Jan-16	TAB	Day in lieu added for New Years Day	TAB	TAB	TAB	31-Jan-16	*SAVE	*DN
+S1051	TAB	TAB	1	TAB	1-Jan-16	TAB	Day in lieu added for New Years Day	TAB	TAB	TAB	31-Jan-16	*SAVE	*DN
+S1052	TAB	TAB	1	TAB	1-Jan-16	TAB	Day in lieu added for New Years Day	TAB	TAB	TAB	31-Jan-16	*SAVE	*DN
+S1055	TAB	TAB	1	TAB	1-Jan-16	TAB	Day in lieu added for New Years Day	TAB	TAB	TAB	31-Jan-16	*SAVE	*DN
+S1056	TAB	TAB	1	TAB	1-Jan-16	TAB	Day in lieu added for New Years Day	TAB	TAB	TAB	31-Jan-16	*SAVE	*DN
+S1057	TAB	TAB	1	TAB	1-Jan-16	TAB	Day in lieu added for New Years Day	TAB	TAB	TAB	31-Jan-16	*SAVE	*DN
+S1058	TAB	TAB	1	TAB	1-Jan-16	TAB	Day in lieu added for New Years Day	TAB	TAB	TAB	31-Jan-16	*SAVE	*DN
+S1059	TAB	TAB	1	TAB	1-Jan-16	TAB	Day in lieu added for New Years Day	TAB	TAB	TAB	31-Jan-16	*SAVE	*DN
+S1061	TAB	TAB	1	TAB	1-Jan-16	TAB	Day in lieu added for New Years Day	TAB	TAB	TAB	31-Jan-16	*SAVE	*DN
+S1063	TAB	TAB	1	TAB	1-Jan-16	TAB	Day in lieu added for New Years Day	TAB	TAB	TAB	31-Jan-16	*SAVE	*DN
+S1064	TAB	TAB	1	TAB	1-Jan-16	TAB	Day in lieu added for New Years Day	TAB	TAB	TAB	31-Jan-16	*SAVE	*DN
+S1065	TAB	TAB	1	TAB	1-Jan-16	TAB	Day in lieu added for New Years Day	TAB	TAB	TAB	31-Jan-16	*SAVE	*DN
+S1066	TAB	TAB	1	TAB	1-Jan-16	TAB	Day in lieu added for New Years Day	TAB	TAB	TAB	31-Jan-16	*SAVE	*DN
+S1067	TAB	TAB	1	TAB	1-Jan-16	TAB	Day in lieu added for New Years Day	TAB	TAB	TAB	31-Jan-16	*SAVE	*DN
+S1070	TAB	TAB	1	TAB	1-Jan-16	TAB	Day in lieu added for New Years Day	TAB	TAB	TAB	31-Jan-16	*SAVE	*DN
+S1071	TAB	TAB	1	TAB	1-Jan-16	TAB	Day in lieu added for New Years Day	TAB	TAB	TAB	31-Jan-16	*SAVE	*DN
+S1074	TAB	TAB	1	TAB	1-Jan-16	TAB	Day in lieu added for New Years Day	TAB	TAB	TAB	31-Jan-16	*SAVE	*DN
+S1075	TAB	TAB	1	TAB	1-Jan-16	TAB	Day in lieu added for New Years Day	TAB	TAB	TAB	31-Jan-16	*SAVE	*DN
+S1076	TAB	TAB	1	TAB	1-Jan-16	TAB	Day in lieu added for New Years Day	TAB	TAB	TAB	31-Jan-16	*SAVE	*DN
+S1077	TAB	TAB	1	TAB	1-Jan-16	TAB	Day in lieu added for New Years Day	TAB	TAB	TAB	31-Jan-16	*SAVE	*DN
+S1078	TAB	TAB	1	TAB	1-Jan-16	TAB	Day in lieu added for New Years Day	TAB	TAB	TAB	31-Jan-16	*SAVE	*DN
+S1079	TAB	TAB	1	TAB	1-Jan-16	TAB	Day in lieu added for New Years Day	TAB	TAB	TAB	31-Jan-16	*SAVE	*DN
+S1080	TAB	TAB	1	TAB	1-Jan-16	TAB	Day in lieu added for New Years Day	TAB	TAB	TAB	31-Jan-16	*SAVE	*DN
+S1081	TAB	TAB	1	TAB	1-Jan-16	TAB	Day in lieu added for New Years Day	TAB	TAB	TAB	31-Jan-16	*SAVE	*DN
+S1082	TAB	TAB	1	TAB	1-Jan-16	TAB	Day in lieu added for New Years Day	TAB	TAB	TAB	31-Jan-16	*SAVE	*DN
+S1083	TAB	TAB	1	TAB	1-Jan-16	TAB	Day in lieu added for New Years Day	TAB	TAB	TAB	31-Jan-16	*SAVE	*DN
+S1085	TAB	TAB	1	TAB	1-Jan-16	TAB	Day in lieu added for New Years Day	TAB	TAB	TAB	31-Jan-16	*SAVE	*DN
+S1087	TAB	TAB	1	TAB	1-Jan-16	TAB	Day in lieu added for New Years Day	TAB	TAB	TAB	31-Jan-16	*SAVE	*DN
+S1088	TAB	TAB	1	TAB	1-Jan-16	TAB	Day in lieu added for New Years Day	TAB	TAB	TAB	31-Jan-16	*SAVE	*DN
+S1089	TAB	TAB	1	TAB	1-Jan-16	TAB	Day in lieu added for New Years Day	TAB	TAB	TAB	31-Jan-16	*SAVE	*DN
+S1090	TAB	TAB	1	TAB	1-Jan-16	TAB	Day in lieu added for New Years Day	TAB	TAB	TAB	31-Jan-16	*SAVE	*DN
+S1092	TAB	TAB	1	TAB	1-Jan-16	TAB	Day in lieu added for New Years Day	TAB	TAB	TAB	31-Jan-16	*SAVE	*DN
+S1093	TAB	TAB	1	TAB	1-Jan-16	TAB	Day in lieu added for New Years Day	TAB	TAB	TAB	31-Jan-16	*SAVE	*DN
+S1095	TAB	TAB	1	TAB	1-Jan-16	TAB	Day in lieu added for New Years Day	TAB	TAB	TAB	31-Jan-16	*SAVE	*DN
+S1096	TAB	TAB	1	TAB	1-Jan-16	TAB	Day in lieu added for New Years Day	TAB	TAB	TAB	31-Jan-16	*SAVE	*DN
+S1097	TAB	TAB	1	TAB	1-Jan-16	TAB	Day in lieu added for New Years Day	TAB	TAB	TAB	31-Jan-16	*SAVE	*DN
+enddata
+beginoptions
+AutoTab=false
+HourGlass=false
+AutoInsert=true
+ProgressBar=true
+TitleSize=false
+DataColour=16777215
+CommandColour=16777215
+KeystrokeColour=16777215
+DataSource=0
+ImportLoad=0
+EnableMacro=1
+DatePicker=1
+LegacyKeyMode=0
+IEOnly=0
+StopIfNotIE=0
+LoadControl=0
+UseBC=0
+SkipBlank=1
+Protection=￶�￶�￮￥￮￥￦￭￦￭￮￥￮￥￶�￶�ￎￅￎￅￆￍￆￍￎￅￎￅ￶�￶�￮￥￮￥￦￭￦￭￮￥￮￥￶�￶�%CR%%CR%v}v}nenefmfmnenev}v}NE
+endoptions
+beginformat
+FontName=Default
+FontSize=8
+ColumnWidth8=103
+endformat
+begincommands
+Command	EBS - R12	EBS - 11i	EBS - 10.7/11.0 NCA	EBS - 10.7SC	Siebel	SAP	Peoplesoft	JDE	Dynamics	Other	Description
+TAB	\{TAB}	\{TAB}	\{TAB}	\{TAB}	\{TAB}	\{TAB}	\{TAB}	\{TAB}	\{TAB}	\{TAB}	TAB key
+ENT	\{ENTER}	\{ENTER}	\{ENTER}	\{ENTER}	\{ENTER}	\{ENTER}	\{ENTER}	\{ENTER}	\{ENTER}	\{ENTER}	Enter key
+*UP	\{UP}	\{UP}	\{UP}	\{UP}	\{UP}	\{UP}	\{UP}	\{UP}	\{UP}	\{UP}	Up arrow key
+*DN	\{DOWN}	\{DOWN}	\{DOWN}	\{DOWN}	\{DOWN}	\{DOWN}	\{DOWN}	\{DOWN}	\{DOWN}	\{DOWN}	Down arrow key
+*LT	\{LEFT}	\{LEFT}	\{LEFT}	\{LEFT}	\{LEFT}	\{LEFT}	\{LEFT}	\{LEFT}	\{LEFT}	\{LEFT}	Left arrow key
+*RT	\{RIGHT}	\{RIGHT}	\{RIGHT}	\{RIGHT}	\{RIGHT}	\{RIGHT}	\{RIGHT}	\{RIGHT}	\{RIGHT}	\{RIGHT}	Right arrow key
+*SP	\%F%V	\%F%V	\%A%{DOWN 4}{ENTER}	\%A%A							Save & proceed
+*SAVE	\^S	\^S	\^S	\{F10}							Save
+*NB	\+{PGDN}	\+{PGDN}	\+{PGDN}	\^{PGDN}							Next Block
+*PB	\+{PGUP}	\+{PGUP}	\+{PGUP}	\^{PGUP}							Previous Block
+*NF	\{TAB}	\{TAB}	\%G%{DOWN}{ENTER}	\{TAB}							Next Field
+*PF	\+{TAB}	\+{TAB}	\%G%{DOWN 2}{ENTER}	\+{TAB}							Previous Field
+*NR	\{DOWN}	\{DOWN}	\%G%{DOWN 3}{ENTER}	\+{DOWN}							Next record
+*PR	\{UP}	\{UP}	\%G%{DOWN 4}{ENTER}	\+{UP}							Previous record
+*FR	\%V%DF	\%V%DF	\%G%{DOWN 5}{ENTER}	\%G%F							First record
+*LR	\%V%DL	\%V%DL	\%G%{DOWN 6}{ENTER}	\%G%L							Last record
+*ER	\{F6}	\{F6}	\{F6}	\+{F4}							Erase record
+*DR	\^{UP}	\^{UP}	\^{UP}	\+{F6}							Delete record
+*SB	\ 	\ 	\ 	\ 	\ 	\ 	\ 	\ 	\ 	\ 	Space bar
+*ST	\{HOME}+{END}	\{HOME}+{END}	\{HOME}+{END}	\{HOME}+{END}	\{HOME}+{END}	\{HOME}+{END}	\{HOME}+{END}	\{HOME}+{END}	\{HOME}+{END}	\{HOME}+{END}	Select field text
+*BM	\^B	\^B	\^B	\{F5}							Block menu
+*QE	\{F11}	\{F11}	\{F11}	\{F7}							Query enter
+*QR	\^{F11}	\^{F11}	\^{F11}	\{F8}							Query run
+*FI	\%V%F	\%V%F	\%Q%{DOWN}{ENTER}								Find
+*FA	\%V%I	\%V%I	\%Q%{DOWN 2}{ENTER}								Find all
+*IR	\^{DOWN}	\^{DOWN}	\^{DOWN}	\{F6}							Insert record
+*CL	\{F5}	\{F5}	\{F5}	\^U							Clear field
+*FE	\^E	\^E	\^E	\^E							Field edit
+*AA	\%A	\%A	\%A	\%A	\%A	\%A	\%A	\%A	\%A	\%A	Alt A
+*AB	\%B	\%B	\%B	\%B	\%B	\%B	\%B	\%B	\%B	\%B	Alt B
+*AC	\%C	\%C	\%C	\%C	\%C	\%C	\%C	\%C	\%C	\%C	Alt C
+*AD	\%D	\%D	\%D	\%D	\%D	\%D	\%D	\%D	\%D	\%D	Alt D
+*AE	\%E	\%E	\%E	\%E	\%E	\%E	\%E	\%E	\%E	\%E	Alt E
+*AF	\%F	\%F	\%F	\%F	\%F	\%F	\%F	\%F	\%F	\%F	Alt F
+*AG	\%G	\%G	\%G	\%G	\%G	\%G	\%G	\%G	\%G	\%G	Alt G
+*AH	\%H	\%H	\%H	\%H	\%H	\%H	\%H	\%H	\%H	\%H	Alt H
+*AI	\%I	\%I	\%I	\%I	\%I	\%I	\%I	\%I	\%I	\%I	Alt I
+*AJ	\%J	\%J	\%J	\%J	\%J	\%J	\%J	\%J	\%J	\%J	Alt J
+*AK	\%K	\%K	\%K	\%K	\%K	\%K	\%K	\%K	\%K	\%K	Alt K
+*AL	\%L	\%L	\%L	\%L	\%L	\%L	\%L	\%L	\%L	\%L	Alt L
+*AM	\%M	\%M	\%M	\%M	\%M	\%M	\%M	\%M	\%M	\%M	Alt M
+*AN	\%N	\%N	\%N	\%N	\%N	\%N	\%N	\%N	\%N	\%N	Alt N
+*AO	\%O	\%O	\%O	\%O	\%O	\%O	\%O	\%O	\%O	\%O	Alt O
+*AP	\%P	\%P	\%P	\%P	\%P	\%P	\%P	\%P	\%P	\%P	Alt P
+*AQ	\%Q	\%Q	\%Q	\%Q	\%Q	\%Q	\%Q	\%Q	\%Q	\%Q	Alt Q
+*AR	\%R	\%R	\%R	\%R	\%R	\%R	\%R	\%R	\%R	\%R	Alt R
+*AS	\%S	\%S	\%S	\%S	\%S	\%S	\%S	\%S	\%S	\%S	Alt S
+*AT	\%T	\%T	\%T	\%T	\%T	\%T	\%T	\%T	\%T	\%T	Alt T
+*AU	\%U	\%U	\%U	\%U	\%U	\%U	\%U	\%U	\%U	\%U	Alt U
+*AV	\%V	\%V	\%V	\%V	\%V	\%V	\%V	\%V	\%V	\%V	Alt V
+*AW	\%W	\%W	\%W	\%W	\%W	\%W	\%W	\%W	\%W	\%W	Alt W
+*AX	\%X	\%X	\%X	\%X	\%X	\%X	\%X	\%X	\%X	\%X	Alt X
+*AY	\%Y	\%Y	\%Y	\%Y	\%Y	\%Y	\%Y	\%Y	\%Y	\%Y	Alt Y
+*AZ	\%Z	\%Z	\%Z	\%Z	\%Z	\%Z	\%Z	\%Z	\%Z	\%Z	Alt Z
+endcommands
+beginhdrgrid
+																																																																																																			
+
+0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
+begindata
+enddata
+endhdrgrid
+beginftrgrid
+																																																																																																		
+
+000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
+begindata
+enddata
+endftrgrid

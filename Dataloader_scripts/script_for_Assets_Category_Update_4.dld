@@ -1,0 +1,233 @@
+﻿begindelays
+DataDelay=0
+CellDelay=0.5
+FormDelay=0.6
+KeyHold=50
+SystemHold=50
+HourGlass=250
+TAB=0
+ENT=0
+*UP=0
+*DN=0
+*LT=0
+*RT=0
+*SP=0
+*SAVE=0
+*NB=0
+*PB=0
+*NF=0
+*PF=0
+*NR=0
+*PR=0
+*FR=0
+*LR=0
+*ER=0
+*DR=0
+*SB=0
+*ST=0
+*BM=0
+*QE=0
+*QR=0
+*FI=0
+*FA=0
+*IR=0
+*CL=0
+*FE=0
+*AA=0
+*AB=0
+*AC=0
+*AD=0
+*AE=0
+*AF=0
+*AG=0
+*AH=0
+*AI=0
+*AJ=0
+*AK=0
+*AL=0
+*AM=0
+*AN=0
+*AO=0
+*AP=0
+*AQ=0
+*AR=0
+*AS=0
+*AT=0
+*AU=0
+*AV=0
+*AW=0
+*AX=0
+*AY=0
+*AZ=0
+enddelays
+beginheader
+*DL(320,154)	Data	*ML(791,639)	*ML(821,622)	*DL(838,235)	*DL(893,561)	Data	*ML(817,625)	*SAVE	*ML(1124,612)	*QE																																																																																																				
+
+000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
+endheader
+beginother
+Window=Oracle Applications - ERPPROD
+Description=
+CommandGroup=EBS - R12
+PasteCtrlV=1
+endother
+begindata
+*DL(320,154)	1008583	*ML(791,639)	*ML(821,622)	*DL(838,235)	*DL(893,561)	DISPLAY MONITOR	*ML(817,625)	*SAVE	*ML(1124,612)	*QE
+*DL(320,154)	1006857	*ML(791,639)	*ML(821,622)	*DL(838,235)	*DL(893,561)	DISPLAY MONITOR	*ML(817,625)	*SAVE	*ML(1124,612)	*QE
+*DL(320,154)	1006446	*ML(791,639)	*ML(821,622)	*DL(838,235)	*DL(893,561)	DISPLAY MONITOR	*ML(817,625)	*SAVE	*ML(1124,612)	*QE
+*DL(320,154)	1006447	*ML(791,639)	*ML(821,622)	*DL(838,235)	*DL(893,561)	DISPLAY MONITOR	*ML(817,625)	*SAVE	*ML(1124,612)	*QE
+*DL(320,154)	1006448	*ML(791,639)	*ML(821,622)	*DL(838,235)	*DL(893,561)	DISPLAY MONITOR	*ML(817,625)	*SAVE	*ML(1124,612)	*QE
+*DL(320,154)	1006449	*ML(791,639)	*ML(821,622)	*DL(838,235)	*DL(893,561)	DISPLAY MONITOR	*ML(817,625)	*SAVE	*ML(1124,612)	*QE
+*DL(320,154)	1006453	*ML(791,639)	*ML(821,622)	*DL(838,235)	*DL(893,561)	DISPLAY MONITOR	*ML(817,625)	*SAVE	*ML(1124,612)	*QE
+*DL(320,154)	1006471	*ML(791,639)	*ML(821,622)	*DL(838,235)	*DL(893,561)	DISPLAY MONITOR	*ML(817,625)	*SAVE	*ML(1124,612)	*QE
+*DL(320,154)	1006472	*ML(791,639)	*ML(821,622)	*DL(838,235)	*DL(893,561)	DISPLAY MONITOR	*ML(817,625)	*SAVE	*ML(1124,612)	*QE
+*DL(320,154)	1006473	*ML(791,639)	*ML(821,622)	*DL(838,235)	*DL(893,561)	DISPLAY MONITOR	*ML(817,625)	*SAVE	*ML(1124,612)	*QE
+*DL(320,154)	1006474	*ML(791,639)	*ML(821,622)	*DL(838,235)	*DL(893,561)	DISPLAY MONITOR	*ML(817,625)	*SAVE	*ML(1124,612)	*QE
+*DL(320,154)	1006475	*ML(791,639)	*ML(821,622)	*DL(838,235)	*DL(893,561)	DISPLAY MONITOR	*ML(817,625)	*SAVE	*ML(1124,612)	*QE
+*DL(320,154)	1006476	*ML(791,639)	*ML(821,622)	*DL(838,235)	*DL(893,561)	DISPLAY MONITOR	*ML(817,625)	*SAVE	*ML(1124,612)	*QE
+*DL(320,154)	1006477	*ML(791,639)	*ML(821,622)	*DL(838,235)	*DL(893,561)	DISPLAY MONITOR	*ML(817,625)	*SAVE	*ML(1124,612)	*QE
+*DL(320,154)	1006478	*ML(791,639)	*ML(821,622)	*DL(838,235)	*DL(893,561)	DISPLAY MONITOR	*ML(817,625)	*SAVE	*ML(1124,612)	*QE
+*DL(320,154)	1006479	*ML(791,639)	*ML(821,622)	*DL(838,235)	*DL(893,561)	DISPLAY MONITOR	*ML(817,625)	*SAVE	*ML(1124,612)	*QE
+*DL(320,154)	1006480	*ML(791,639)	*ML(821,622)	*DL(838,235)	*DL(893,561)	DISPLAY MONITOR	*ML(817,625)	*SAVE	*ML(1124,612)	*QE
+*DL(320,154)	1006801	*ML(791,639)	*ML(821,622)	*DL(838,235)	*DL(893,561)	DISPLAY MONITOR	*ML(817,625)	*SAVE	*ML(1124,612)	*QE
+*DL(320,154)	1006804	*ML(791,639)	*ML(821,622)	*DL(838,235)	*DL(893,561)	DISPLAY MONITOR	*ML(817,625)	*SAVE	*ML(1124,612)	*QE
+*DL(320,154)	1006805	*ML(791,639)	*ML(821,622)	*DL(838,235)	*DL(893,561)	DISPLAY MONITOR	*ML(817,625)	*SAVE	*ML(1124,612)	*QE
+*DL(320,154)	1006806	*ML(791,639)	*ML(821,622)	*DL(838,235)	*DL(893,561)	DISPLAY MONITOR	*ML(817,625)	*SAVE	*ML(1124,612)	*QE
+*DL(320,154)	1006807	*ML(791,639)	*ML(821,622)	*DL(838,235)	*DL(893,561)	DISPLAY MONITOR	*ML(817,625)	*SAVE	*ML(1124,612)	*QE
+*DL(320,154)	1006808	*ML(791,639)	*ML(821,622)	*DL(838,235)	*DL(893,561)	DISPLAY MONITOR	*ML(817,625)	*SAVE	*ML(1124,612)	*QE
+*DL(320,154)	1006809	*ML(791,639)	*ML(821,622)	*DL(838,235)	*DL(893,561)	DISPLAY MONITOR	*ML(817,625)	*SAVE	*ML(1124,612)	*QE
+*DL(320,154)	1006810	*ML(791,639)	*ML(821,622)	*DL(838,235)	*DL(893,561)	DISPLAY MONITOR	*ML(817,625)	*SAVE	*ML(1124,612)	*QE
+*DL(320,154)	1006811	*ML(791,639)	*ML(821,622)	*DL(838,235)	*DL(893,561)	DISPLAY MONITOR	*ML(817,625)	*SAVE	*ML(1124,612)	*QE
+*DL(320,154)	1006812	*ML(791,639)	*ML(821,622)	*DL(838,235)	*DL(893,561)	DISPLAY MONITOR	*ML(817,625)	*SAVE	*ML(1124,612)	*QE
+*DL(320,154)	1006813	*ML(791,639)	*ML(821,622)	*DL(838,235)	*DL(893,561)	DISPLAY MONITOR	*ML(817,625)	*SAVE	*ML(1124,612)	*QE
+*DL(320,154)	1006814	*ML(791,639)	*ML(821,622)	*DL(838,235)	*DL(893,561)	DISPLAY MONITOR	*ML(817,625)	*SAVE	*ML(1124,612)	*QE
+*DL(320,154)	1006815	*ML(791,639)	*ML(821,622)	*DL(838,235)	*DL(893,561)	DISPLAY MONITOR	*ML(817,625)	*SAVE	*ML(1124,612)	*QE
+*DL(320,154)	1006816	*ML(791,639)	*ML(821,622)	*DL(838,235)	*DL(893,561)	DISPLAY MONITOR	*ML(817,625)	*SAVE	*ML(1124,612)	*QE
+*DL(320,154)	1006817	*ML(791,639)	*ML(821,622)	*DL(838,235)	*DL(893,561)	DISPLAY MONITOR	*ML(817,625)	*SAVE	*ML(1124,612)	*QE
+*DL(320,154)	1006818	*ML(791,639)	*ML(821,622)	*DL(838,235)	*DL(893,561)	DISPLAY MONITOR	*ML(817,625)	*SAVE	*ML(1124,612)	*QE
+*DL(320,154)	1006819	*ML(791,639)	*ML(821,622)	*DL(838,235)	*DL(893,561)	DISPLAY MONITOR	*ML(817,625)	*SAVE	*ML(1124,612)	*QE
+*DL(320,154)	1006820	*ML(791,639)	*ML(821,622)	*DL(838,235)	*DL(893,561)	DISPLAY MONITOR	*ML(817,625)	*SAVE	*ML(1124,612)	*QE
+*DL(320,154)	1006830	*ML(791,639)	*ML(821,622)	*DL(838,235)	*DL(893,561)	DISPLAY MONITOR	*ML(817,625)	*SAVE	*ML(1124,612)	*QE
+*DL(320,154)	1006831	*ML(791,639)	*ML(821,622)	*DL(838,235)	*DL(893,561)	DISPLAY MONITOR	*ML(817,625)	*SAVE	*ML(1124,612)	*QE
+*DL(320,154)	1006832	*ML(791,639)	*ML(821,622)	*DL(838,235)	*DL(893,561)	DISPLAY MONITOR	*ML(817,625)	*SAVE	*ML(1124,612)	*QE
+*DL(320,154)	1006833	*ML(791,639)	*ML(821,622)	*DL(838,235)	*DL(893,561)	DISPLAY MONITOR	*ML(817,625)	*SAVE	*ML(1124,612)	*QE
+*DL(320,154)	1006834	*ML(791,639)	*ML(821,622)	*DL(838,235)	*DL(893,561)	DISPLAY MONITOR	*ML(817,625)	*SAVE	*ML(1124,612)	*QE
+*DL(320,154)	1006835	*ML(791,639)	*ML(821,622)	*DL(838,235)	*DL(893,561)	DISPLAY MONITOR	*ML(817,625)	*SAVE	*ML(1124,612)	*QE
+*DL(320,154)	1006836	*ML(791,639)	*ML(821,622)	*DL(838,235)	*DL(893,561)	DISPLAY MONITOR	*ML(817,625)	*SAVE	*ML(1124,612)	*QE
+*DL(320,154)	1006837	*ML(791,639)	*ML(821,622)	*DL(838,235)	*DL(893,561)	DISPLAY MONITOR	*ML(817,625)	*SAVE	*ML(1124,612)	*QE
+*DL(320,154)	1006838	*ML(791,639)	*ML(821,622)	*DL(838,235)	*DL(893,561)	DISPLAY MONITOR	*ML(817,625)	*SAVE	*ML(1124,612)	*QE
+*DL(320,154)	1006839	*ML(791,639)	*ML(821,622)	*DL(838,235)	*DL(893,561)	DISPLAY MONITOR	*ML(817,625)	*SAVE	*ML(1124,612)	*QE
+*DL(320,154)	1006840	*ML(791,639)	*ML(821,622)	*DL(838,235)	*DL(893,561)	DISPLAY MONITOR	*ML(817,625)	*SAVE	*ML(1124,612)	*QE
+*DL(320,154)	1006841	*ML(791,639)	*ML(821,622)	*DL(838,235)	*DL(893,561)	DISPLAY MONITOR	*ML(817,625)	*SAVE	*ML(1124,612)	*QE
+*DL(320,154)	1006842	*ML(791,639)	*ML(821,622)	*DL(838,235)	*DL(893,561)	DISPLAY MONITOR	*ML(817,625)	*SAVE	*ML(1124,612)	*QE
+*DL(320,154)	1006843	*ML(791,639)	*ML(821,622)	*DL(838,235)	*DL(893,561)	DISPLAY MONITOR	*ML(817,625)	*SAVE	*ML(1124,612)	*QE
+*DL(320,154)	1006844	*ML(791,639)	*ML(821,622)	*DL(838,235)	*DL(893,561)	DISPLAY MONITOR	*ML(817,625)	*SAVE	*ML(1124,612)	*QE
+*DL(320,154)	1006845	*ML(791,639)	*ML(821,622)	*DL(838,235)	*DL(893,561)	DISPLAY MONITOR	*ML(817,625)	*SAVE	*ML(1124,612)	*QE
+*DL(320,154)	1006846	*ML(791,639)	*ML(821,622)	*DL(838,235)	*DL(893,561)	DISPLAY MONITOR	*ML(817,625)	*SAVE	*ML(1124,612)	*QE
+*DL(320,154)	1006847	*ML(791,639)	*ML(821,622)	*DL(838,235)	*DL(893,561)	DISPLAY MONITOR	*ML(817,625)	*SAVE	*ML(1124,612)	*QE
+*DL(320,154)	1006848	*ML(791,639)	*ML(821,622)	*DL(838,235)	*DL(893,561)	DISPLAY MONITOR	*ML(817,625)	*SAVE	*ML(1124,612)	*QE
+*DL(320,154)	1006849	*ML(791,639)	*ML(821,622)	*DL(838,235)	*DL(893,561)	DISPLAY MONITOR	*ML(817,625)	*SAVE	*ML(1124,612)	*QE
+*DL(320,154)	1006445	*ML(791,639)	*ML(821,622)	*DL(838,235)	*DL(893,561)	DISPLAY MONITOR	*ML(817,625)	*SAVE	*ML(1124,612)	*QE
+enddata
+beginoptions
+AutoTab=false
+HourGlass=false
+AutoInsert=true
+ProgressBar=true
+TitleSize=false
+DataColour=16777215
+CommandColour=16777215
+KeystrokeColour=16777215
+DataSource=0
+ImportLoad=0
+EnableMacro=1
+DatePicker=1
+LegacyKeyMode=0
+IEOnly=0
+StopIfNotIE=0
+LoadControl=0
+UseBC=0
+SkipBlank=1
+Protection=￶�￶�￮￥￮￥￦￭￦￭￮￥￮￥￶�￶�ￎￅￎￅￆￍￆￍￎￅￎￅ￶�￶�￮￥￮￥￦￭￦￭￮￥￮￥￶�￶�%CR%%CR%v}v}nenefmfmnenev}v}NE
+endoptions
+beginformat
+FontName=Default
+FontSize=8
+ColumnWidth1=117
+ColumnWidth3=81
+ColumnWidth4=136
+ColumnWidth5=106
+ColumnWidth6=126
+ColumnWidth8=93
+endformat
+begincommands
+Command	EBS - R12	EBS - 11i	EBS - 10.7/11.0 NCA	EBS - 10.7SC	Siebel	SAP	Peoplesoft	JDE	Dynamics	Other	Description
+TAB	\{TAB}	\{TAB}	\{TAB}	\{TAB}	\{TAB}	\{TAB}	\{TAB}	\{TAB}	\{TAB}	\{TAB}	TAB key
+ENT	\{ENTER}	\{ENTER}	\{ENTER}	\{ENTER}	\{ENTER}	\{ENTER}	\{ENTER}	\{ENTER}	\{ENTER}	\{ENTER}	Enter key
+*UP	\{UP}	\{UP}	\{UP}	\{UP}	\{UP}	\{UP}	\{UP}	\{UP}	\{UP}	\{UP}	Up arrow key
+*DN	\{DOWN}	\{DOWN}	\{DOWN}	\{DOWN}	\{DOWN}	\{DOWN}	\{DOWN}	\{DOWN}	\{DOWN}	\{DOWN}	Down arrow key
+*LT	\{LEFT}	\{LEFT}	\{LEFT}	\{LEFT}	\{LEFT}	\{LEFT}	\{LEFT}	\{LEFT}	\{LEFT}	\{LEFT}	Left arrow key
+*RT	\{RIGHT}	\{RIGHT}	\{RIGHT}	\{RIGHT}	\{RIGHT}	\{RIGHT}	\{RIGHT}	\{RIGHT}	\{RIGHT}	\{RIGHT}	Right arrow key
+*SP	\%F%V	\%F%V	\%A%{DOWN 4}{ENTER}	\%A%A							Save & proceed
+*SAVE	\^S	\^S	\^S	\{F10}							Save
+*NB	\+{PGDN}	\+{PGDN}	\+{PGDN}	\^{PGDN}							Next Block
+*PB	\+{PGUP}	\+{PGUP}	\+{PGUP}	\^{PGUP}							Previous Block
+*NF	\{TAB}	\{TAB}	\%G%{DOWN}{ENTER}	\{TAB}							Next Field
+*PF	\+{TAB}	\+{TAB}	\%G%{DOWN 2}{ENTER}	\+{TAB}							Previous Field
+*NR	\{DOWN}	\{DOWN}	\%G%{DOWN 3}{ENTER}	\+{DOWN}							Next record
+*PR	\{UP}	\{UP}	\%G%{DOWN 4}{ENTER}	\+{UP}							Previous record
+*FR	\%V%DF	\%V%DF	\%G%{DOWN 5}{ENTER}	\%G%F							First record
+*LR	\%V%DL	\%V%DL	\%G%{DOWN 6}{ENTER}	\%G%L							Last record
+*ER	\{F6}	\{F6}	\{F6}	\+{F4}							Erase record
+*DR	\^{UP}	\^{UP}	\^{UP}	\+{F6}							Delete record
+*SB	\ 	\ 	\ 	\ 	\ 	\ 	\ 	\ 	\ 	\ 	Space bar
+*ST	\{HOME}+{END}	\{HOME}+{END}	\{HOME}+{END}	\{HOME}+{END}	\{HOME}+{END}	\{HOME}+{END}	\{HOME}+{END}	\{HOME}+{END}	\{HOME}+{END}	\{HOME}+{END}	Select field text
+*BM	\^B	\^B	\^B	\{F5}							Block menu
+*QE	\{F11}	\{F11}	\{F11}	\{F7}							Query enter
+*QR	\^{F11}	\^{F11}	\^{F11}	\{F8}							Query run
+*FI	\%V%F	\%V%F	\%Q%{DOWN}{ENTER}								Find
+*FA	\%V%I	\%V%I	\%Q%{DOWN 2}{ENTER}								Find all
+*IR	\^{DOWN}	\^{DOWN}	\^{DOWN}	\{F6}							Insert record
+*CL	\{F5}	\{F5}	\{F5}	\^U							Clear field
+*FE	\^E	\^E	\^E	\^E							Field edit
+*AA	\%A	\%A	\%A	\%A	\%A	\%A	\%A	\%A	\%A	\%A	Alt A
+*AB	\%B	\%B	\%B	\%B	\%B	\%B	\%B	\%B	\%B	\%B	Alt B
+*AC	\%C	\%C	\%C	\%C	\%C	\%C	\%C	\%C	\%C	\%C	Alt C
+*AD	\%D	\%D	\%D	\%D	\%D	\%D	\%D	\%D	\%D	\%D	Alt D
+*AE	\%E	\%E	\%E	\%E	\%E	\%E	\%E	\%E	\%E	\%E	Alt E
+*AF	\%F	\%F	\%F	\%F	\%F	\%F	\%F	\%F	\%F	\%F	Alt F
+*AG	\%G	\%G	\%G	\%G	\%G	\%G	\%G	\%G	\%G	\%G	Alt G
+*AH	\%H	\%H	\%H	\%H	\%H	\%H	\%H	\%H	\%H	\%H	Alt H
+*AI	\%I	\%I	\%I	\%I	\%I	\%I	\%I	\%I	\%I	\%I	Alt I
+*AJ	\%J	\%J	\%J	\%J	\%J	\%J	\%J	\%J	\%J	\%J	Alt J
+*AK	\%K	\%K	\%K	\%K	\%K	\%K	\%K	\%K	\%K	\%K	Alt K
+*AL	\%L	\%L	\%L	\%L	\%L	\%L	\%L	\%L	\%L	\%L	Alt L
+*AM	\%M	\%M	\%M	\%M	\%M	\%M	\%M	\%M	\%M	\%M	Alt M
+*AN	\%N	\%N	\%N	\%N	\%N	\%N	\%N	\%N	\%N	\%N	Alt N
+*AO	\%O	\%O	\%O	\%O	\%O	\%O	\%O	\%O	\%O	\%O	Alt O
+*AP	\%P	\%P	\%P	\%P	\%P	\%P	\%P	\%P	\%P	\%P	Alt P
+*AQ	\%Q	\%Q	\%Q	\%Q	\%Q	\%Q	\%Q	\%Q	\%Q	\%Q	Alt Q
+*AR	\%R	\%R	\%R	\%R	\%R	\%R	\%R	\%R	\%R	\%R	Alt R
+*AS	\%S	\%S	\%S	\%S	\%S	\%S	\%S	\%S	\%S	\%S	Alt S
+*AT	\%T	\%T	\%T	\%T	\%T	\%T	\%T	\%T	\%T	\%T	Alt T
+*AU	\%U	\%U	\%U	\%U	\%U	\%U	\%U	\%U	\%U	\%U	Alt U
+*AV	\%V	\%V	\%V	\%V	\%V	\%V	\%V	\%V	\%V	\%V	Alt V
+*AW	\%W	\%W	\%W	\%W	\%W	\%W	\%W	\%W	\%W	\%W	Alt W
+*AX	\%X	\%X	\%X	\%X	\%X	\%X	\%X	\%X	\%X	\%X	Alt X
+*AY	\%Y	\%Y	\%Y	\%Y	\%Y	\%Y	\%Y	\%Y	\%Y	\%Y	Alt Y
+*AZ	\%Z	\%Z	\%Z	\%Z	\%Z	\%Z	\%Z	\%Z	\%Z	\%Z	Alt Z
+endcommands
+beginhdrgrid
+																																																																																																			
+
+0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
+begindata
+enddata
+endhdrgrid
+beginftrgrid
+																																																																																																		
+
+000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
+begindata
+enddata
+endftrgrid
