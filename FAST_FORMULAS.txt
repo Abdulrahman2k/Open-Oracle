@@ -1,0 +1,4067 @@
+GFC_ANNUAL_LEAVE_ACCRUAL
+
+
+/* ------------------------------------------------------------------------
+    NAME : PTO_PAYROLL_BALANCE_CALCULATION
+    This formula calculates the dates between which an assignment is to accrue.
+    It is based on PTO_PAYROLL_CALCULATION, but has been amended to allow its
+    use with the payroll balance functionality.
+   ----------------------------------------------------------------------*/
+
+DEFAULT FOR ACP_START IS 'HD'
+DEFAULT FOR ACP_INELIGIBILITY_PERIOD_TYPE IS 'CM'
+DEFAULT FOR ACP_INELIGIBILITY_PERIOD_LENGTH IS 0
+DEFAULT FOR ACP_CONTINUOUS_SERVICE_DATE IS '4712/12/31 00:00:00' (date)
+DEFAULT FOR ACP_ENROLLMENT_END_DATE IS '4712/12/31 00:00:00' (date)
+DEFAULT FOR ACP_TERMINATION_DATE IS '4712/12/31 00:00:00' (date)
+DEFAULT FOR ACP_ENROLLMENT_START_DATE IS '4712/12/31 00:00:00' (date)
+DEFAULT FOR ACP_SERVICE_START_DATE IS '4712/12/31 00:00:00' (date)
+DEFAULT FOR ASG_GRADE IS ' '
+DEFAULT FOR PERIODS_OF_SERVICE_SEPARATION_DATE IS '31-DEC-4712'
+
+
+default for Accrual_Start_Date is '4712/12/31 00:00:00' (date)
+default for Accrual_Latest_Balance is 0
+
+INPUTS ARE
+Calculation_Date (date),
+Accrual_Start_Date (date),
+Accrual_Latest_Balance
+
+Calculation_Date=add_days(trunc(add_months(calculation_date,12),'year'),-1)
+
+/* bug 4047666*/
+prm_Accrual_Start_Date (date) = Accrual_Start_Date
+prm_Calculation_Date (date) = Calculation_Date
+/* bug 4047666*/
+
+E = CALCULATE_PAYROLL_PERIODS()
+
+/*-----------------------------------------------------------------------
+   For the payroll year that spans the Calculation Date
+   get the first days of the payroll year. If we have a latest balance,
+   we use the Accrual Start Date.
+  ----------------------------------------------------------------------- */
+
+Payroll_Year_First_Valid_Date = GET_DATE('PAYROLL_YEAR_FIRST_VALID_DATE')
+
+
+IF Accrual_Start_Date < Payroll_Year_First_Valid_Date THEN
+(
+  Accrual_Start_Date = Payroll_Year_First_Valid_Date
+)
+
+IF NOT (Accrual_Start_Date WAS DEFAULTED) THEN
+(
+  E = SET_DATE('PAYROLL_YEAR_SD', Accrual_Start_Date)
+)
+ELSE
+(
+  E = SET_DATE('PAYROLL_YEAR_SD', Payroll_Year_First_Valid_Date)
+)
+
+
+/* ------------------------------------------------------------------------
+   Set the Calculation_Date to the Termination Date / Enrollment end date if not defaulted
+-------------------------------------------------------------------------- */
+
+IF NOT (ACP_TERMINATION_DATE WAS DEFAULTED) OR
+    NOT (ACP_ENROLLMENT_END_DATE WAS DEFAULTED) THEN
+(
+  Early_End_Date = least(ACP_TERMINATION_DATE, ACP_ENROLLMENT_END_DATE)
+
+  IF (Early_End_Date < Calculation_Date) THEN
+  (
+    Calculation_Date = Early_End_Date
+  )
+)
+
+/* ------------------------------------------------------------------------
+   Get the last whole payroll period prior to the Calculation Date and ensure that it is within the
+   Payroll Year (if the Calculation Date is the End of a Period then use that period)
+   ------------------------------------------------------------------------ */
+
+E = GET_PAYROLL_PERIOD(Calculation_Date)
+Calculation_Period_SD  = get_date('PAYROLL_PERIOD_START_DATE')
+Calculation_Period_ED = get_date('PAYROLL_PERIOD_END_DATE')
+
+IF (Calculation_Date <> Calculation_Period_ED) AND
+   (Calculation_Period_SD > Payroll_Year_First_Valid_Date) THEN
+    (
+     E = GET_PAYROLL_PERIOD(ADD_DAYS(Calculation_Period_SD,-1))
+    Calculation_Period_SD  = get_date('PAYROLL_PERIOD_START_DATE')
+    Calculation_Period_ED = get_date('PAYROLL_PERIOD_END_DATE')
+   )
+ELSE IF (Calculation_Period_SD = Payroll_Year_First_Valid_Date) AND
+        (Calculation_Date <> Calculation_Period_ED) THEN
+  (
+    Calculation_Period_ED = ADD_DAYS(Calculation_Period_SD,-1)
+  )
+
+
+/* ------------------------------------------------------------------------
+   Set the Continuous Service Global Variable, whilst also
+   ensuring that the continuous service date is before the Calculation Period
+  ------------------------------------------------------------------------ */
+
+IF (ACP_CONTINUOUS_SERVICE_DATE WAS DEFAULTED) THEN
+    (
+    E = set_date('CONTINUOUS_SERVICE_DATE', ACP_SERVICE_START_DATE)
+    )
+ELSE IF(ACP_CONTINUOUS_SERVICE_DATE > Calculation_Period_SD) THEN
+   (
+    Total_Accrued_PTO = 0
+    E = PUT_MESSAGE('HR_52796_PTO_FML_CSD')
+    E = set_date('CONTINUOUS_SERVICE_DATE', ACP_CONTINUOUS_SERVICE_DATE)
+   )
+ELSE
+  (
+    E = set_date('CONTINUOUS_SERVICE_DATE', ACP_CONTINUOUS_SERVICE_DATE)
+  )
+
+/* ------------------------------------------------------------------------
+   Determine the Accrual Start Rule and modify the start date of the accrual calculation accordingly
+
+   N.B. In this calculation the Accrual Start Rule determines the date from which a person may first accrue
+   PTO. The Ineligibility Rule determines the period of time during which the PTO is not registered.
+   Once this date has passed the accrual is registered from the date determined by the Accrual Start Rule.
+ ------------------------------------------------------------------------ */
+
+Continuous_Service_Date = get_date('CONTINUOUS_SERVICE_DATE')
+
+IF (ACP_START = 'BOY') THEN
+    (
+     First_Eligible_To_Accrue_Date =
+         to_date('01/01/'||to_char(add_months(Continuous_Service_Date, 12), 'YYYY'),
+                 'DD/MM/YYYY')
+     )
+ELSE IF (ACP_START = 'PLUS_SIX_MONTHS') THEN
+    (
+     First_Eligible_To_Accrue_Date = add_months(Continuous_Service_Date,6)
+     )
+ELSE IF (ACP_START = 'HD') THEN
+    (
+     First_Eligible_To_Accrue_Date  = Continuous_Service_Date
+     )
+
+/*------------------------------------------------------------------------
+   Determine the date on which accrued PTo may first be registered, i.e the date on which the
+   Ineligibility Period expires
+   ------------------------------------------------------------------------ */
+
+Accrual_Ineligibility_Expired_Date = First_Eligible_To_Accrue_Date
+
+IF (ACP_START <> 'PLUS_SIX_MONTHS' AND
+     ACP_INELIGIBILITY_PERIOD_LENGTH > 0) THEN
+   (
+   IF ACP_INELIGIBILITY_PERIOD_TYPE = 'BM' THEN
+      (
+      Accrual_Ineligibility_Expired_Date = add_months(Continuous_Service_Date,
+                                                    ACP_INELIGIBILITY_PERIOD_LENGTH*2)
+      )
+   ELSE IF ACP_INELIGIBILITY_PERIOD_TYPE = 'F' THEN
+      (
+      Accrual_Ineligibility_Expired_Date = add_days(Continuous_Service_Date,
+                                                    ACP_INELIGIBILITY_PERIOD_LENGTH*14)
+      )
+   ELSE IF ACP_INELIGIBILITY_PERIOD_TYPE = 'CM' THEN
+      (
+      Accrual_Ineligibility_Expired_Date = add_months(Continuous_Service_Date,
+                                                      ACP_INELIGIBILITY_PERIOD_LENGTH)
+      )
+   ELSE IF ACP_INELIGIBILITY_PERIOD_TYPE = 'LM' THEN
+      (
+      Accrual_Ineligibility_Expired_Date = add_days(Continuous_Service_Date,
+                                                  ACP_INELIGIBILITY_PERIOD_LENGTH*28)
+      )
+   ELSE IF ACP_INELIGIBILITY_PERIOD_TYPE = 'Q' THEN
+      (
+      Accrual_Ineligibility_Expired_Date = add_months(Continuous_Service_Date,
+                                                      ACP_INELIGIBILITY_PERIOD_LENGTH*3)
+      )
+   ELSE IF ACP_INELIGIBILITY_PERIOD_TYPE = 'SM' THEN
+      (
+      Accrual_Ineligibility_Expired_Date = add_months(Continuous_Service_Date,
+                                                      ACP_INELIGIBILITY_PERIOD_LENGTH/2)
+      )
+   ELSE IF ACP_INELIGIBILITY_PERIOD_TYPE = 'SY' THEN
+      (
+      Accrual_Ineligibility_Expired_Date = add_months(Continuous_Service_Date,
+                                                      ACP_INELIGIBILITY_PERIOD_LENGTH*6)
+      )
+   ELSE IF ACP_INELIGIBILITY_PERIOD_TYPE = 'W' THEN
+      (
+      Accrual_Ineligibility_Expired_Date = add_days(Continuous_Service_Date,
+                                                    ACP_INELIGIBILITY_PERIOD_LENGTH*7)
+      )
+   ELSE IF ACP_INELIGIBILITY_PERIOD_TYPE = 'Y' THEN
+      (
+      Accrual_Ineligibility_Expired_Date = add_months(Continuous_Service_Date,
+                                                      ACP_INELIGIBILITY_PERIOD_LENGTH*12)
+      )
+
+   IF Accrual_Ineligibility_Expired_Date > First_Eligible_To_Accrue_Date
+   AND Calculation_Date < Accrual_Ineligibility_Expired_Date THEN
+      (
+      First_Eligible_To_Accrue_Date = Accrual_Ineligibility_Expired_Date
+      )
+   )
+
+
+/* ----------------------------------------------------------------------
+  If the employee is eligible to accrue before the start of this year,
+  we must get the period dates for the first period of the year.
+  Otherwise, we do not need these dates, as we will never accrue that
+  far back.
+----------------------------------------------------------------------- */
+
+IF (not Accrual_Start_Date was defaulted) AND
+   ((Calculation_Date < Accrual_Ineligibility_Expired_Date) OR
+    (Accrual_Start_Date > Accrual_Ineligibility_Expired_Date)) THEN
+(
+
+/*
+ * This function checks for unprocessed plan element entries, and
+ * returns the EE effective start date of the earliest it finds. This may
+ * be useful if we amend the design to process a partial year starting at
+ * this date.
+ *
+ * At the moment, however, we simply recalculate for the entire plan term
+ * in these circumstances, so Adjusted_Start_Date is never used
+ */
+
+  Adjusted_Start_Date = Get_Start_Date(Accrual_Start_Date,
+                                       Payroll_Year_First_Valid_Date)
+
+  /* Check whether RESET_PTO_ACCRUAL action parameter is defined and set to Y */
+  /* If yes, then we need to calculate from the beginning                    */
+
+  Reset_Accruals = Reset_PTO_Accruals()
+
+  /* ----------------------------------------------------------- */
+  /* Check for retrospective Assignment changes                  */
+  /* Return earliest effective date                              */
+  /* ----------------------------------------------------------- */
+
+  Earliest_AsgUpd_Date = Get_Earliest_AsgChange_Date
+                                 ( 'PTO Event Group',
+                                   add_days(Calculation_Period_SD,-1),
+                                   Calculation_Period_ED,
+                                   Accrual_Start_Date)
+
+  New_Adj_Start_Date = LEAST(Adjusted_Start_Date,
+                             Earliest_AsgUpd_Date)
+
+  IF ((New_Adj_Start_Date < Accrual_Start_Date) OR
+      (Reset_Accruals = 'TRUE'))  THEN
+
+  (
+    Process_Full_Term = 'Y'
+  )
+  ELSE
+  (
+    Process_Full_Term = 'N'
+  )
+)
+ELSE
+(
+  Process_Full_Term = 'Y'
+)
+
+Latest_Balance = 0
+
+IF (Process_Full_Term = 'Y') THEN
+(
+   /* Ensure the Payroll Year Start Date gets reset if caculating */
+   /* from the beginning of the year.                             */
+
+   E = SET_DATE('PAYROLL_YEAR_SD', Payroll_Year_First_Valid_Date)
+)
+
+IF (Process_Full_Term = 'N') AND
+   (Accrual_Start_Date >= First_Eligible_To_Accrue_Date) THEN
+(
+  E = GET_PAYROLL_PERIOD(Adjusted_Start_Date)
+  Payroll_Year_1st_Period_SD = get_date('PAYROLL_PERIOD_START_DATE')
+  Payroll_Year_1st_Period_ED = get_date('PAYROLL_PERIOD_END_DATE')
+
+  Latest_Balance = Accrual_Latest_Balance
+  Effective_Start_Date = Adjusted_Start_Date
+
+  IF First_Eligible_To_Accrue_Date > Payroll_Year_1st_Period_SD THEN
+  (
+     E = GET_PAYROLL_PERIOD(ADD_DAYS(Payroll_Year_1st_Period_ED, 1))
+
+    Payroll_Year_1st_Period_SD = get_date('PAYROLL_PERIOD_START_DATE')
+    Payroll_Year_1st_Period_ED = get_date('PAYROLL_PERIOD_END_DATE')
+  )
+
+)
+ELSE IF First_Eligible_To_Accrue_Date <= Payroll_Year_First_Valid_Date THEN
+(
+  IF (not Accrual_Start_Date was defaulted) THEN
+  (
+    Latest_Balance = Accrual_Latest_Balance
+  )
+  ELSE
+  (
+    Latest_Balance = 0
+  )
+
+  E = GET_PAYROLL_PERIOD(Payroll_Year_First_Valid_Date)
+
+  Payroll_Year_1st_Period_SD = get_date('PAYROLL_PERIOD_START_DATE')
+  Payroll_Year_1st_Period_ED = get_date('PAYROLL_PERIOD_END_DATE')
+
+  IF Payroll_Year_1st_Period_SD <> Payroll_Year_First_Valid_Date THEN
+  (
+     E = GET_PAYROLL_PERIOD(ADD_DAYS(Payroll_Year_1st_Period_ED, 1))
+
+    Payroll_Year_1st_Period_SD = get_date('PAYROLL_PERIOD_START_DATE')
+    Payroll_Year_1st_Period_ED = get_date('PAYROLL_PERIOD_END_DATE')
+  )
+
+  Effective_Start_Date = Payroll_Year_First_Valid_Date
+)
+ELSE
+(
+  /* ------------------------------------------------------------------------
+   Get the first full payroll period following the First_Eligible_To_Accrue_Date
+   (if it falls on the beginning of the period then use that period)
+  ------------------------------------------------------------------------- */
+  IF (not Accrual_Start_Date was defaulted) THEN
+  (
+    Latest_Balance = Accrual_Latest_Balance
+  )
+  ELSE
+  (
+    Latest_Balance = 0
+  )
+
+  E = GET_PAYROLL_PERIOD(First_Eligible_To_Accrue_Date )
+  First_Eligible_To_Accrue_Period_SD  = get_date('PAYROLL_PERIOD_START_DATE')
+  First_Eligible_To_Accrue_Period_ED  = get_date('PAYROLL_PERIOD_END_DATE')
+
+  IF First_Eligible_To_Accrue_Date <> First_Eligible_To_Accrue_Period_SD THEN
+  (
+    E = GET_PAYROLL_PERIOD(add_days(First_Eligible_To_Accrue_Period_ED,1))
+    First_Eligible_To_Accrue_Period_SD  = get_date('PAYROLL_PERIOD_START_DATE')
+    First_Eligible_To_Accrue_Period_ED  = get_date('PAYROLL_PERIOD_END_DATE')
+   )
+
+  IF (First_Eligible_To_Accrue_Period_SD > Calculation_Period_ED) THEN
+  (
+    Total_Accrued_PTO = 0
+    E = PUT_MESSAGE('HR_52793_PTO_FML_ASG_INELIG')
+  )
+
+  Payroll_Year_1st_Period_SD = First_Eligible_To_Accrue_Period_SD
+  Payroll_Year_1st_Period_ED = First_Eligible_To_Accrue_Period_ED
+
+  Effective_Start_Date = First_Eligible_To_Accrue_Date
+)
+
+  Effective_Start_Date = GREATEST(Effective_Start_Date, ACP_ENROLLMENT_START_DATE)
+
+/* -----------------------------------------------------------------
+  Output messages based on calculated date
+----------------------------------------------------------------- */
+
+IF (Early_End_Date < Payroll_Year_1st_Period_ED) THEN
+(
+  Total_Accrued_PTO = 0
+  E = PUT_MESSAGE('HR_52794_PTO_FML_ASG_TER')
+)
+
+If (Calculation_Period_ED < Payroll_Year_1st_Period_ED) THEN
+(
+  Total_Accrued_PTO = 0
+  E = PUT_MESSAGE('HR_52795_PTO_FML_CALC_DATE')
+)
+
+
+
+/* ------------------------------------------------------------------------
+   Determine the date on which PTO actually starts accruing based on Hire Date,
+   Continuous Service Date and plan Enrollment Start Date. Remember, we have
+   already determined whether to user hire date or CSD earlier in the formula.
+   If this date is after the 1st period and the fisrt eligible date then
+   establish the first full payroll period after this date
+   (if the Actual Start Date falls on the beginning of a payroll period then
+   use this period)
+ ------------------------------------------------------------------------ */
+
+
+  Enrollment_Start_Date = ACP_ENROLLMENT_START_DATE
+
+  Actual_Accrual_Start_Date = GREATEST(Enrollment_Start_Date,
+                                       Continuous_Service_Date,
+                                       Payroll_Year_1st_Period_SD)
+
+/* -------------------------------------------------------------------------
+       Determine the actual start of the accrual calculation
+-------------------------------------------------------------------------*/
+IF (Actual_Accrual_Start_Date > Payroll_Year_1st_Period_SD AND
+     Actual_Accrual_Start_Date > First_Eligible_To_Accrue_Date) THEN
+    (
+     E = GET_PAYROLL_PERIOD(Actual_Accrual_Start_Date)
+
+     Accrual_Start_Period_SD = get_date('PAYROLL_PERIOD_START_DATE')
+     Accrual_Start_Period_ED = get_date('PAYROLL_PERIOD_END_DATE')
+
+     IF Actual_Accrual_Start_Date > Accrual_Start_Period_SD THEN
+         (
+          E = GET_PAYROLL_PERIOD(add_days(Accrual_Start_Period_ED,1))
+
+          Accrual_Start_Period_SD = get_date('PAYROLL_PERIOD_START_DATE')
+          Accrual_Start_Period_ED = get_date('PAYROLL_PERIOD_END_DATE')
+         )
+
+/* -----------------------------------------------------------------
+        If the Actual Acrual Period is after the Calculation Period then end the processing.
+----------------------------------------------------------------- */
+        IF (Accrual_Start_Period_SD > Calculation_Period_ED) THEN
+            (
+            Total_Accrued_PTO = 0
+            E = PUT_MESSAGE('HR_52797_PTO_FML_ACT_ACCRUAL')
+            )
+     )
+
+ELSE IF (First_Eligible_To_Accrue_Date > Payroll_Year_1st_Period_SD) THEN
+     (
+          Accrual_Start_Period_SD = First_Eligible_To_Accrue_Period_SD
+          Accrual_Start_Period_ED = First_Eligible_To_Accrue_Period_ED
+     )
+ELSE
+    (
+          Accrual_Start_Period_SD = Payroll_Year_1st_Period_SD
+          Accrual_Start_Period_ED = Payroll_Year_1st_Period_ED
+    )
+
+ /* -------------------------------------------------------------------
+       Now set up the information that will be used in when looping
+       through the payroll periods
+--------------------------------------------------------------------- */
+
+IF Calculation_Period_ED >= Accrual_Start_Period_ED THEN
+(
+E = set_date('PERIOD_SD',Actual_Accrual_Start_date)
+E = set_date('PERIOD_ED',Accrual_Start_Period_ED)
+E = set_date('LAST_PERIOD_SD',Calculation_Period_SD)
+E = set_date('LAST_PERIOD_ED',Calculation_date)
+
+IF (Process_Full_Term = 'N') THEN
+(
+  E = set_number('TOTAL_ACCRUED_PTO', Latest_Balance)
+)
+ELSE
+(
+  E = set_number('TOTAL_ACCRUED_PTO', 0)
+)
+
+/* -------------------------------------------------------------------
+       Initialize Band Information
+-------------------------------------------------------------------- */
+/*
+E = set_number('ANNUAL_RATE', 0)
+E = set_number('UPPER_LIMIT', 0)
+E = set_number('CEILING', 0)
+*/
+/*
+E = LOOP_CONTROL('SC_ANNUAL_LEAVE_PERIOD_ACCRUAL')
+
+*/
+
+   Total_Accrued_PTO = get_number('TOTAL_ACCRUED_PTO')- Latest_Balance   
+
+)
+
+IF Accrual_Start_Period_SD <= Calculation_Period_SD THEN
+(
+  Accrual_end_date = Calculation_Period_ED
+)
+
+IF Process_Full_Term = 'Y' AND
+   Effective_Start_Date > Actual_Accrual_Start_Date THEN
+(
+  Effective_Start_Date = Actual_Accrual_Start_Date
+)
+
+Effective_End_Date = Calculation_Date
+
+/* bug 4047666*/
+IF Process_Full_Term = 'N' AND NOT (Accrual_Start_Date WAS DEFAULTED)
+                           AND NOT (Accrual_Latest_Balance WAS DEFAULTED)
+                           AND prm_Accrual_Start_Date > prm_Calculation_Date THEN
+  (
+    Effective_Start_Date = ADD_DAYS(Effective_End_Date,1)
+  )
+ELSE
+  (
+/* bug 4047666*/
+    IF Effective_Start_Date >= Effective_End_Date THEN
+      (
+        Effective_Start_Date = least(Effective_End_Date, Accrual_Start_Period_SD)
+      )
+  )
+
+IF PERIODS_OF_SERVICE_SEPARATION_DATE WAS NOT DEFAULTED THEN
+(
+  SEPARATION_DATE = TO_DATE(PERIODS_OF_SERVICE_SEPARATION_DATE,'YYYY/MM/DD HH24:MI:SS ')
+  IF (TO_CHAR(SEPARATION_DATE,'YYYY') = TO_CHAR(CALCULATION_DATE,'YYYY'))
+  THEN(
+  CALCULATION_DATE = SEPARATION_DATE
+  EFFECTIVE_END_DATE = CALCULATION_DATE
+   )
+)
+
+Accrual_Rate = XXGFC_ANNUAL_LEAVE_ACCR_DAYS(Effective_start_date,calculation_date,'GFC AL ACCRUAL','GRADE')
+
+/*  --Commented  by Anilkumar on 27-Jul-15--
+Annual_Rate = GFC_get_table_value('GFC AL ACCRUAL','GRADE',ASG_GRADE,CALCULATION_DATE)
+
+IF Effective_start_date = Payroll_Year_First_Valid_Date AND Calculation_Date = add_days(trunc(add_months(Payroll_Year_First_Valid_Date,12),'year'),-1) THEN
+(
+Accrual_Rate = Annual_Rate 
+)
+ELSE
+(
+l_days = days_between(calculation_date,Effective_start_date)+1
+Accrual_Rate = Annual_Rate * (l_days/365)
+)
+*/
+
+E = SET_NUMBER('TOTAL_ACCRUED_PTO',Accrual_Rate)
+
+Total_Accrued_PTO = get_number('TOTAL_ACCRUED_PTO')
+
+
+RETURN Total_Accrued_PTO, Effective_start_date, Effective_end_date, Accrual_end_date
+
+
+GFC_ANNUAL_LEAVE_CALC
+
+
+DEFAULT FOR ENTRY_START_DATE IS '01-JAN-1952'(DATE)
+DEFAULT FOR ENTRY_END_DATE IS '31-DEC-4712'(DATE)
+DEFAULT FOR PAY_PROC_PERIOD_START_DATE IS '01-JAN-1952'(DATE)
+DEFAULT FOR PAY_PROC_PERIOD_END_DATE IS '31-DEC-4712'(DATE)
+DEFAULT FOR TOTAL_MONTHLY_SALARY_MONTHLY_SALARY_ENTRY_VALUE IS 0
+
+
+L_ST_DT = GREATEST(PAY_PROC_PERIOD_START_DATE,ENTRY_START_DATE)
+L_ED_DT = LEAST(PAY_PROC_PERIOD_END_DATE,ENTRY_END_DATE)
+
+DURATION = GFC_GET_LEAVE_DAYS('Annual Leave',L_ST_DT,L_ED_DT,'Working')
+
+WORKING_DAYS = GFC_GET_WORK_DAYS(PAY_PROC_PERIOD_START_DATE,PAY_PROC_PERIOD_END_DATE,'AM','PM')
+
+EFFECTIVE_DATE = PAY_PROC_PERIOD_START_DATE
+
+RETURN DURATION , EFFECTIVE_DATE
+
+GFC_ANNUAL_LEAVE_DEDUCTION
+
+Annual Leave Deduction Monthly in exceptional cases
+
+INPUTS ARE AMOUNT
+
+DEFAULT FOR ENTRY_START_DATE IS '01-JAN-1952'(DATE)
+DEFAULT FOR ENTRY_END_DATE IS '31-DEC-4712'(DATE)
+DEFAULT FOR PAY_PROC_PERIOD_START_DATE IS '01-JAN-1952'(DATE)
+DEFAULT FOR PAY_PROC_PERIOD_END_DATE IS '31-DEC-4712'(DATE)
+DEFAULT FOR TOTAL_MONTHLY_SALARY_MONTHLY_SALARY_ENTRY_VALUE IS 0
+DEFAULT FOR GROUP_KF_MONTHLY_ALLOWANCE_PERCE IS '0'
+DEFAULT FOR GROUP_KF_BASIC_SALARY_PERCENTAGE IS '0'
+DURATION = 0
+WORKING_DAYS = 0
+BASIC_DEDUCTION = 0
+MONTHLY_ALLOWNCE_DEDUCTION = 0
+L_ST_DT = GREATEST(PAY_PROC_PERIOD_START_DATE,ENTRY_START_DATE)
+L_ED_DT = LEAST(PAY_PROC_PERIOD_END_DATE,ENTRY_END_DATE)
+
+/*DURATION = GFC_GET_LEAVE_DAYS('Unpaid Maternity Leave',L_ST_DT,L_ED_DT,'Working')*/
+
+WORKING_DAYS = GFC_GET_WORK_DAYS(PAY_PROC_PERIOD_START_DATE,PAY_PROC_PERIOD_END_DATE,'AM','PM')
+
+DEDUCTION = AMOUNT
+/*
+IF (GROUP_KF_MONTHLY_ALLOWANCE_PERCE WAS DEFAULTED) OR (GROUP_KF_BASIC_SALARY_PERCENTAGE WAS DEFAULTED) THEN
+  (
+     L_BASIC = GFC_BASIC_PERCENT
+     L_MONTHLY = GFC_MONTHLY_ALLOWANCE_PERCENT
+  )
+  ELSE 
+  (
+     L_BASIC = TO_NUM(GROUP_KF_BASIC_SALARY_PERCENTAGE)
+     L_MONTHLY= TO_NUM(GROUP_KF_MONTHLY_ALLOWANCE_PERCE)
+  )
+MONTHLY_ALLOWANCE_DEDUCTION = DEDUCTION * (L_MONTHLY/100)
+BASIC_DEDUCTION = DEDUCTION - MONTHLY_ALLOWANCE_DEDUCTION
+*/
+RETURN DEDUCTION
+
+GFC_ANNUAL_LEAVE_ENCASHMENT
+Annual Leave Encashment Amount Calculation
+INPUTS ARE DAYS
+
+DEFAULT FOR TOTAL_MONTHLY_SALARY_MONTHLY_SALARY_ENTRY_VALUE IS 0
+DEFAULT FOR BASIC_SALARY_MONTHLY_AMOUNT_ENTRY_VALUE IS 0
+DEFAULT FOR PTO_DATE_PAID_CALCULATION_DATE IS '31-DEC-4712'(DATE)
+DEFAULT FOR PTO_ACCRUAL_PLAN_ID IS 0
+DEFAULT FOR PTO_DATE_PAID_START_DATE IS '01-JAN-1952'(DATE)
+
+Total_Accrued_PTO = get_net_accrual(
+                    PTO_DATE_PAID_CALCULATION_DATE,
+                    PTO_ACCRUAL_PLAN_ID,
+                    PTO_DATE_PAID_START_DATE,
+                    ANNUAL_LEAVE_ACCRUAL_BALANCE_ASG_PTO_YTD )
+
+IF DAYS < Total_Accrued_PTO THEN
+( 
+    DAYS = Total_Accrued_PTO
+)
+
+PAY_VALUE = ((TOTAL_MONTHLY_SALARY_MONTHLY_SALARY_ENTRY_VALUE/22)+(BASIC_SALARY_MONTHLY_AMOUNT_ENTRY_VALUE/22))* DAYS
+
+RETURN DAYS,PAY_VALUE
+
+GFC_GRATUITY_ACCRUAL
+GFC Gratuity Accrual Calculation
+/****************************************************************************
+             GFC Gratuity Accrual (Accrual & Payment) Calculation Formula
+
+Balances               :GRATUITY_ACCRUAL_DAYS_ASG_ITD
+                        GRAUTITY_ACCRUAL_AMOUNT_ASG_ITD
+                        UNPAID_ABSENCE_ASG_RUN
+                        UNPAID_ABSENCE_ASG_ITD
+Globas                 :GFC_BASIC_PERCENT
+                        GFC_MONTHLY_ALLOWANCE_PERCENT
+******************************************************************************/
+
+/*---------------------- Alias Begins ------------------*/
+ALIAS TOTAL_MONTHLY_SALARY_MONTHLY_SALARY_ENTRY_VALUE AS TOT_SAL
+/*--------------- Alias Ends -----------------*/
+
+/*--------------- Database Item Default Begins ---------------*/
+DEFAULT FOR PAY_PROC_PERIOD_END_DATE is '31-DEC-4712'(DATE)
+DEFAULT FOR PAY_PROC_PERIOD_NUMBER is 0
+DEFAULT FOR EMP_HIRE_DATE is '01-JAN-1952'(DATE)
+DEFAULT FOR EMP_TERM_DATE is '31-DEC-4712'(DATE)
+DEFAULT FOR ENTRY_START_DATE is '01-JAN-1952'(DATE)
+DEFAULT FOR ENTRY_END_DATE is '31-DEC-4712'(DATE)
+DEFAULT FOR GRATUITY_ACCRUAL_DAYS_ASG_ITD is 0
+DEFAULT FOR GRATUITY_ACCRUAL_AMOUNT_ASG_ITD is 0
+DEFAULT FOR GROUP_KF_BASIC_SALARY_PERCENTAGE IS '0'
+DEFAULT FOR TOT_SAL is 0
+DEFAULT FOR GROUP_KF_GRATUITY_DATE IS '01-JAN-1952'
+DEFAULT FOR PERIODS_OF_SERVICE_SEPARATION_DATE IS '31-DEC-4712'
+DEFAULT FOR GROUP_KF_MONTHLY_ALLOWANCE_PERCE IS '0'
+DEFAULT FOR GRATUITY_HOLD_HOLD_ENTRY_VALUE IS 'N'
+/*--------------- Database Item Default Ends ---------------*/
+
+/*--------------- Variable Default Begins ---------------*/
+ ACCRUAL_DAYS = 0
+ ACCRUAL_AMOUNT = 0
+ TOTAL_ACCRUAL_DAYS = 0
+ TOTAL_ACCRUAL_AMOUNT = 0
+ EOSB_GAIN = 0
+ EOSB_AMOUNT = 0
+ EOSB_ADJ_AMOUNT = 0
+ EOSB_ADJ_DAYS = 0
+ L_CURR_UNPAID_DAYS = 0
+
+/*--------------- Variable Default Ends ---------------*/ 
+
+/*--------------- Formula Body Begins -----------------*/
+IF TERMINATION_DAYS_ASG_ITD = 0 THEN
+(
+   IF GROUP_KF_MONTHLY_ALLOWANCE_PERCE WAS DEFAULTED OR GROUP_KF_BASIC_SALARY_PERCENTAGE WAS DEFAULTED THEN
+   (
+     L_BASIC = GFC_BASIC_PERCENT
+   )
+   ELSE
+   (
+     L_BASIC = TO_NUM(GROUP_KF_BASIC_SALARY_PERCENTAGE)
+   )
+
+   MONTHLY_VALUE = TOT_SAL * (L_BASIC/100)
+
+   L_END_DATE = least(PAY_PROC_PERIOD_END_DATE, ENTRY_END_DATE, EMP_TERM_DATE)
+   L_TERM_DATE = L_END_DATE
+
+   /*========== Monthly Accrual ==========*/
+   IF PERIODS_OF_SERVICE_SEPARATION_DATE WAS NOT DEFAULTED AND EMP_TERM_DATE <= PAY_PROC_PERIOD_END_DATE THEN 
+   (
+       L_END_DATE = TO_DATE(PERIODS_OF_SERVICE_SEPARATION_DATE,'YYYY/MM/DD HH24:MI:SS')
+   )
+   
+   MSG3 = TO_CHAR(L_END_DATE)
+
+   L_UNPAID_DAYS = UNPAID_ABSENCE_SERVICE_ASG_ITD  
+
+   IF (L_TERM_DATE = EMP_TERM_DATE OR PAY_PROC_PERIOD_NUMBER = 12) AND UNPAID_ABSENCE_ASG_YTD > 20 THEN 
+   (
+      L_CURR_UNPAID_DAYS = UNPAID_ABSENCE_ASG_YTD - 20 
+      L_UNPAID_DAYS = L_UNPAID_DAYS + L_CURR_UNPAID_DAYS   
+   )
+
+   IF GROUP_KF_GRATUITY_DATE WAS DEFAULTED THEN 
+   (
+      TOTAL_SERVICE_DAYS =  DAYS_BETWEEN (L_END_DATE, EMP_HIRE_DATE)+1
+      LENGTH_OF_SERVICE_DAYS = DAYS_BETWEEN (L_END_DATE, EMP_HIRE_DATE)+1 - L_UNPAID_DAYS
+      LENGTH_OF_SERVICE_YEARS = LENGTH_OF_SERVICE_DAYS/365
+
+      MSG = ELEMENT_NAME+': Total Length of Service Days: ' + to_text (TOTAL_SERVICE_DAYS) + '; Unpaid Absence Days: ' + to_text (L_UNPAID_DAYS) + '; Length of Service   Days: 
+            ' + to_text (LENGTH_OF_SERVICE_DAYS) + '; Length of Service Years: ' + to_text (LENGTH_OF_SERVICE_YEARS)
+
+      IF LENGTH_OF_SERVICE_YEARS < 5 THEN
+      (
+           TOTAL_ACCRUAL_DAYS = LENGTH_OF_SERVICE_YEARS * GFC_GRATUITY_ACCRUAL_DAYS_BELOW_FIVE
+           TOTAL_ACCRUAL_AMOUNT = TOTAL_ACCRUAL_DAYS * (MONTHLY_VALUE * 12/365)
+      )
+      ELSE
+      (
+          TOTAL_ACCRUAL_DAYS = 5 * GFC_GRATUITY_ACCRUAL_DAYS_BELOW_FIVE + (LENGTH_OF_SERVICE_YEARS - 5) * GFC_GRATUITY_ACCRUAL_DAYS_ABOVE_FIVE
+          TOTAL_ACCRUAL_AMOUNT = (5 * GFC_GRATUITY_ACCRUAL_DAYS_BELOW_FIVE + (LENGTH_OF_SERVICE_YEARS - 5) * GFC_GRATUITY_ACCRUAL_DAYS_ABOVE_FIVE) * (MONTHLY_VALUE * 12/365)
+      )
+   )
+   ELSE
+   (
+       
+       L_old_date = ADD_DAYS(TRUNC (TO_DATE (GROUP_KF_GRATUITY_DATE,'YYYY/MM/DD HH24:MI:SS'), 'MONTH'),-1)
+       L_old_basic = XXSC_GET_ELE_ENTRY_VALUE(l_old_date, 'Total Monthly Salary', 'Monthly Salary') * (L_BASIC/100)
+
+       L_Old_Service_Days = DAYS_BETWEEN(L_old_date, EMP_HIRE_DATE)+1 - L_UNPAID_DAYS
+       L_Old_Service_Years = L_Old_Service_Days/365
+
+       LENGTH_OF_SERVICE_DAYS =  days_between(L_END_DATE,EMP_HIRE_DATE)+1 - L_UNPAID_DAYS
+       LENGTH_OF_SERVICE_YEARS = LENGTH_OF_SERVICE_DAYS/365
+
+       MSG = ELEMENT_NAME +': Old Service Days: ' + to_text (L_Old_Service_Days) + '; Old Service Years: ' + to_text (L_Old_Service_Years) + '; Unpaid Absence Days: ' + to_text (L_UNPAID_DAYS) 
+	     + '; Length of Service Days: ' + to_text (LENGTH_OF_SERVICE_DAYS) + '; Length of Service Years: ' + to_text (LENGTH_OF_SERVICE_YEARS)
+  
+       IF LENGTH_OF_SERVICE_YEARS < 5 THEN
+       (
+            TOTAL_ACCRUAL_DAYS = LENGTH_OF_SERVICE_YEARS * GFC_GRATUITY_ACCRUAL_DAYS_BELOW_FIVE
+            TOTAL_ACCRUAL_AMOUNT = ((L_Old_Service_Years * (l_old_basic * 12/365)) + ((LENGTH_OF_SERVICE_YEARS - L_Old_Service_Years) * (MONTHLY_VALUE * 12/365))) * GFC_GRATUITY_ACCRUAL_DAYS_BELOW_FIVE
+       )
+       ELSE
+       (
+            TOTAL_ACCRUAL_DAYS =  5 * GFC_GRATUITY_ACCRUAL_DAYS_BELOW_FIVE + (LENGTH_OF_SERVICE_YEARS - 5) * GFC_GRATUITY_ACCRUAL_DAYS_ABOVE_FIVE
+
+	    l_old_sal_years1 = least (5, L_Old_Service_Years)
+	    l_old_sal_years2 = L_Old_Service_Years - l_old_sal_years1
+	    l_new_sal_years1 = 5 - l_old_sal_years1
+        l_new_sal_years2 = LENGTH_OF_SERVICE_YEARS - 5 - l_old_sal_years2
+
+            TOTAL_ACCRUAL_AMOUNT = ((l_old_sal_years1 * (l_old_basic * 12/365)) + (l_new_sal_years1 * (MONTHLY_VALUE * 12/365))) * GFC_GRATUITY_ACCRUAL_DAYS_BELOW_FIVE + 
+         	                   ((l_old_sal_years2 * (l_old_basic * 12/365)) + (l_new_sal_years2 * (MONTHLY_VALUE * 12/365))) * GFC_GRATUITY_ACCRUAL_DAYS_ABOVE_FIVE 
+       )
+    )
+
+    ACCRUAL_DAYS = TOTAL_ACCRUAL_DAYS - GRATUITY_ACCRUAL_DAYS_ASG_ITD
+    ACCRUAL_AMOUNT = TOTAL_ACCRUAL_AMOUNT - GRATUITY_ACCRUAL_AMOUNT_ASG_ITD
+
+    
+    MSG2 = ' '
+    
+    IF L_TERM_DATE <> EMP_TERM_DATE THEN
+    (
+           RETURN ACCRUAL_DAYS, ACCRUAL_AMOUNT, L_CURR_UNPAID_DAYS, MSG, MSG2
+    )
+
+
+    /*========== Final Settlement ===========*/
+
+    IF (L_TERM_DATE = EMP_TERM_DATE) THEN
+    (
+       IF LENGTH_OF_SERVICE_YEARS < 1 THEN
+       (
+               MSG = MSG || 'Service is <1 year; not eligible to get Gratuity Amount'
+               EOSB_AMOUNT = 0
+       )
+       ELSE
+       (
+               EOSB_AMOUNT = TOTAL_ACCRUAL_AMOUNT 
+       )
+   
+       EOSB_GAIN = (TOTAL_ACCRUAL_AMOUNT - EOSB_AMOUNT) * (-1)
+
+       EOSB_ADJ_AMOUNT = -(TOTAL_ACCRUAL_AMOUNT)
+       EOSB_ADJ_DAYS = -(TOTAL_ACCRUAL_DAYS)
+       IF GRATUITY_HOLD_HOLD_ENTRY_VALUE = 'Y' AND EOSB_AMOUNT > 0 THEN 
+       (
+            L_HOLD_AMOUNT = EOSB_AMOUNT
+            EOSB_AMOUNT = 0
+            MSG = MSG || 'Gratuity on Hold'
+            RETURN ACCRUAL_DAYS, ACCRUAL_AMOUNT, EOSB_AMOUNT, EOSB_GAIN, EOSB_ADJ_AMOUNT, EOSB_ADJ_DAYS, MSG, L_CURR_UNPAID_DAYS,MSG2,MSG3, L_HOLD_AMOUNT
+       )
+       RETURN ACCRUAL_DAYS, ACCRUAL_AMOUNT, EOSB_AMOUNT, EOSB_GAIN, EOSB_ADJ_AMOUNT, EOSB_ADJ_DAYS, MSG, L_CURR_UNPAID_DAYS, MSG2
+    )
+)
+
+
+/*---------------- Formula Body Begins ----------------*/
+
+GFC_GRATUITY_RELEASE
+
+DEFAULT FOR GRATUITY_RELEASE_RELEASE_ENTRY_VALUE IS 'Y'
+
+INPUTS ARE RELEASE (TEXT)
+
+IF GRATUITY_RELEASE_RELEASE_ENTRY_VALUE = 'Y' AND GRATUITY_HOLD_AMOUNT_ASG_ITD <> 0 THEN 
+   (
+       EOSB_AMOUNT = GRATUITY_HOLD_AMOUNT_ASG_ITD
+       L_HOLD_ADJ_AMOUNT = - EOSB_AMOUNT
+	   RETURN EOSB_AMOUNT, L_HOLD_ADJ_AMOUNT
+   )
+
+GFC_HOUSE_RENT_ADVANCE1_SKIP
+GFC House Rent Advance Skip
+/**************************************************************
+ Formula Name : SC_HOUSE_RENT_ADVANCE1_SKIP
+ Description : This formula prevents element from being
+               processed in each period if Skip Input is set to 'Y' or Deduction is in future
+***************************************************************/
+DEFAULT FOR HOUSE_RENT_ADVANCE1_SKIP_ENTRY_VALUE IS 'N'
+DEFAULT FOR HOUSE_RENT_ADVANCE1_DEDUCTION_START_DATE_ENTRY_VALUE IS '31-DEC-4712' (DATE)
+DEFAULT FOR EMP_TERM_DATE IS '31-DEC-4712' (DATE)
+DEFAULT FOR PAY_PROC_PERIOD_END_DATE IS '31-DEC-4712' (DATE)
+
+L_END_DATE = LEAST (EMP_TERM_DATE, PAY_PROC_PERIOD_END_DATE)
+
+If (HOUSE_RENT_ADVANCE1_SKIP_ENTRY_VALUE = 'Y' OR 
+HOUSE_RENT_ADVANCE1_DEDUCTION_START_DATE_ENTRY_VALUE > PAY_PROC_PERIOD_END_DATE) AND (EMP_TERM_DATE <> L_END_DATE) THEN
+ skip_flag = 'Y'
+Else 
+skip_flag = 'N'
+Return skip_flag
+
+GFC_HOUSE_RENT_ADVANCE2_SKIP
+GFC House Rent Advance Skip
+/**************************************************************
+ Formula Name : GFC_HOUSE_RENT_ADVANCE2_SKIP
+ Description : This formula prevents element from being
+               processed in each period if Skip Input is set to 'Y' or Deduction is in future
+***************************************************************/
+DEFAULT FOR HOUSE_RENT_ADVANCE2_SKIP_ENTRY_VALUE IS 'N'
+DEFAULT FOR HOUSE_RENT_ADVANCE2_DEDUCTION_START_DATE_ENTRY_VALUE IS '31-DEC-4712' (DATE)
+DEFAULT FOR EMP_TERM_DATE IS '31-DEC-4712' (DATE)
+DEFAULT FOR PAY_PROC_PERIOD_END_DATE IS '31-DEC-4712' (DATE)
+
+L_END_DATE = LEAST (EMP_TERM_DATE, PAY_PROC_PERIOD_END_DATE)
+
+If (HOUSE_RENT_ADVANCE2_SKIP_ENTRY_VALUE = 'Y' OR 
+HOUSE_RENT_ADVANCE2_DEDUCTION_START_DATE_ENTRY_VALUE > PAY_PROC_PERIOD_END_DATE) AND (EMP_TERM_DATE <> L_END_DATE) THEN
+ skip_flag = 'Y'
+Else 
+skip_flag = 'N'
+Return skip_flag
+
+GFC_HRA1_RECOVERY
+GFC HRA Recovery Calculation
+/*****************************************************************************
+               HRA1 Recovery Calculation Formula 
+
+Globals                : None
+Balances               : OUTSTANDING_HRA_AMOUNT1_ASG_ITD
+User Defined Functions : None
+******************************************************************************
+
+/*--------------- Database Item Default Begins ---------------*/
+DEFAULT FOR PAY_PROC_PERIOD_END_DATE IS '31-DEC-4712' (DATE)
+DEFAULT FOR EMP_TERM_DATE IS '31-DEC-4712' (DATE)
+DEFAULT FOR Override_Amount IS 0
+DEFAULT FOR Installments IS 0
+DEFAULT FOR OUTSTANDING_HRA_AMOUNT1_ASG_ITD IS 0
+DEFAULT FOR Skip IS 'N'
+DEFAULT FOR HRA_CASH_PAYMENT1_AMOUNT_ENTRY_VALUE IS 0
+/*--------------- Database Item Default Ends---------------*/
+
+INPUTS ARE Advance_Amount, Installments, Deduction_Start_Date (DATE), Skip (TEXT), Override_Amount
+
+/*--------------- Variable Default Begins ---------------*/
+L_Advance_Given = 0
+L_Advance_Paid = 0
+L_Installment_Amount = 0
+L_Deduction_Amount = 0
+L_STOP = 'Y'
+L_Installments = 0
+A = 0
+L_EARLY_PAYMENT = 0
+/*--------------- Variable Default Ends---------------*/
+/*--------------- Formula Body Begins ---------------*/
+IF OUTSTANDING_HRA_AMOUNT1_ASG_ITD = 0 THEN 
+(
+    L_Advance_Given = Advance_Amount
+    
+)
+A = TRUNC(MONTHS_BETWEEN(PAY_PROC_PERIOD_END_DATE, Deduction_Start_Date),0)
+L_Installments = Installments - A
+IF L_Installments <=0 THEN
+   (
+     L_Installments = 1
+   )
+/*============== TERMINATION MONTH OUTSTANDING AMOUNT REPAYMENT =============*/
+IF EMP_TERM_DATE <= PAY_PROC_PERIOD_END_DATE THEN
+(
+      L_Deduction_Amount = OUTSTANDING_HRA_AMOUNT1_ASG_ITD + L_Advance_Given
+      RETURN L_Deduction_Amount, L_STOP
+)
+/*============== TERMINATION MONTH OUTSTANDING AMOUNT REPAYMENT =============*/
+IF Deduction_Start_Date <= PAY_PROC_PERIOD_END_DATE AND Skip = 'N' THEN
+(
+     L_Installment_Amount = ((OUTSTANDING_HRA_AMOUNT1_ASG_ITD + L_Advance_Given)/L_Installments)
+     IF HRA_CASH_PAYMENT1_AMOUNT_ENTRY_VALUE <> 0 THEN
+     (
+       /*IF HRA_CASH_PAYMENT1_AMOUNT_ENTRY_VALUE <= OUTSTANDING_HRA_AMOUNT1_ASG_ITD THEN
+        (
+             L_Deduction_Amount = OUTSTANDING_HRA_AMOUNT1_ASG_ITD - HRA_CASH_PAYMENT1_AMOUNT_ENTRY_VALUE
+             L_EARLY_PAYMENT = HRA_CASH_PAYMENT1_AMOUNT_ENTRY_VALUE
+	 	     RETURN L_Deduction_Amount, L_STOP, L_EARLY_PAYMENT, L_Advance_Paid, L_Advance_Given, L_Installments
+		 )*/
+      L_EARLY_PAYMENT = LEAST (HRA_CASH_PAYMENT1_AMOUNT_ENTRY_VALUE, OUTSTANDING_HRA_AMOUNT1_ASG_ITD)
+	 )	
+     IF Override_Amount <> 0 THEN
+     (
+         L_Deduction_AMount = least (Override_Amount, (OUTSTANDING_HRA_AMOUNT1_ASG_ITD + L_Advance_Given - L_EARLY_PAYMENT))
+     )
+     ELSE
+     (
+         L_Deduction_Amount = least (L_Installment_Amount, (OUTSTANDING_HRA_AMOUNT1_ASG_ITD + L_Advance_Given - L_EARLY_PAYMENT))
+     )
+     
+     L_Installments = L_Installments - 1
+     
+     IF (OUTSTANDING_HRA_AMOUNT1_ASG_ITD + L_Advance_Given) - L_Deduction_Amount <= 0 THEN 
+     (
+        
+        IF HRA_CASH_PAYMENT1_AMOUNT_ENTRY_VALUE <> 0 THEN
+	 (
+		 RETURN L_Deduction_Amount, L_STOP, L_EARLY_PAYMENT, L_Advance_Paid, L_Advance_Given, L_Installments
+	 )
+	 ELSE
+	 (	 
+		 RETURN L_Deduction_Amount, L_STOP, L_Advance_Paid, L_Advance_Given, L_Installments
+	 )
+         /*RETURN L_Deduction_Amount, L_STOP, L_Advance_Paid, L_Advance_Given, L_Installments*/
+     )
+     
+     IF HRA_CASH_PAYMENT1_AMOUNT_ENTRY_VALUE <> 0 THEN
+     (
+		 RETURN L_Deduction_Amount, L_EARLY_PAYMENT, L_Advance_Paid, L_Advance_Given, L_Installments
+     )
+     ELSE
+     (
+		RETURN L_Deduction_Amount, L_Advance_Paid, L_Advance_Given, L_Installments
+     )
+     /*RETURN L_Deduction_Amount, L_Advance_Paid, L_Advance_Given, L_Installments*/
+)
+/* ****************************
+ELSE
+(
+     IF Deduction_Start_date > PAY_PROC_PERIOD_END_DATE then
+      (
+        L_Installments = Installments
+      )
+     else
+      (
+        L_Installments = L_Installments - 1
+      )
+     RETURN L_Advance_Paid, L_Advance_Given, L_Installments
+)
+************************************* */
+/*--------------- Formula Body Ends ---------------*/
+
+GFC_HRA2_RECOVERY
+
+GFC HRA Recovery Calculation
+
+/*****************************************************************************
+               HRA2 Recovery Calculation Formula 
+
+Globals                : None
+Balances               : OUTSTANDING_HRA_AMOUNT2_ASG_ITD
+User Defined Functions : None
+******************************************************************************
+
+/*--------------- Database Item Default Begins ---------------*/
+DEFAULT FOR PAY_PROC_PERIOD_END_DATE IS '31-DEC-4712' (DATE)
+DEFAULT FOR EMP_TERM_DATE IS '31-DEC-4712' (DATE)
+DEFAULT FOR Override_Amount IS 0
+DEFAULT FOR Installments IS 0
+DEFAULT FOR OUTSTANDING_HRA_AMOUNT2_ASG_ITD IS 0
+DEFAULT FOR Skip IS 'N'
+DEFAULT FOR HRA_CASH_PAYMENT2_AMOUNT_ENTRY_VALUE IS 0
+/*--------------- Database Item Default Ends---------------*/
+
+INPUTS ARE Advance_Amount, Installments, Deduction_Start_Date (DATE), Skip (TEXT), Override_Amount
+
+/*--------------- Variable Default Begins ---------------*/
+L_Advance_Given = 0
+L_Advance_Paid = 0
+L_Installment_Amount = 0
+L_Deduction_Amount = 0
+L_STOP = 'Y'
+L_Installments = 0
+A = 0
+L_EARLY_PAYMENT = 0
+/*--------------- Variable Default Ends---------------*/
+/*--------------- Formula Body Begins ---------------*/
+IF OUTSTANDING_HRA_AMOUNT2_ASG_ITD = 0 THEN 
+(
+    L_Advance_Given = Advance_Amount
+    
+)
+A = TRUNC(MONTHS_BETWEEN(PAY_PROC_PERIOD_END_DATE, Deduction_Start_Date),0)
+L_Installments = Installments - A
+IF L_Installments <=0 THEN
+   (
+     L_Installments = 1
+   )
+/*============== TERMINATION MONTH OUTSTANDING AMOUNT REPAYMENT =============*/
+IF EMP_TERM_DATE <= PAY_PROC_PERIOD_END_DATE THEN
+(
+      L_Deduction_Amount = OUTSTANDING_HRA_AMOUNT2_ASG_ITD + L_Advance_Given
+      RETURN L_Deduction_Amount, L_STOP
+)
+/*============== TERMINATION MONTH OUTSTANDING AMOUNT REPAYMENT =============*/
+IF Deduction_Start_Date <= PAY_PROC_PERIOD_END_DATE AND Skip = 'N' THEN
+(
+     L_Installment_Amount = ((OUTSTANDING_HRA_AMOUNT2_ASG_ITD + L_Advance_Given)/L_Installments)
+     IF HRA_CASH_PAYMENT2_AMOUNT_ENTRY_VALUE <> 0 THEN
+	 (
+	     /*IF HRA_CASH_PAYMENT2_AMOUNT_ENTRY_VALUE <= OUTSTANDING_HRA_AMOUNT2_ASG_ITD THEN
+		 (
+		     L_Deduction_Amount = OUTSTANDING_HRA_AMOUNT2_ASG_ITD - HRA_CASH_PAYMENT2_AMOUNT_ENTRY_VALUE
+             L_EARLY_PAYMENT = HRA_CASH_PAYMENT2_AMOUNT_ENTRY_VALUE
+			 RETURN L_Deduction_Amount, L_STOP, L_EARLY_PAYMENT, L_Advance_Paid, L_Advance_Given, L_Installments
+		 )*/
+     L_EARLY_PAYMENT = LEAST (HRA_CASH_PAYMENT2_AMOUNT_ENTRY_VALUE, OUTSTANDING_HRA_AMOUNT2_ASG_ITD)
+	 )	 
+
+     IF Override_Amount <> 0 THEN
+     (
+         L_Deduction_AMount = least (Override_Amount, (OUTSTANDING_HRA_AMOUNT2_ASG_ITD + L_Advance_Given - L_EARLY_PAYMENT))
+     )
+     ELSE
+     (
+         L_Deduction_Amount = least (L_Installment_Amount, (OUTSTANDING_HRA_AMOUNT2_ASG_ITD + L_Advance_Given - L_EARLY_PAYMENT))
+     )
+     
+     L_Installments = L_Installments - 1
+     
+     IF (OUTSTANDING_HRA_AMOUNT2_ASG_ITD + L_Advance_Given) - L_Deduction_Amount <= 0 THEN 
+     (
+        IF HRA_CASH_PAYMENT2_AMOUNT_ENTRY_VALUE <> 0 THEN
+	 (
+		 RETURN L_Deduction_Amount, L_STOP, L_EARLY_PAYMENT, L_Advance_Paid, L_Advance_Given, L_Installments
+	 )
+	 ELSE
+	 (	 
+		 RETURN L_Deduction_Amount, L_STOP, L_Advance_Paid, L_Advance_Given, L_Installments
+	 ) /* RETURN L_Deduction_Amount, L_STOP, L_Advance_Paid, L_Advance_Given, L_Installments*/
+     )
+          
+     IF HRA_CASH_PAYMENT2_AMOUNT_ENTRY_VALUE <> 0 THEN
+     (
+		 RETURN L_Deduction_Amount, L_EARLY_PAYMENT, L_Advance_Paid, L_Advance_Given, L_Installments
+     )
+     ELSE
+     (
+		RETURN L_Deduction_Amount, L_Advance_Paid, L_Advance_Given, L_Installments
+     )
+     /*RETURN L_Deduction_Amount, L_Advance_Paid, L_Advance_Given, L_Installments*/
+)
+/***********************************************
+ELSE
+(
+     L_Installments = L_Installments - 1
+     RETURN L_Advance_Paid, L_Advance_Given, L_Installments
+)
+****************************************************/
+/*--------------- Formula Body Ends ---------------*/
+
+GFC_MATERNITY_LEAVE_CALC
+
+INPUTS ARE DAYS
+
+DEFAULT FOR ENTRY_START_DATE IS '01-JAN-1952'(DATE)
+DEFAULT FOR ENTRY_END_DATE IS '31-DEC-4712'(DATE)
+DEFAULT FOR PAY_PROC_PERIOD_START_DATE IS '01-JAN-1952'(DATE)
+DEFAULT FOR PAY_PROC_PERIOD_END_DATE IS '31-DEC-4712'(DATE)
+DEFAULT FOR EMP_HIRE_DATE IS '01-JAN-1952'(DATE)
+DEFAULT FOR TOTAL_MONTHLY_SALARY_MONTHLY_SALARY_ENTRY_VALUE IS 0
+DEFAULT FOR GROUP_KF_MONTHLY_ALLOWANCE_PERCE IS '0'
+DEFAULT FOR GROUP_KF_BASIC_SALARY_PERCENTAGE IS '0'
+DEFAULT FOR MATERNITY_LEAVE_DAYS_ASG_ITD IS 0
+DURATION = 0
+WORKING_DAYS = 0
+BASIC_DEDUCTION = 0
+MONTHLY_ALLOWANCE_DEDUCTION = 0
+BASIC_DEDUCTION1 = 0
+MONTHLY_ALLOWANCE_DEDUCTION1 = 0
+BASIC_HALF_DEDUCTION = 0
+BASIC_FULL_DEDUCTION = 0
+MONTHLY_HALF_DEDUCTION = 0
+MONTHLY_FULL_DEDUCTION = 0
+L_HALF_DAYS = 0
+L_FULL_DAYS = 0
+L_DED_DAYS = 0
+
+L_ST_DT = GREATEST(PAY_PROC_PERIOD_START_DATE,ENTRY_START_DATE)
+L_ED_DT = LEAST(PAY_PROC_PERIOD_END_DATE,ENTRY_END_DATE)
+
+
+/*Comented on 18JAN16 to deduct halfpay deduction on calendar days,if employee service below one year at the start of leave as per Vidya request*/
+/*DURATION = GFC_GET_LEAVE_DAYS('Maternity Leave',L_ST_DT,L_ED_DT,'Working')*/
+
+DURATION = GFC_GET_LEAVE_DAYS('Maternity Leave',L_ST_DT,L_ED_DT,'Calendar')
+
+/* ----------- Calculation to deduct half pay if employee service period is less than one year ----------*/
+/*Comented on 12JAN16 to deduct halfpay deduction*/
+/*IF ((DAYS_BETWEEN(L_ST_DT, EMP_HIRE_DATE)+1) - GFC_GET_ASGITD_BALVAL('Unpaid Absence Service', L_ST_DT))/365 < 1 THEN*/
+IF (DAYS_BETWEEN(ENTRY_START_DATE, EMP_HIRE_DATE)+1)/365 < 1 THEN
+(	
+	/*WORKING_DAYS = GFC_GET_WORK_DAYS(PAY_PROC_PERIOD_START_DATE,PAY_PROC_PERIOD_END_DATE,'AM','PM')*/
+
+	/*Comented on 18JAN16 to deduct halfpay deduction on calendar days,if employee service below one year at the start of leave as per Vidya request*/
+	/*WORKING_DAYS = GFC_GET_WORKING_DAYS(PAY_PROC_PERIOD_START_DATE, PAY_PROC_PERIOD_END_DATE, 'AM', 'PM')*/
+
+	WORKING_DAYS =DAYS_BETWEEN(PAY_PROC_PERIOD_END_DATE,PAY_PROC_PERIOD_START_DATE)+1
+
+	L_DED_DAYS = MATERNITY_LEAVE_DAYS_ASG_ITD + DURATION
+
+	IF L_DED_DAYS > GFC_MATERNITY_LEAVES_LESS_ONEYEAR
+	THEN
+	(
+		L_FULL_DAYS = L_DED_DAYS - GFC_MATERNITY_LEAVES_LESS_ONEYEAR
+		L_HALF_DAYS = DURATION - L_FULL_DAYS
+		MSG='Loop1 Full Days '+TO_CHAR(L_FULL_DAYS)+' Half Days '+TO_CHAR(L_HALF_DAYS)
+	)
+	ELSE
+	(
+		L_HALF_DAYS = L_DED_DAYS
+		MSG='Loop2 Half Days '+TO_CHAR(L_HALF_DAYS)
+	)
+
+	IF (GROUP_KF_MONTHLY_ALLOWANCE_PERCE WAS DEFAULTED) OR (GROUP_KF_BASIC_SALARY_PERCENTAGE WAS DEFAULTED) THEN
+	(
+		L_BASIC = GFC_BASIC_PERCENT
+		L_MONTHLY = GFC_MONTHLY_ALLOWANCE_PERCENT
+	)
+	ELSE 
+	(
+		L_BASIC = TO_NUM(GROUP_KF_BASIC_SALARY_PERCENTAGE)
+		L_MONTHLY= TO_NUM(GROUP_KF_MONTHLY_ALLOWANCE_PERCE)
+	)
+
+	IF L_DED_DAYS <= GFC_MATERNITY_LEAVES_LESS_ONEYEAR
+	THEN
+	(
+		DEDUCTION =(TOTAL_MONTHLY_SALARY_MONTHLY_SALARY_ENTRY_VALUE/WORKING_DAYS)* DURATION
+
+		MONTHLY_ALLOWANCE_DEDUCTION = DEDUCTION * (L_MONTHLY/100)
+		BASIC_DEDUCTION = DEDUCTION - MONTHLY_ALLOWANCE_DEDUCTION
+		
+		MONTHLY_ALLOWANCE_DEDUCTION=MONTHLY_ALLOWANCE_DEDUCTION/2
+		BASIC_DEDUCTION=BASIC_DEDUCTION/2
+		
+		MSG=' Loop3 '+'Deduction '+TO_CHAR(DEDUCTION)+' Total '+TO_CHAR(TOTAL_MONTHLY_SALARY_MONTHLY_SALARY_ENTRY_VALUE)+' Wroking Days '+TO_CHAR(WORKING_DAYS)+' Duration '+TO_CHAR(DURATION)+' Basic '+TO_CHAR(BASIC_DEDUCTION)+' Monthly '+TO_CHAR(MONTHLY_ALLOWANCE_DEDUCTION)  + MSG	
+		RETURN DURATION, BASIC_DEDUCTION, MONTHLY_ALLOWANCE_DEDUCTION, MSG	
+	)
+	/*ELSE
+	(
+		DEDUCTION =(TOTAL_MONTHLY_SALARY_MONTHLY_SALARY_ENTRY_VALUE/WORKING_DAYS)* DURATION
+	
+		MONTHLY_ALLOWANCE_DEDUCTION = (DEDUCTION * (L_MONTHLY/100))/2
+		BASIC_DEDUCTION = (DEDUCTION - (DEDUCTION * (L_MONTHLY/100)))/2
+
+		MONTHLY_HALF_DEDUCTION = (MONTHLY_ALLOWANCE_DEDUCTION/DURATION)*L_HALF_DAYS
+		BASIC_HALF_DEDUCTION= (BASIC_DEDUCTION/DURATION)*L_HALF_DAYS
+
+		MONTHLY_ALLOWANCE_DEDUCTION1 = DEDUCTION * (L_MONTHLY/100)
+		BASIC_DEDUCTION1 = DEDUCTION - MONTHLY_ALLOWANCE_DEDUCTION1
+		
+		MONTHLY_FULL_DEDUCTION = (MONTHLY_ALLOWANCE_DEDUCTION1/DURATION)*L_FULL_DAYS
+		BASIC_FULL_DEDUCTION= (BASIC_DEDUCTION1/DURATION)*L_FULL_DAYS
+
+		MONTHLY_ALLOWANCE_DEDUCTION = MONTHLY_HALF_DEDUCTION + MONTHLY_FULL_DEDUCTION
+		BASIC_DEDUCTION = BASIC_HALF_DEDUCTION + BASIC_FULL_DEDUCTION
+
+		MSG=' Loop4 Basic '+TO_CHAR(BASIC_DEDUCTION)+' Monthly '+TO_CHAR(MONTHLY_ALLOWANCE_DEDUCTION) + MSG		
+		RETURN DURATION, BASIC_DEDUCTION, MONTHLY_ALLOWANCE_DEDUCTION, MSG
+	)*/
+)
+ELSE
+(
+	RETURN DURATION
+)
+
+GFC_NEGATIVE_PAY_MONITOR
+
+/*--------------- Alias Begins ---------------*/
+ALIAS GFC_TOTAL_EARNINGS_ASG_RUN AS TOTAL_EARNINGS
+/*--------------- Alias Ends ---------------*/
+
+/*--------------- Database Item Default Begins ---------------*/
+ default for PAY_PROC_PERIOD_END_DATE is '31-DEC-4712'(DATE)
+ default for EMP_TERM_DATE is '31-DEC-4712'(DATE)
+ default for TOTAL_EARNINGS is 0
+ default for GFC_PAY_PERCENTAGE is 0
+/*--------------- Database Item Default Ends ---------------*/
+
+/*--------------- Variable Default Begins ---------------*/
+/*--------------- Variable Default Ends ---------------*/ 
+
+/*--------------- Formula Body Begins ---------------*/
+
+BF_PAY_VALUE = GFC_NEGATIVE_SALARY_ASG_ITD 
+CF_PAY_VALUE = 0
+L_MIN_SAL = ROUND (TOTAL_EARNINGS * (GFC_PAY_PERCENTAGE/100))
+MSG = ' '
+
+L_END_DATE = LEAST (EMP_TERM_DATE, PAY_PROC_PERIOD_END_DATE)
+
+IF L_END_DATE  < EMP_TERM_DATE THEN 
+(
+      L_ELIG_AMOUNT =  NET_ASG_RUN - GFC_NEGATIVE_SALARY_ASG_ITD - L_MIN_SAL
+
+      IF L_ELIG_AMOUNT < 0 THEN 
+      (
+            CF_PAY_VALUE = L_ELIG_AMOUNT * -1 
+            MSG = 'Minimum Salary should not less than ' + to_text (L_MIN_SAL) +'; Negative Salary Carry Forward : ' + to_text (CF_PAY_VALUE) + 'Negative Salary Brought Forward: '+ to_Text (BF_PAY_VALUE) 
+      )
+      MSG = 'Minimum Salary should not less than ' + to_text (L_MIN_SAL) + 'Negative Salary Brought Forward: '+ to_Text (BF_PAY_VALUE) 
+) 
+ELSE
+(
+     MSG = 'Minimum Salary should not less than ' + to_text (L_MIN_SAL) + 'Employee got terminated, outstanding negative salary is '+ to_Text (BF_PAY_VALUE)
+)
+
+RETURN CF_PAY_VALUE, BF_PAY_VALUE, MSG
+
+GFC_NOTICE_PERIOD_PAY
+
+/****************************************************************************
+             GFC Notice Period Pay Costing Formula
+
+Balances               :
+Globals                :
+******************************************************************************/
+ALIAS TOTAL_MONTHLY_SALARY_MONTHLY_SALARY_ENTRY_VALUE AS TOT_SAL
+
+default for NOTICE_PERIOD_PAY_PAY_VALUE_ENTRY_VALUE IS 0
+default for TOT_SAL is 0
+DEFAULT FOR GROUP_KF_MONTHLY_ALLOWANCE_PERCE IS '0'
+DEFAULT FOR GROUP_KF_BASIC_SALARY_PERCENTAGE IS '0'
+
+BASIC = 0
+MONTHLY_ALLOWANCE = 0
+L_BASIC = 0
+L_MONTHLY = 0
+
+IF GROUP_KF_MONTHLY_ALLOWANCE_PERCE WAS DEFAULTED OR GROUP_KF_BASIC_SALARY_PERCENTAGE WAS DEFAULTED THEN
+  (
+     L_BASIC = GFC_BASIC_PERCENT
+     L_MONTHLY = GFC_MONTHLY_ALLOWANCE_PERCENT
+  )
+  ELSE 
+  (
+     L_BASIC = TO_NUM(GROUP_KF_BASIC_SALARY_PERCENTAGE)
+     L_MONTHLY= TO_NUM(GROUP_KF_MONTHLY_ALLOWANCE_PERCE)
+  )
+BASIC = TOT_SAL * (L_BASIC/100)
+MONTHLY = TOT_SAL * (L_MONTHLY/100)
+
+RETURN BASIC, MONTHLY
+
+GFC_OVERTIME_ALLOWANCE
+
+/*****************************************************************************
+               GFC Overtime Allowance Calculation Formula 
+
+Globals                : None
+Balances               : GFC_BASIC_PERCENT,GFC_MONTHLY_ALLOWANCE_PERCENT
+User Defined Functions : None
+******************************************************************************/
+
+
+ALIAS TOTAL_MONTHLY_SALARY_MONTHLY_SALARY_ENTRY_VALUE AS TOT_SAL
+
+/*-------------------- Database Item Default Begins ----------------*/
+ default for PAY_PROC_PERIOD_START_DATE is '01-JAN-1952'(DATE)
+ default for PAY_PROC_PERIOD_END_DATE is '31-DEC-4712'(DATE)
+ default for ENTRY_START_DATE is '01-JAN-1952'(DATE)
+ default for ENTRY_END_DATE is '31-DEC-4712'(DATE)
+ default for EMP_HIRE_DATE is '01-JAN-1952'(DATE)
+ default for EMP_TERM_DATE is '31-DEC-4712'(DATE)
+ default for TOT_SAL is 0
+ default for BASIC_SALARY_ASG_PTD is 0
+ default for Normal_Hours is 0
+ default for Late_Hours is 0
+ default for Weekend_Hours is 0
+ default for Holiday_Hours is 0
+ default for GROUP_KF_MONTHLY_ALLOWANCE_PERCE is '0'
+ default for GROUP_KF_BASIC_SALARY_PERCENTAGE is '0'
+/*--------------- Database Item Default Ends ---------------*/
+
+inputs are Normal_Hours, Late_Hours, Weekend_Hours, Holiday_Hours
+
+/*--------------- Variable Default Begins ---------------*/
+ Normal_OT_Amount = 0
+ Late_OT_Amount = 0
+ Weekend_OT_Amount = 0
+ Holiday_OT_Amount = 0
+ Total_OT_Amount = 0
+ CAL_DAYS = 0
+  
+/*--------------- Variable Default Ends ---------------*/ 
+
+
+/*--------------- Formula Body Begins ---------------*/
+
+CAL_DAYS =DAYS_BETWEEN(PAY_PROC_PERIOD_END_DATE,PAY_PROC_PERIOD_START_DATE)+1
+
+IF GROUP_KF_MONTHLY_ALLOWANCE_PERCE WAS DEFAULTED OR GROUP_KF_BASIC_SALARY_PERCENTAGE WAS DEFAULTED THEN
+   (
+     L_BASIC = GFC_BASIC_PERCENT
+     L_MONTHLY = GFC_MONTHLY_ALLOWANCE_PERCENT
+   )
+ELSE
+   (
+     L_BASIC = TO_NUM(GROUP_KF_BASIC_SALARY_PERCENTAGE)
+     L_MONTHLY= TO_NUM(GROUP_KF_MONTHLY_ALLOWANCE_PERCE)
+   )
+MONTHLY_VALUE = ROUND(TOT_SAL * (L_MONTHLY/100),2)
+BASIC = ROUND(TOT_SAL - MONTHLY_VALUE,2)
+
+Normal_OT_Amount = (TOT_SAL/(CAL_DAYS*8))* 1.25 * Normal_Hours
+
+Late_OT_Amount = (TOT_SAL/(CAL_DAYS*8))* 1.5 * Late_Hours
+
+Weekend_OT_Amount = (TOT_SAL/(CAL_DAYS*8)) * 0.5 * Weekend_Hours + (BASIC/(CAL_DAYS*8))* Weekend_Hours
+
+Holiday_OT_Amount = (TOT_SAL/(CAL_DAYS*8)) * 0.5 * Holiday_Hours +  (BASIC/(CAL_DAYS*8))* Holiday_Hours
+
+Total_OT_Amount = Normal_OT_Amount + Late_OT_Amount + Weekend_OT_Amount + Holiday_OT_Amount
+
+return Normal_OT_Amount, Late_OT_Amount, Weekend_OT_Amount, Holiday_OT_Amount, Total_OT_Amount
+
+GFC_PENSION_CONTRIBUTION
+
+/****************************************************************************
+               GFC PENSION CONTRIBUTION Calculation Formula 
+
+Globals                : None
+Balances               : None
+User Defined Functions : None
+******************************************************************************/
+
+
+/*----------------- Database Item Default Begins ---------------*/
+default for PAY_PROC_PERIOD_START_DATE is '01-JAN-1952'(DATE)
+default for PAY_PROC_PERIOD_END_DATE is '31-DEC-4712'(DATE)
+default for GROUP_KF_PENSION_ELIGIBILITY IS 'NO'
+default for TOTAL_MONTHLY_SALARY_MONTHLY_SALARY_ENTRY_VALUE is 0
+default for GROUP_KF_EMPLOYEE_PENSION_CONTRIBUTION is '0'
+default for GROUP_KF_EMPLOYER_PENSION_CONTRIBUTION is '0'
+
+/*--------------- Database Item Default Ends---------------*/
+
+COMP_CONTR = 0
+EMP_CONTR = 0
+IF TERMINATION_DAYS_ASG_ITD = 0 THEN
+(
+   PENSION_SAL = TOTAL_MONTHLY_SALARY_MONTHLY_SALARY_ENTRY_VALUE
+
+   IF PENSION_SAL > 50000 THEN
+   (
+      PENSION_SAL = 50000
+   )
+   L_NATIONALITY = GFC_GET_NATIONALITY(PAY_PROC_PERIOD_END_DATE)
+
+   MSG = L_NATIONALITY
+   IF GROUP_KF_EMPLOYEE_PENSION_CONTRIBUTION WAS DEFAULTED OR GROUP_KF_EMPLOYER_PENSION_CONTRIBUTION WAS DEFAULTED THEN
+   (
+      L_COMP_CONTR = GFC_GET_TABLE_VALUE('GFC PENSION','Company Contribution',L_NATIONALITY ,PAY_PROC_PERIOD_END_DATE)
+
+      L_EMP_CONTR  = GFC_GET_TABLE_VALUE('GFC PENSION','Employee Contribution',L_NATIONALITY, PAY_PROC_PERIOD_END_DATE)
+   )
+   ELSE
+   (
+      L_COMP_CONTR = to_num(GROUP_KF_EMPLOYER_PENSION_CONTRIBUTION)
+      L_EMP_CONTR = to_num(GROUP_KF_EMPLOYEE_PENSION_CONTRIBUTION)
+   )
+   COMP_CONTR = PENSION_SAL * (L_COMP_CONTR/100)
+   EMP_CONTR = PENSION_SAL * (L_EMP_CONTR/100)
+
+RETURN COMP_CONTR, EMP_CONTR, MSG
+)
+GFC_PERFORMANCE_ALLOWANCE
+/*****************************************************************************
+               GFC Performance Allowance Calculation Formula 
+
+Globals                : None
+Balances               : None
+User Defined Functions : None
+******************************************************************************/
+
+inputs are MONTHLY_AMOUNT, START_DATE(DATE),END_DATE(DATE)
+
+/*--------------- Database Item Default Begins ---------------*/
+default for PAY_PROC_PERIOD_START_DATE is '01-JAN-1952'(DATE)
+default for PAY_PROC_PERIOD_END_DATE is '31-DEC-4712'(DATE)
+default for ENTRY_START_DATE is '01-JAN-1952'(DATE)
+default for ENTRY_END_DATE is '31-DEC-4712'(DATE)
+default for EMP_HIRE_DATE is '01-JAN-1952'(DATE)
+default for EMP_TERM_DATE is '31-DEC-4712'(DATE)
+default for Monthly_Amount is 0
+default for UNPAID_LEAVES_DAYS_ENTRY_VALUE IS '0'
+default for UNPAID_MATERNITY_LEAVE_DAYS_ENTRY_VALUE IS '0'
+/*--------------- Database Item Default Ends---------------*/
+
+/*--------------- Variable Default Begins ---------------*/
+ L_STOP = 'Y'
+ L_MONTHLY_AMOUNT = 0
+/*--------------- Variable Default Ends ---------------*/ 
+
+/*--------------- Formula Body Begins ---------------*/
+L_START_DATE = greatest(ENTRY_START_DATE,EMP_HIRE_DATE,PAY_PROC_PERIOD_START_DATE)
+L_END_DATE = least(ENTRY_END_DATE,PAY_PROC_PERIOD_END_DATE,EMP_TERM_DATE,END_DATE)
+CALENDAR_DAYS = days_between(PAY_PROC_PERIOD_END_DATE,PAY_PROC_PERIOD_START_DATE)+1
+DAYS = days_between(L_END_DATE,L_START_DATE)+1 - TO_NUMBER(UNPAID_LEAVES_DAYS_ENTRY_VALUE)-(TO_NUM(UNPAID_MATERNITY_LEAVE_DAYS_ENTRY_VALUE))
+IF TERMINATION_DAYS_ASG_ITD = 0 THEN
+(
+L_MONTHLY_AMOUNT = MONTHLY_AMOUNT * (DAYS)/CALENDAR_DAYS
+IF EMP_TERM_DATE < PAY_PROC_PERIOD_END_DATE THEN
+(
+  RETURN L_MONTHLY_AMOUNT,L_STOP
+)
+IF END_DATE <=PAY_PROC_PERIOD_END_DATE THEN
+(
+RETURN L_MONTHLY_AMOUNT,L_STOP
+)
+IF START_DATE<=PAY_PROC_PERIOD_END_DATE THEN
+(
+  RETURN L_MONTHLY_AMOUNT
+)
+)
+/*--------------- Formula Body Ends -------------*/
+
+GFC_SALARY_ADVANCE2_DEDUCTION_SKIP
+
+/**************************************************************
+ Formula Name : GFC_SALARY_ADVANCE_DEDUCTION_SKIP
+ Description : This formula prevents element from being
+               processed in each period if Skip Input is set to 'Y' or Deduction is in future
+***************************************************************/
+DEFAULT FOR SALARY_ADVANCE2_SKIP_ENTRY_VALUE IS 'N'
+DEFAULT FOR SALARY_ADVANCE2_DEDUCTION_START_DATE_ENTRY_VALUE IS '31-DEC-4712' (DATE)
+DEFAULT FOR EMP_TERM_DATE IS '31-DEC-4712' (DATE)
+DEFAULT FOR PAY_PROC_PERIOD_END_DATE IS '31-DEC-4712' (DATE)
+
+L_END_DATE = LEAST (EMP_TERM_DATE, PAY_PROC_PERIOD_END_DATE)
+
+If (SALARY_ADVANCE2_SKIP_ENTRY_VALUE = 'Y' OR 
+SALARY_ADVANCE2_DEDUCTION_START_DATE_ENTRY_VALUE > PAY_PROC_PERIOD_END_DATE) AND (EMP_TERM_DATE <> L_END_DATE) THEN
+ skip_flag = 'Y'
+Else 
+skip_flag = 'N'
+Return skip_flag
+
+GFC_SALARY_ADVANCE2_RECOVERY
+
+/*****************************************************************************
+               Salary Advance Recovery Calculation Formula 
+
+Globals                : None
+Balances               : OUTSTANDING_SALARY_ADVANCE2_ASG_ITD
+User Defined Functions : None
+******************************************************************************
+
+/*--------------- Database Item Default Begins ---------------*/
+DEFAULT FOR PAY_PROC_PERIOD_END_DATE IS '31-DEC-4712' (DATE)
+DEFAULT FOR EMP_TERM_DATE IS '31-DEC-4712' (DATE)
+DEFAULT FOR Override_Amount IS 0
+DEFAULT FOR Installments IS 0
+DEFAULT FOR OUTSTANDING_SALARY_ADVANCE2_ASG_ITD IS 0
+DEFAULT FOR SALARY_ADVANCE_CASH_PAYMENT2_AMOUNT_ENTRY_VALUE IS 0
+DEFAULT FOR Skip IS 'N'
+/*--------------- Database Item Default Ends---------------*/
+
+INPUTS ARE Advance_Amount, Installments, Deduction_Start_Date (DATE), Skip (TEXT), Override_Amount
+
+/*--------------- Variable Default Begins ---------------*/
+L_Advance_Given = 0
+L_Advance_Paid = 0
+L_Installment_Amount = 0
+L_Deduction_Amount = 0
+L_STOP = 'Y'
+L_Installments = 0
+A = 0
+/*--------------- Variable Default Ends---------------*/
+/*--------------- Formula Body Begins ---------------*/
+IF OUTSTANDING_SALARY_ADVANCE2_ASG_ITD = 0 THEN 
+(
+    L_Advance_Given = Advance_Amount
+   
+)
+A = TRUNC(MONTHS_BETWEEN(PAY_PROC_PERIOD_END_DATE, Deduction_Start_Date),0)
+L_Installments = Installments - A
+IF L_Installments <=0 THEN
+   (
+     L_Installments = 1
+   )
+/*============== TERMINATION MONTH OUTSTANDING AMOUNT REPAYMENT =============*/
+IF EMP_TERM_DATE <= PAY_PROC_PERIOD_END_DATE THEN
+(
+      L_Deduction_Amount = OUTSTANDING_SALARY_ADVANCE2_ASG_ITD
+      RETURN L_Deduction_Amount, L_STOP
+)
+
+IF Deduction_Start_Date <= PAY_PROC_PERIOD_END_DATE AND Skip = 'N' THEN
+(
+     L_Installment_Amount = ((OUTSTANDING_SALARY_ADVANCE2_ASG_ITD + L_Advance_Given)/L_Installments)
+     IF SALARY_ADVANCE_CASH_PAYMENT2_AMOUNT_ENTRY_VALUE <> 0 THEN
+     (
+       IF SALARY_ADVANCE_CASH_PAYMENT2_AMOUNT_ENTRY_VALUE <= OUTSTANDING_SALARY_ADVANCE2_ASG_ITD THEN
+       (
+          IF SALARY_ADVANCE_CASH_PAYMENT2_AMOUNT_ENTRY_VALUE <= OUTSTANDING_SALARY_ADVANCE2_ASG_ITD THEN
+		 (
+		     L_Deduction_Amount = OUTSTANDING_SALARY_ADVANCE2_ASG_ITD - SALARY_ADVANCE_CASH_PAYMENT2_AMOUNT_ENTRY_VALUE
+             L_EARLY_PAYMENT = SALARY_ADVANCE_CASH_PAYMENT2_AMOUNT_ENTRY_VALUE
+	 	     RETURN L_Deduction_Amount, L_STOP, L_EARLY_PAYMENT, L_Advance_Paid, L_Advance_Given, L_Installments
+		 )
+       )
+	 )       
+     IF Override_Amount <> 0 THEN
+     (
+         L_Deduction_Amount = least (Override_Amount, (OUTSTANDING_SALARY_ADVANCE2_ASG_ITD + L_Advance_Given))
+     )
+     ELSE
+     (
+         L_Deduction_Amount = least (L_Installment_Amount, (OUTSTANDING_SALARY_ADVANCE2_ASG_ITD + L_Advance_Given))
+     )
+     L_Installments = L_Installments - 1
+     IF (OUTSTANDING_SALARY_ADVANCE2_ASG_ITD + L_Advance_Given) - L_Deduction_Amount <= 0 THEN 
+     (
+         RETURN L_Deduction_Amount, L_STOP, L_Advance_Paid, L_Advance_Given, L_Installments
+     )
+     RETURN L_Deduction_Amount, L_Advance_Paid, L_Advance_Given, L_Installments
+)
+
+/* ******************************************
+ELSE
+(    
+     L_Installments = INSTALLMENTS 
+     RETURN L_Advance_Paid, L_Advance_Given, L_Installments
+)
+
+********************************************** */
+/*--------------- Formula Body Ends ---------------*/
+
+GFC_SALARY_ADVANCE_DEDUCTION_SKIP
+
+/**************************************************************
+ Formula Name : GFC_SALARY_ADVANCE_DEDUCTION_SKIP
+ Description : This formula prevents element from being
+               processed in each period if Skip Input is set to 'Y' or Deduction is in future
+***************************************************************/
+DEFAULT FOR SALARY_ADVANCE_SKIP_ENTRY_VALUE IS 'N'
+DEFAULT FOR SALARY_ADVANCE_DEDUCTION_START_DATE_ENTRY_VALUE IS '31-DEC-4712' (DATE)
+DEFAULT FOR EMP_TERM_DATE IS '31-DEC-4712' (DATE)
+DEFAULT FOR PAY_PROC_PERIOD_END_DATE IS '31-DEC-4712' (DATE)
+
+L_END_DATE = LEAST (EMP_TERM_DATE, PAY_PROC_PERIOD_END_DATE)
+
+If (SALARY_ADVANCE_SKIP_ENTRY_VALUE = 'Y' OR 
+SALARY_ADVANCE_DEDUCTION_START_DATE_ENTRY_VALUE > PAY_PROC_PERIOD_END_DATE) AND (EMP_TERM_DATE <> L_END_DATE) THEN
+ skip_flag = 'Y'
+Else 
+skip_flag = 'N'
+Return skip_flag
+
+GFC_SALARY_ADVANCE_RECOVERY
+
+/*****************************************************************************
+               Salary Advance Recovery Calculation Formula 
+
+Globals                : None
+Balances               : OUTSTANDING_SALARY_ADVANCE_ASG_ITD
+User Defined Functions : None
+******************************************************************************
+
+/*--------------- Database Item Default Begins ---------------*/
+DEFAULT FOR PAY_PROC_PERIOD_END_DATE IS '31-DEC-4712' (DATE)
+DEFAULT FOR EMP_TERM_DATE IS '31-DEC-4712' (DATE)
+DEFAULT FOR Override_Amount IS 0
+DEFAULT FOR Installments IS 0
+DEFAULT FOR OUTSTANDING_SALARY_ADVANCE_ASG_ITD IS 0
+DEFAULT FOR Skip IS 'N'
+DEFAULT FOR SALARY_ADVANCE_CASH_PAYMENT_AMOUNT_ENTRY_VALUE IS 0
+/*--------------- Database Item Default Ends---------------*/
+
+INPUTS ARE Advance_Amount, Installments, Deduction_Start_Date (DATE), Skip (TEXT), Override_Amount
+
+/*--------------- Variable Default Begins ---------------*/
+L_Advance_Given = 0
+L_Advance_Paid = 0
+L_Installment_Amount = 0
+L_Deduction_Amount = 0
+L_STOP = 'Y'
+L_Installments = 0
+A = 0
+/*--------------- Variable Default Ends---------------*/
+/*--------------- Formula Body Begins ---------------*/
+IF OUTSTANDING_SALARY_ADVANCE_ASG_ITD = 0 THEN 
+(
+    L_Advance_Given = Advance_Amount
+   
+)
+A = TRUNC(MONTHS_BETWEEN(PAY_PROC_PERIOD_END_DATE, Deduction_Start_Date),0)
+L_Installments = Installments - A
+IF L_Installments <=0 THEN
+   (
+     L_Installments = 1
+   )
+/*============== TERMINATION MONTH OUTSTANDING AMOUNT REPAYMENT =============*/
+IF EMP_TERM_DATE <= PAY_PROC_PERIOD_END_DATE THEN
+(
+      L_Deduction_Amount = OUTSTANDING_SALARY_ADVANCE_ASG_ITD
+      RETURN L_Deduction_Amount, L_STOP
+)
+
+IF Deduction_Start_Date <= PAY_PROC_PERIOD_END_DATE AND Skip = 'N' THEN
+(
+     L_Installment_Amount = ((OUTSTANDING_SALARY_ADVANCE_ASG_ITD + L_Advance_Given)/L_Installments)
+     IF SALARY_ADVANCE_CASH_PAYMENT_AMOUNT_ENTRY_VALUE <> 0 THEN
+     (
+       IF SALARY_ADVANCE_CASH_PAYMENT_AMOUNT_ENTRY_VALUE <= OUTSTANDING_SALARY_ADVANCE_ASG_ITD THEN
+       (
+          IF SALARY_ADVANCE_CASH_PAYMENT_AMOUNT_ENTRY_VALUE <= OUTSTANDING_SALARY_ADVANCE_ASG_ITD THEN
+		 (
+		     L_Deduction_Amount = OUTSTANDING_SALARY_ADVANCE_ASG_ITD - SALARY_ADVANCE_CASH_PAYMENT_AMOUNT_ENTRY_VALUE
+             L_EARLY_PAYMENT = SALARY_ADVANCE_CASH_PAYMENT_AMOUNT_ENTRY_VALUE
+	 	     RETURN L_Deduction_Amount, L_STOP, L_EARLY_PAYMENT, L_Advance_Paid, L_Advance_Given, L_Installments
+		 )
+       )
+	 )       
+     IF Override_Amount <> 0 THEN
+     (
+         L_Deduction_AMount = least (Override_Amount, (OUTSTANDING_SALARY_ADVANCE_ASG_ITD + L_Advance_Given))
+     )
+     ELSE
+     (
+         L_Deduction_Amount = least (L_Installment_Amount, (OUTSTANDING_SALARY_ADVANCE_ASG_ITD + L_Advance_Given))
+     )
+     L_Installments = L_Installments - 1
+     IF (OUTSTANDING_SALARY_ADVANCE_ASG_ITD + L_Advance_Given) - L_Deduction_Amount <= 0 THEN 
+     (
+         RETURN L_Deduction_Amount, L_STOP, L_Advance_Paid, L_Advance_Given, L_Installments
+     )
+     RETURN L_Deduction_Amount, L_Advance_Paid, L_Advance_Given, L_Installments
+)
+
+/* ******************************************
+ELSE
+(    
+     L_Installments = INSTALLMENTS 
+     RETURN L_Advance_Paid, L_Advance_Given, L_Installments
+)
+
+********************************************** */
+/*--------------- Formula Body Ends ---------------*/
+
+ GFC_SICK_LEAVE_ACCRUAL
+
+DEFAULT FOR EMP_HIRE_DATE IS '01-JAN-1952'(DATE)
+DEFAULT FOR PAY_PROC_PERIOD_START_DATE IS '01-JAN-1952'(DATE)
+DEFAULT FOR PAY_PROC_PERIOD_NUMBER IS 0
+DEFAULT FOR PAY_PROC_PERIOD_END_DATE IS '31-DEC-4712'(DATE)
+DEFAULT FOR ASG_LAST_PROC_PERIOD_NUMBER IS 0
+
+FULL_PAY= 0
+HALF_PAY=0
+WITHOUT_PAY=0
+
+FULL_PAY_RETRO = GFC_GET_ENTRY_VALUE_PREVIOUS_RETRO(PAY_PROC_PERIOD_END_DATE,'Sick Leave','Full Pay Days')
+HALF_PAY_RETRO = GFC_GET_ENTRY_VALUE_PREVIOUS_RETRO(PAY_PROC_PERIOD_END_DATE,'Sick Leave','Half Pay Days')
+WITHOUT_PAY_RETRO = GFC_GET_ENTRY_VALUE_PREVIOUS_RETRO(PAY_PROC_PERIOD_END_DATE,'Sick Leave','Without Pay Days')
+
+IF LAST_DAY(EMP_HIRE_DATE) = PAY_PROC_PERIOD_END_DATE OR (EMP_HIRE_DATE<PAY_PROC_PERIOD_START_DATE AND ASG_LAST_PROC_PERIOD_NUMBER=0)
+THEN(
+L_ELIG_DAYS = (DAYS_BETWEEN(ADD_DAYS(TRUNC(ADD_MONTHS(EMP_HIRE_DATE,12),'YEAR'),-1),EMP_HIRE_DATE)+1)/365
+FULL_PAY = ROUND((GFC_SICK_LEAVE_FULL_PAY * L_ELIG_DAYS)*2,0)/2
+
+HALF_PAY = ROUND((GFC_SICK_LEAVE_HALF_PAY * L_ELIG_DAYS)*2,0)/2
+
+WITHOUT_PAY = ROUND((GFC_SICK_LEAVE_WITHOUT_PAY * L_ELIG_DAYS)*2,0)/2
+
+)
+
+IF PAY_PROC_PERIOD_NUMBER=1 AND EMP_HIRE_DATE < PAY_PROC_PERIOD_START_DATE THEN
+(
+   FULL_PAY = GFC_SICK_LEAVE_FULL_PAY
+   HALF_PAY = GFC_SICK_LEAVE_HALF_PAY
+   WITHOUT_PAY = GFC_SICK_LEAVE_WITHOUT_PAY
+)
+
+
+RETURN FULL_PAY,HALF_PAY,WITHOUT_PAY,FULL_PAY_RETRO,HALF_PAY_RETRO, WITHOUT_PAY_RETRO
+
+GFC_SICK_LEAVE_TAKEN
+
+DEFAULT FOR PAY_PROC_PERIOD_START_DATE IS '01-JAN-1952'(DATE)
+DEFAULT FOR PAY_PROC_PERIOD_END_DATE IS '31-DEC-4712'(DATE)
+DEFAULT FOR ENTRY_START_DATE IS '01-JAN-1952'(DATE)
+DEFAULT FOR ENTRY_END_DATE IS '31-DEC-4712'(DATE)
+DEFAULT FOR TOTAL_MONTHLY_SALARY_MONTHLY_SALARY_ENTRY_VALUE IS 0
+DEFAULT FOR GROUP_KF_MONTHLY_ALLOWANCE_PERCE IS '0'
+DEFAULT FOR GROUP_KF_BASIC_SALARY_PERCENTAGE IS '0'
+
+BASIC_DEDUCTION = 0
+MONTHLY_ALLOWANCE_DEDUCTION = 0
+FROM_DATE = GREATEST(PAY_PROC_PERIOD_START_DATE,ENTRY_START_DATE)
+TO_DATE = LEAST(PAY_PROC_PERIOD_END_DATE,ENTRY_END_DATE)
+
+CALENDAR_DAYS = DAYS_BETWEEN(PAY_PROC_PERIOD_END_DATE,PAY_PROC_PERIOD_START_DATE)+1
+
+DAYS = GFC_GET_LEAVE_DAYS('Sick Leave',from_date, TO_DATE,'Calendar')
+
+REMAINING = DAYS
+
+FULL_PAY_RETRO = GFC_GET_ENTRY_VALUE_RETRO(PAY_PROC_PERIOD_END_DATE,'Sick Leave','Full Pay Days')
+
+HALF_PAY_RETRO = GFC_GET_ENTRY_VALUE_RETRO(PAY_PROC_PERIOD_END_DATE,'Sick Leave','Half Pay Days')
+
+WITHOUT_PAY_RETRO = GFC_GET_ENTRY_VALUE_RETRO(PAY_PROC_PERIOD_END_DATE,'Sick Leave','Without Pay Days')
+
+FULL_PAY=LEAST(REMAINING,AVAILABLE_SICK_LEAVE_FULL_PAY_ASG_YTD - FULL_PAY_RETRO)
+
+REMAINING = REMAINING - FULL_PAY
+
+HALF_PAY=LEAST(REMAINING,AVAILABLE_SICK_LEAVE_HALF_PAY_ASG_YTD - HALF_PAY_RETRO)
+
+REMAINING = REMAINING - HALF_PAY
+
+WITHOUT_PAY=LEAST(REMAINING,AVAILABLE_SICK_LEAVE_WITHOUT_PAY_ASG_YTD - WITHOUT_PAY_RETRO)
+
+UNPAID=REMAINING - WITHOUT_PAY
+
+DEDUCTION=((HALF_PAY * 0.5)+WITHOUT_PAY+UNPAID)*TOTAL_MONTHLY_SALARY_MONTHLY_SALARY_ENTRY_VALUE/CALENDAR_DAYS
+
+IF (GROUP_KF_MONTHLY_ALLOWANCE_PERCE WAS DEFAULTED) OR (GROUP_KF_BASIC_SALARY_PERCENTAGE WAS DEFAULTED) THEN
+  (
+     L_BASIC = GFC_BASIC_PERCENT
+     L_MONTHLY = GFC_MONTHLY_ALLOWANCE_PERCENT
+  )
+  ELSE 
+  (
+     L_BASIC = TO_NUM(GROUP_KF_BASIC_SALARY_PERCENTAGE)
+     L_MONTHLY= TO_NUM(GROUP_KF_MONTHLY_ALLOWANCE_PERCE)
+  )
+MONTHLY_ALLOWANCE_DEDUCTION = DEDUCTION * (L_MONTHLY/100)
+BASIC_DEDUCTION = DEDUCTION - MONTHLY_ALLOWANCE_DEDUCTION
+
+RETURN DAYS, FULL_PAY, HALF_PAY, WITHOUT_PAY, UNPAID, MONTHLY_ALLOWANCE_DEDUCTION, BASIC_DEDUCTION
+
+GFC_STOP_SALARY_CALC
+
+INPUTS ARE RELEASE_SALARY_DATE(DATE)
+
+DEFAULT FOR STOP_SALARY_ASG_ITD IS 0
+DEFAULT FOR NET_ASG_RUN IS 0
+DEFAULT FOR PAY_PROC_PERIOD_END_DATE IS '31-DEC-4712'(DATE)
+
+
+IF RELEASE_SALARY_DATE <= PAY_PROC_PERIOD_END_DATE
+THEN (
+L_STOP='Y'
+BF_STOP_SALARY=STOP_SALARY_ASG_ITD
+RETURN BF_STOP_SALARY,L_STOP
+)
+
+ELSE(
+STOP_SALARY=NET_ASG_RUN
+RETURN STOP_SALARY
+)
+
+GFC_TOTAL_MONTHLY_SALARY
+
+/******************************************************************************
+               GFC Total Monthly Salary Calculation Formula 
+
+Globals                : GFC_BASIC_PERCENT, GFC_MONTHLY_ALLOWANCE_PERCENT
+Balances               : None
+User Defined Functions : None
+******************************************************************************/
+
+inputs are MONTHLY_SALARY, PRORATE_START(DATE), PRORATE_END(DATE)
+
+/*----------------- Database Item Default Begins ----------------*/
+default for PAY_PROC_PERIOD_START_DATE is '01-JAN-1952'(DATE)
+default for PAY_PROC_PERIOD_END_DATE is '31-DEC-4712'(DATE)
+default for PRORATE_START is '01-JAN-1952'(DATE)
+default for PRORATE_END is '31-DEC-4712'(DATE)
+default for ENTRY_START_DATE is '01-JAN-1952'(DATE)
+default for ENTRY_END_DATE is '31-DEC-4712'(DATE)
+default for EMP_HIRE_DATE is '01-JAN-1952'(DATE)
+default for EMP_TERM_DATE is '31-DEC-4712'(DATE)
+default for MONTHLY_SALARY is 0
+DEFAULT FOR GROUP_KF_MONTHLY_ALLOWANCE_PERCE IS '0'
+DEFAULT FOR GROUP_KF_BASIC_SALARY_PERCENTAGE IS '0'
+DEFAULT FOR ASG_LAST_PROC_PERIOD_NUMBER IS 0
+
+/*--------------- Database Item Default Ends---------------*/
+
+/*--------------- Variable Default Begins ---------------*/
+ CALENDAR_DAYS = 0
+ PRORATED_DAYS = 0
+ BASIC_PERCENT = 0
+ MONTHLY_PERCENT = 0
+ EXTRA_DAYS = 0
+ BASIC_RETRO = 0
+ MONTHLY_RETRO = 0
+
+/*--------------- Variable Default Ends ---------------*/ 
+
+/*--------------- Formula Body Begins ---------------*/
+/*IF TERMINATION_DAYS_ASG_ITD = 0 THEN*/
+(
+  L_START_DATE = greatest(PAY_PROC_PERIOD_START_DATE,ENTRY_START_DATE, EMP_HIRE_DATE, PRORATE_START)
+  L_END_DATE = least(PAY_PROC_PERIOD_END_DATE, ENTRY_END_DATE, EMP_TERM_DATE, PRORATE_END)
+  PRORATED_DAYS = (days_between(L_END_DATE, L_START_DATE)+1)
+
+  CALENDAR_DAYS = (days_between(PAY_PROC_PERIOD_END_DATE, PAY_PROC_PERIOD_START_DATE)+1)
+  IF EMP_TERM_DATE <= PAY_PROC_PERIOD_END_DATE THEN
+  (
+    EXTRA_DAYS = 1
+  )
+  /*----------------------- TERMINATED AFTER PAYROLL, PROCESSING IN NEXT MONTH BEGINS ------------*/
+  IF EMP_TERM_DATE < PAY_PROC_PERIOD_START_DATE THEN
+  (
+     L_START_DATE = EMP_TERM_DATE
+     L_END_DATE = PAY_PROC_PERIOD_START_DATE
+     PRORATED_DAYS = days_between(L_START_DATE,L_END_DATE)+1
+     CALENDAR_DAYS = days_between(ADD_MONTHS(PAY_PROC_PERIOD_END_DATE,-1),ADD_MONTHS(PAY_PROC_PERIOD_START_DATE,-1))+1
+  )
+  /*----------------------- TERMINATED AFTER PAYROLL, PROCESSING IN NEXT MONTH ENDS ------------*/
+  IF (GROUP_KF_MONTHLY_ALLOWANCE_PERCE WAS DEFAULTED) OR (GROUP_KF_BASIC_SALARY_PERCENTAGE WAS DEFAULTED) THEN
+  (
+     L_BASIC = GFC_BASIC_PERCENT
+     L_MONTHLY = GFC_MONTHLY_ALLOWANCE_PERCENT
+  )
+  ELSE 
+  (
+     L_BASIC = TO_NUM(GROUP_KF_BASIC_SALARY_PERCENTAGE)
+     L_MONTHLY= TO_NUM(GROUP_KF_MONTHLY_ALLOWANCE_PERCE)
+  )
+  /*----------------------- PERCENTAGES EXCEEEDING 100 ------------*/
+  IF L_BASIC+L_MONTHLY > 100 THEN
+  (
+     MSG = ELEMENT_NAME+': Total Percentage exceeds 100'
+     RETURN MSG, EXTRA_DAYS
+  )
+
+  MONTHLY_VALUE = ROUND(Monthly_Salary * (L_MONTHLY/100),2)
+  BASIC = MONTHLY_SALARY - MONTHLY_VALUE
+
+  TOTAL = ROUND((MONTHLY_SALARY * (PRORATED_DAYS/CALENDAR_DAYS)),2)
+  MONTHLY_ALLOWANCE = ROUND(TOTAL*L_MONTHLY/100,2)
+  BASIC_SALARY=TOTAL-MONTHLY_ALLOWANCE
+ 
+  IF ASG_LAST_PROC_PERIOD_NUMBER = 0 AND EMP_HIRE_DATE < PAY_PROC_PERIOD_START_DATE THEN
+  (
+     BASIC_RETRO = BASIC * (days_between(add_months(PAY_PROC_PERIOD_END_DATE,-1),EMP_HIRE_DATE) + 1)/(days_between(ADD_MONTHS(PAY_PROC_PERIOD_END_DATE,-1),ADD_MONTHS(PAY_PROC_PERIOD_START_DATE,-1))+1)
+     MONTHLY_RETRO = MONTHLY_VALUE * (days_between(add_months(PAY_PROC_PERIOD_END_DATE,-1),EMP_HIRE_DATE) + 1)/(days_between(ADD_MONTHS(PAY_PROC_PERIOD_END_DATE,-1),ADD_MONTHS(PAY_PROC_PERIOD_START_DATE,-1))+1)
+     BASIC_SALARY = BASIC
+     MONTHLY_ALLOWANCE = MONTHLY_VALUE
+     IF (CALENDAR_DAYS <> PRORATED_DAYS)THEN
+  (
+     MSG = ELEMENT_NAME+': Prorated from ' +to_char(L_START_DATE,'DD-MON-YYYY')+' to '+to_char(L_END_DATE,'DD-MON-YYYY')+'.Amount Paid for the Period is '+to_char(BASIC_SALARY + MONTHLY_ALLOWANCE)
+  )
+ ELSE
+  (
+     MSG = ELEMENT_NAME+': No Proration. Full Amount Paid'+'. Full Value for the Period is '+to_char(Monthly_Salary) 
+  )
+     RETURN BASIC, MONTHLY_VALUE, BASIC_SALARY, MONTHLY_ALLOWANCE, MSG, EXTRA_DAYS, BASIC_RETRO, MONTHLY_RETRO
+  )
+
+  IF (CALENDAR_DAYS <> PRORATED_DAYS)THEN
+  (
+     MSG = ELEMENT_NAME+': Prorated from ' +to_char(L_START_DATE,'DD-MON-YYYY')+' to '+to_char(L_END_DATE,'DD-MON-YYYY')+'.Amount Paid for the Period is '+to_char(BASIC_SALARY + MONTHLY_ALLOWANCE)
+  )
+ ELSE
+  (
+     MSG = ELEMENT_NAME+': No Proration. Full Amount Paid'+'. Full Value for the Period is '+to_char(Monthly_Salary) 
+  )
+
+ RETURN BASIC, MONTHLY_VALUE, BASIC_SALARY, MONTHLY_ALLOWANCE, MSG, EXTRA_DAYS
+)
+
+/*--------------- Formula Body Ends -------------*/
+
+GFC_TRANSPORT_ALLOWANCE
+
+/*****************************************************************************
+               GFC Transport Allowance Calculation Formula 
+
+Globals                : None
+Balances               : None
+User Defined Functions : None
+******************************************************************************/
+
+inputs are Monthly_Amount,PRORATE_START(DATE),PRORATE_END(DATE)
+
+/*--------------- Database Item Default Begins ---------------*/
+default for PAY_PROC_PERIOD_START_DATE is '01-JAN-1952'(DATE)
+default for PAY_PROC_PERIOD_END_DATE is '31-DEC-4712'(DATE)
+default for PRORATE_START is '01-JAN-1952'(DATE)
+default for PRORATE_END is '31-DEC-4712'(DATE)
+default for ENTRY_START_DATE is '01-JAN-1952'(DATE)
+default for ENTRY_END_DATE is '31-DEC-4712'(DATE)
+default for EMP_HIRE_DATE is '01-JAN-1952'(DATE)
+default for EMP_TERM_DATE is '31-DEC-4712'(DATE)
+default for Monthly_Amount is 0
+default for UNPAID_LEAVES_DAYS_ENTRY_VALUE is '0'
+default for UNPAID_MATERNITY_LEAVE_DAYS_ENTRY_VALUE is '0'
+/*--------------- Database Item Default Ends---------------*/
+
+/*--------------- Variable Default Begins ---------------*/
+ CALENDAR_DAYS = 0
+ PRORATED_DAYS = 0
+ Transport_Allowance = 0
+/*--------------- Variable Default Ends ---------------*/ 
+
+/*--------------- Formula Body Begins ---------------*/
+IF TERMINATION_DAYS_ASG_ITD = 0 THEN
+(
+L_START_DATE = greatest(PAY_PROC_PERIOD_START_DATE,ENTRY_START_DATE, EMP_HIRE_DATE, PRORATE_START)
+L_END_DATE = least(PAY_PROC_PERIOD_END_DATE, ENTRY_END_DATE, EMP_TERM_DATE, PRORATE_END)
+
+PRORATED_DAYS = (days_between(L_END_DATE, L_START_DATE)+1) - TO_NUMBER(UNPAID_LEAVES_DAYS_ENTRY_VALUE) - (to_num(UNPAID_MATERNITY_LEAVE_DAYS_ENTRY_VALUE))
+
+CALENDAR_DAYS = (days_between(PAY_PROC_PERIOD_END_DATE, PAY_PROC_PERIOD_START_DATE)+1)
+
+Transport_Allowance = (Monthly_Amount * (PRORATED_DAYS/CALENDAR_DAYS))
+
+if (CALENDAR_DAYS <> PRORATED_DAYS)
+then
+(
+MSG = ELEMENT_NAME+': Prorated from ' +to_char(L_START_DATE,'DD-MON-YYYY')+' to '+to_char(L_END_DATE,'DD-MON-YYYY')+'. Amount for the Period is '+to_char(Transport_Allowance)
+)
+
+else
+(
+MSG = ELEMENT_NAME+': No Proration. Full Amount Paid'+'. Full Value for the Period is '+to_char(Monthly_Amount)
+)
+
+return Transport_Allowance, MSG
+)
+/*--------------- Formula Body Ends ------------*/
+
+ GFC_UNPAID_DEDUCTION
+
+INPUTS ARE DAYS
+
+DEFAULT FOR ENTRY_START_DATE IS '01-JAN-1952'(DATE)
+DEFAULT FOR ENTRY_END_DATE IS '31-DEC-4712'(DATE)
+DEFAULT FOR PAY_PROC_PERIOD_START_DATE IS '01-JAN-1952'(DATE)
+DEFAULT FOR PAY_PROC_PERIOD_END_DATE IS '31-DEC-4712'(DATE)
+DEFAULT FOR TOTAL_MONTHLY_SALARY_MONTHLY_SALARY_ENTRY_VALUE IS 0
+DEFAULT FOR GROUP_KF_MONTHLY_ALLOWANCE_PERCE IS '0'
+DEFAULT FOR GROUP_KF_BASIC_SALARY_PERCENTAGE IS '0'
+
+WORKING_DAYS = 0
+BASIC_DEDUCTION = 0
+MONTHLY_ALLOWANCE_DEDUCTION = 0
+
+Leave_deduction = (total_monthly_salary_monthly_salary_entry_value/22) * days
+
+IF (GROUP_KF_MONTHLY_ALLOWANCE_PERCE WAS DEFAULTED) OR (GROUP_KF_BASIC_SALARY_PERCENTAGE WAS DEFAULTED) THEN
+  (
+     L_BASIC = GFC_BASIC_PERCENT
+     L_MONTHLY = GFC_MONTHLY_ALLOWANCE_PERCENT
+  )
+  ELSE 
+  (
+     L_BASIC = TO_NUM(GROUP_KF_BASIC_SALARY_PERCENTAGE)
+     L_MONTHLY= TO_NUM(GROUP_KF_MONTHLY_ALLOWANCE_PERCE)
+  )
+MONTHLY_ALLOWANCE_DEDUCTION = Leave_deduction * (L_MONTHLY/100)
+BASIC_DEDUCTION = Leave_deduction - MONTHLY_ALLOWANCE_DEDUCTION
+
+RETURN MONTHLY_ALLOWANCE_DEDUCTION,BASIC_DEDUCTION
+
+GFC_UNPAID_LEAVE_TAKEN
+
+INPUTS ARE DAYS 
+
+DEFAULT FOR PAY_PROC_PERIOD_START_DATE IS '01-JAN-1952'(DATE)
+DEFAULT FOR PAY_PROC_PERIOD_END_DATE IS '31-DEC-4712'(DATE)
+DEFAULT FOR ENTRY_START_DATE IS '01-JAN-1952'(DATE)
+DEFAULT FOR ENTRY_END_DATE IS '31-DEC-4712'(DATE)
+DEFAULT FOR TOTAL_MONTHLY_SALARY_MONTHLY_SALARY_ENTRY_VALUE IS 0
+DEFAULT FOR GROUP_KF_MONTHLY_ALLOWANCE_PERCE IS '0'
+DEFAULT FOR GROUP_KF_BASIC_SALARY_PERCENTAGE IS '0'
+
+BASIC_DEDUCTION = 0
+MONTHLY_ALLOWANCE_DEDUCTION = 0
+FROM_DATE = GREATEST(PAY_PROC_PERIOD_START_DATE,ENTRY_START_DATE)
+TO_DATE = LEAST(PAY_PROC_PERIOD_END_DATE,ENTRY_END_DATE)
+
+CALENDAR_DAYS = DAYS_BETWEEN(PAY_PROC_PERIOD_END_DATE,PAY_PROC_PERIOD_START_DATE)+1
+
+DAYS = GFC_GET_LEAVE_DAYS('Unpaid Leave',from_date, TO_DATE,'Calendar')
+
+/*DAYS = GFC_GET_LEAVE_DAYS_WPH('Unpaid Leave',from_date, TO_DATE)*/
+
+MSG=ELEMENT_NAME + ' Start Date '+to_char(FROM_DATE)+' End Date '+TO_CHAR(TO_DATE)+' Days '+TO_CHAR(DAYS)
+
+DEDUCTION=(DAYS * TOTAL_MONTHLY_SALARY_MONTHLY_SALARY_ENTRY_VALUE)/CALENDAR_DAYS
+
+IF (GROUP_KF_MONTHLY_ALLOWANCE_PERCE WAS DEFAULTED) OR (GROUP_KF_BASIC_SALARY_PERCENTAGE WAS DEFAULTED) THEN
+  (
+     L_BASIC = GFC_BASIC_PERCENT
+     L_MONTHLY = GFC_MONTHLY_ALLOWANCE_PERCENT
+  )
+  ELSE 
+  (
+     L_BASIC = TO_NUM(GROUP_KF_BASIC_SALARY_PERCENTAGE)
+     L_MONTHLY= TO_NUM(GROUP_KF_MONTHLY_ALLOWANCE_PERCE)
+  )
+
+MONTHLY_ALLOWANCE_DEDUCTION = DEDUCTION * (L_MONTHLY/100)
+BASIC_DEDUCTION = DEDUCTION - MONTHLY_ALLOWANCE_DEDUCTION
+
+RETURN DAYS, MONTHLY_ALLOWANCE_DEDUCTION, BASIC_DEDUCTION, MSG
+
+GFC_UNPAID_MATERNITY_LEAVE_CALC
+
+INPUTS ARE DAYS
+
+DEFAULT FOR ENTRY_START_DATE IS '01-JAN-1952'(DATE)
+DEFAULT FOR ENTRY_END_DATE IS '31-DEC-4712'(DATE)
+DEFAULT FOR PAY_PROC_PERIOD_START_DATE IS '01-JAN-1952'(DATE)
+DEFAULT FOR PAY_PROC_PERIOD_END_DATE IS '31-DEC-4712'(DATE)
+DEFAULT FOR TOTAL_MONTHLY_SALARY_MONTHLY_SALARY_ENTRY_VALUE IS 0
+DEFAULT FOR GROUP_KF_MONTHLY_ALLOWANCE_PERCE IS '0'
+DEFAULT FOR GROUP_KF_BASIC_SALARY_PERCENTAGE IS '0'
+DURATION = 0
+WORKING_DAYS = 0
+BASIC_DEDUCTION = 0
+MONTHLY_ALLOWANCE_DEDUCTION = 0
+L_ST_DT = GREATEST(PAY_PROC_PERIOD_START_DATE,ENTRY_START_DATE)
+L_ED_DT = LEAST(PAY_PROC_PERIOD_END_DATE,ENTRY_END_DATE)
+
+DURATION = GFC_GET_LEAVE_DAYS('Unpaid Maternity Leave',L_ST_DT,L_ED_DT,'Working')
+
+WORKING_DAYS = GFC_GET_WORK_DAYS(PAY_PROC_PERIOD_START_DATE,PAY_PROC_PERIOD_END_DATE,'AM','PM')
+
+DEDUCTION =(TOTAL_MONTHLY_SALARY_MONTHLY_SALARY_ENTRY_VALUE/WORKING_DAYS)* DURATION
+
+IF (GROUP_KF_MONTHLY_ALLOWANCE_PERCE WAS DEFAULTED) OR (GROUP_KF_BASIC_SALARY_PERCENTAGE WAS DEFAULTED) THEN
+  (
+     L_BASIC = GFC_BASIC_PERCENT
+     L_MONTHLY = GFC_MONTHLY_ALLOWANCE_PERCENT
+  )
+  ELSE 
+  (
+     L_BASIC = TO_NUM(GROUP_KF_BASIC_SALARY_PERCENTAGE)
+     L_MONTHLY= TO_NUM(GROUP_KF_MONTHLY_ALLOWANCE_PERCE)
+  )
+MONTHLY_ALLOWANCE_DEDUCTION = DEDUCTION * (L_MONTHLY/100)
+BASIC_DEDUCTION = DEDUCTION - MONTHLY_ALLOWANCE_DEDUCTION
+
+RETURN DURATION, BASIC_DEDUCTION, MONTHLY_ALLOWANCE_DEDUCTION
+
+SC_AL_ENCASHMENT_VALIDATION
+Element Input Validation
+Validation to apply for encashment
+
+INPUTS ARE ENTRY_VALUE(TEXT)
+
+FORMULA_STATUS='S'
+
+Total_Accrued_PTO = SC_GET_NET_ACCRUAL(
+                    'Annual Leave Plan',
+                    sysdate )
+
+IF TO_NUM(ENTRY_VALUE) > Total_Accrued_PTO THEN
+(FORMULA_STATUS='E'
+FORMULA_MESSAGE = 'Encashment Days are exceeding Net Accrual'
+)
+
+RETURN FORMULA_STATUS, FORMULA_MESSAGE
+
+SC_ANNUAL_BONUS
+
+Element Input Validation
+
+/***********************************************************
+               ANNUAL BONUS INPUT VALIDATION FORMULA 
+
+Globals                : SC_ANN_BONUS_ELIGIBILITY
+Balances               : None
+User Defined Functions : None
+*************************************************************/
+
+DEFAULT FOR EMP_HIRE_DATE IS '01-JAN-1952'(DATE)
+
+FORMULA_STATUS='E'
+
+IF (EMP_HIRE_DATE<ADD_MONTHS(TRUNC(SYSDATE,'YEAR'),-SC_ANN_BONUS_ELIGIBILITY))
+THEN (
+FORMULA_STATUS='S'
+RETURN FORMULA_STATUS
+)
+ELSE(
+FORMULA_MESSAGE='This Employee is not eligible for annual bonus'
+RETURN FORMULA_STATUS,FORMULA_MESSAGE
+)
+
+SC_ANNUAL_LEAVE_ACCRUAL
+Accrual
+Annual Leave PTO Accrual
+
+
+
+/* ---------------------------------------------------------------------
+    NAME : PTO_PAYROLL_BALANCE_CALCULATION
+    This formula calculates the dates between which an assignment is to accrue.
+    It is based on PTO_PAYROLL_CALCULATION, but has been amended to allow its
+    use with the payroll balance functionality.
+   -----------------------------------------------------------------------*/
+
+DEFAULT FOR ACP_START IS 'HD'
+DEFAULT FOR ACP_INELIGIBILITY_PERIOD_TYPE IS 'CM'
+DEFAULT FOR ACP_INELIGIBILITY_PERIOD_LENGTH IS 0
+DEFAULT FOR ACP_CONTINUOUS_SERVICE_DATE IS '4712/12/31 00:00:00' (date)
+DEFAULT FOR ACP_ENROLLMENT_END_DATE IS '4712/12/31 00:00:00' (date)
+DEFAULT FOR ACP_TERMINATION_DATE IS '4712/12/31 00:00:00' (date)
+DEFAULT FOR ACP_ENROLLMENT_START_DATE IS '4712/12/31 00:00:00' (date)
+DEFAULT FOR ACP_SERVICE_START_DATE IS '4712/12/31 00:00:00' (DATE)
+DEFAULT FOR ASG_GRADE IS ' '
+DEFAULT FOR PERIODS_OF_SERVICE_SEPARATION_DATE IS '31-DEC-4712'
+
+
+
+DEFAULT FOR Accrual_Start_Date is '4712/12/31 00:00:00' (DATE)
+DEFAULT FOR Accrual_Latest_Balance is 0
+
+INPUTS ARE
+Calculation_Date (date),
+Accrual_Start_Date (date),
+Accrual_Latest_Balance
+
+Calculation_Date=ADD_DAYS(trunc(add_months(calculation_date,12),'year'),-1)
+
+/* bug 4047666*/
+prm_Accrual_Start_Date (date) = Accrual_Start_Date
+prm_Calculation_Date (date) = Calculation_Date
+/* bug 4047666*/
+
+E = CALCULATE_PAYROLL_PERIODS()
+
+/*-----------------------------------------------------------------------
+   For the payroll year that spans the Calculation Date
+   get the first days of the payroll year. If we have a latest balance,
+   we use the Accrual Start Date.
+  ----------------------------------------------------------------------- */
+
+Payroll_Year_First_Valid_Date = GET_DATE('PAYROLL_YEAR_FIRST_VALID_DATE')
+
+
+IF Accrual_Start_Date < Payroll_Year_First_Valid_Date THEN
+(
+  Accrual_Start_Date = Payroll_Year_First_Valid_Date
+)
+
+IF NOT (Accrual_Start_Date WAS DEFAULTED) THEN
+(
+  E = SET_DATE('PAYROLL_YEAR_SD', Accrual_Start_Date)
+)
+ELSE
+(
+  E = SET_DATE('PAYROLL_YEAR_SD', Payroll_Year_First_Valid_Date)
+)
+
+
+/* ------------------------------------------------------------------------
+   Set the Calculation_Date to the Termination Date / Enrollment end date if not defaulted
+-------------------------------------------------------------------------- */
+
+IF NOT (ACP_TERMINATION_DATE WAS DEFAULTED) OR
+    NOT (ACP_ENROLLMENT_END_DATE WAS DEFAULTED) THEN
+(
+  Early_End_Date = least(ACP_TERMINATION_DATE, ACP_ENROLLMENT_END_DATE)
+
+  IF (Early_End_Date < Calculation_Date) THEN
+  (
+    Calculation_Date = Early_End_Date
+  )
+)
+
+/* ------------------------------------------------------------------------
+   Get the last whole payroll period prior to the Calculation Date and ensure that it is within the
+   Payroll Year (if the Calculation Date is the End of a Period then use that period)
+   ------------------------------------------------------------------------ */
+
+E = GET_PAYROLL_PERIOD(Calculation_Date)
+Calculation_Period_SD  = get_date('PAYROLL_PERIOD_START_DATE')
+Calculation_Period_ED = get_date('PAYROLL_PERIOD_END_DATE')
+
+IF (Calculation_Date <> Calculation_Period_ED) AND
+   (Calculation_Period_SD > Payroll_Year_First_Valid_Date) THEN
+    (
+     E = GET_PAYROLL_PERIOD(ADD_DAYS(Calculation_Period_SD,-1))
+    Calculation_Period_SD  = get_date('PAYROLL_PERIOD_START_DATE')
+    Calculation_Period_ED = get_date('PAYROLL_PERIOD_END_DATE')
+   )
+ELSE IF (Calculation_Period_SD = Payroll_Year_First_Valid_Date) AND
+        (Calculation_Date <> Calculation_Period_ED) THEN
+  (
+    Calculation_Period_ED = ADD_DAYS(Calculation_Period_SD,-1)
+  )
+
+
+/* ------------------------------------------------------------------------
+   Set the Continuous Service Global Variable, whilst also
+   ensuring that the continuous service date is before the Calculation Period
+  ------------------------------------------------------------------------ */
+
+IF (ACP_CONTINUOUS_SERVICE_DATE WAS DEFAULTED) THEN
+    (
+    E = set_date('CONTINUOUS_SERVICE_DATE', ACP_SERVICE_START_DATE)
+    )
+ELSE IF(ACP_CONTINUOUS_SERVICE_DATE > Calculation_Period_SD) THEN
+   (
+    Total_Accrued_PTO = 0
+    E = PUT_MESSAGE('HR_52796_PTO_FML_CSD')
+    E = set_date('CONTINUOUS_SERVICE_DATE', ACP_CONTINUOUS_SERVICE_DATE)
+   )
+ELSE
+  (
+    E = set_date('CONTINUOUS_SERVICE_DATE', ACP_CONTINUOUS_SERVICE_DATE)
+  )
+
+/* ------------------------------------------------------------------------
+   Determine the Accrual Start Rule and modify the start date of the accrual calculation accordingly
+
+   N.B. In this calculation the Accrual Start Rule determines the date from which a person may first accrue
+   PTO. The Ineligibility Rule determines the period of time during which the PTO is not registered.
+   Once this date has passed the accrual is registered from the date determined by the Accrual Start Rule.
+ ------------------------------------------------------------------------ */
+
+Continuous_Service_Date = get_date('CONTINUOUS_SERVICE_DATE')
+
+IF (ACP_START = 'BOY') THEN
+    (
+     First_Eligible_To_Accrue_Date =
+         to_date('01/01/'||to_char(add_months(Continuous_Service_Date, 12), 'YYYY'),
+                 'DD/MM/YYYY')
+     )
+ELSE IF (ACP_START = 'PLUS_SIX_MONTHS') THEN
+    (
+     First_Eligible_To_Accrue_Date = add_months(Continuous_Service_Date,6)
+     )
+ELSE IF (ACP_START = 'HD') THEN
+    (
+     First_Eligible_To_Accrue_Date  = Continuous_Service_Date
+     )
+
+/*------------------------------------------------------------------------
+   Determine the date on which accrued PTo may first be registered, i.e the date on which the
+   Ineligibility Period expires
+   ------------------------------------------------------------------------ */
+
+Accrual_Ineligibility_Expired_Date = First_Eligible_To_Accrue_Date
+
+IF (ACP_START <> 'PLUS_SIX_MONTHS' AND
+     ACP_INELIGIBILITY_PERIOD_LENGTH > 0) THEN
+   (
+   IF ACP_INELIGIBILITY_PERIOD_TYPE = 'BM' THEN
+      (
+      Accrual_Ineligibility_Expired_Date = add_months(Continuous_Service_Date,
+                                                    ACP_INELIGIBILITY_PERIOD_LENGTH*2)
+      )
+   ELSE IF ACP_INELIGIBILITY_PERIOD_TYPE = 'F' THEN
+      (
+      Accrual_Ineligibility_Expired_Date = add_days(Continuous_Service_Date,
+                                                    ACP_INELIGIBILITY_PERIOD_LENGTH*14)
+      )
+   ELSE IF ACP_INELIGIBILITY_PERIOD_TYPE = 'CM' THEN
+      (
+      Accrual_Ineligibility_Expired_Date = add_months(Continuous_Service_Date,
+                                                      ACP_INELIGIBILITY_PERIOD_LENGTH)
+      )
+   ELSE IF ACP_INELIGIBILITY_PERIOD_TYPE = 'LM' THEN
+      (
+      Accrual_Ineligibility_Expired_Date = add_days(Continuous_Service_Date,
+                                                  ACP_INELIGIBILITY_PERIOD_LENGTH*28)
+      )
+   ELSE IF ACP_INELIGIBILITY_PERIOD_TYPE = 'Q' THEN
+      (
+      Accrual_Ineligibility_Expired_Date = add_months(Continuous_Service_Date,
+                                                      ACP_INELIGIBILITY_PERIOD_LENGTH*3)
+      )
+   ELSE IF ACP_INELIGIBILITY_PERIOD_TYPE = 'SM' THEN
+      (
+      Accrual_Ineligibility_Expired_Date = add_months(Continuous_Service_Date,
+                                                      ACP_INELIGIBILITY_PERIOD_LENGTH/2)
+      )
+   ELSE IF ACP_INELIGIBILITY_PERIOD_TYPE = 'SY' THEN
+      (
+      Accrual_Ineligibility_Expired_Date = add_months(Continuous_Service_Date,
+                                                      ACP_INELIGIBILITY_PERIOD_LENGTH*6)
+      )
+   ELSE IF ACP_INELIGIBILITY_PERIOD_TYPE = 'W' THEN
+      (
+      Accrual_Ineligibility_Expired_Date = add_days(Continuous_Service_Date,
+                                                    ACP_INELIGIBILITY_PERIOD_LENGTH*7)
+      )
+   ELSE IF ACP_INELIGIBILITY_PERIOD_TYPE = 'Y' THEN
+      (
+      Accrual_Ineligibility_Expired_Date = add_months(Continuous_Service_Date,
+                                                      ACP_INELIGIBILITY_PERIOD_LENGTH*12)
+      )
+
+   IF Accrual_Ineligibility_Expired_Date > First_Eligible_To_Accrue_Date
+   AND Calculation_Date < Accrual_Ineligibility_Expired_Date THEN
+      (
+      First_Eligible_To_Accrue_Date = Accrual_Ineligibility_Expired_Date
+      )
+   )
+
+
+/* ----------------------------------------------------------------------
+  If the employee is eligible to accrue before the start of this year,
+  we must get the period dates for the first period of the year.
+  Otherwise, we do not need these dates, as we will never accrue that
+  far back.
+----------------------------------------------------------------------- */
+
+IF (not Accrual_Start_Date was defaulted) AND
+   ((Calculation_Date < Accrual_Ineligibility_Expired_Date) OR
+    (Accrual_Start_Date > Accrual_Ineligibility_Expired_Date)) THEN
+(
+
+/*
+ * This function checks for unprocessed plan element entries, and
+ * returns the EE effective start date of the earliest it finds. This may
+ * be useful if we amend the design to process a partial year starting at
+ * this date.
+ *
+ * At the moment, however, we simply recalculate for the entire plan term
+ * in these circumstances, so Adjusted_Start_Date is never used
+ */
+
+  Adjusted_Start_Date = Get_Start_Date(Accrual_Start_Date,
+                                       Payroll_Year_First_Valid_Date)
+
+  /* Check whether RESET_PTO_ACCRUAL action parameter is defined and set to Y */
+  /* If yes, then we need to calculate from the beginning                    */
+
+  Reset_Accruals = Reset_PTO_Accruals()
+
+  /* ----------------------------------------------------------- */
+  /* Check for retrospective Assignment changes                  */
+  /* Return earliest effective date                              */
+  /* ----------------------------------------------------------- */
+
+  Earliest_AsgUpd_Date = Get_Earliest_AsgChange_Date
+                                 ( 'PTO Event Group',
+                                   add_days(Calculation_Period_SD,-1),
+                                   Calculation_Period_ED,
+                                   Accrual_Start_Date)
+
+  New_Adj_Start_Date = LEAST(Adjusted_Start_Date,
+                             Earliest_AsgUpd_Date)
+
+  IF ((New_Adj_Start_Date < Accrual_Start_Date) OR
+      (Reset_Accruals = 'TRUE'))  THEN
+
+  (
+    Process_Full_Term = 'Y'
+  )
+  ELSE
+  (
+    Process_Full_Term = 'N'
+  )
+)
+ELSE
+(
+  Process_Full_Term = 'Y'
+)
+
+Latest_Balance = 0
+
+IF (Process_Full_Term = 'Y') THEN
+(
+   /* Ensure the Payroll Year Start Date gets reset if caculating */
+   /* from the beginning of the year.                             */
+
+   E = SET_DATE('PAYROLL_YEAR_SD', Payroll_Year_First_Valid_Date)
+)
+
+IF (Process_Full_Term = 'N') AND
+   (Accrual_Start_Date >= First_Eligible_To_Accrue_Date) THEN
+(
+  E = GET_PAYROLL_PERIOD(Adjusted_Start_Date)
+  Payroll_Year_1st_Period_SD = get_date('PAYROLL_PERIOD_START_DATE')
+  Payroll_Year_1st_Period_ED = get_date('PAYROLL_PERIOD_END_DATE')
+
+  Latest_Balance = Accrual_Latest_Balance
+  Effective_Start_Date = Adjusted_Start_Date
+
+  IF First_Eligible_To_Accrue_Date > Payroll_Year_1st_Period_SD THEN
+  (
+     E = GET_PAYROLL_PERIOD(ADD_DAYS(Payroll_Year_1st_Period_ED, 1))
+
+    Payroll_Year_1st_Period_SD = get_date('PAYROLL_PERIOD_START_DATE')
+    Payroll_Year_1st_Period_ED = get_date('PAYROLL_PERIOD_END_DATE')
+  )
+
+)
+ELSE IF First_Eligible_To_Accrue_Date <= Payroll_Year_First_Valid_Date THEN
+(
+  IF (not Accrual_Start_Date was defaulted) THEN
+  (
+    Latest_Balance = Accrual_Latest_Balance
+  )
+  ELSE
+  (
+    Latest_Balance = 0
+  )
+
+  E = GET_PAYROLL_PERIOD(Payroll_Year_First_Valid_Date)
+
+  Payroll_Year_1st_Period_SD = get_date('PAYROLL_PERIOD_START_DATE')
+  Payroll_Year_1st_Period_ED = get_date('PAYROLL_PERIOD_END_DATE')
+
+  IF Payroll_Year_1st_Period_SD <> Payroll_Year_First_Valid_Date THEN
+  (
+     E = GET_PAYROLL_PERIOD(ADD_DAYS(Payroll_Year_1st_Period_ED, 1))
+
+    Payroll_Year_1st_Period_SD = get_date('PAYROLL_PERIOD_START_DATE')
+    Payroll_Year_1st_Period_ED = get_date('PAYROLL_PERIOD_END_DATE')
+  )
+
+  Effective_Start_Date = Payroll_Year_First_Valid_Date
+)
+ELSE
+(
+  /* ------------------------------------------------------------------------
+   Get the first full payroll period following the First_Eligible_To_Accrue_Date
+   (if it falls on the beginning of the period then use that period)
+  ------------------------------------------------------------------------- */
+  IF (not Accrual_Start_Date was defaulted) THEN
+  (
+    Latest_Balance = Accrual_Latest_Balance
+  )
+  ELSE
+  (
+    Latest_Balance = 0
+  )
+
+  E = GET_PAYROLL_PERIOD(First_Eligible_To_Accrue_Date )
+  First_Eligible_To_Accrue_Period_SD  = get_date('PAYROLL_PERIOD_START_DATE')
+  First_Eligible_To_Accrue_Period_ED  = get_date('PAYROLL_PERIOD_END_DATE')
+
+  IF First_Eligible_To_Accrue_Date <> First_Eligible_To_Accrue_Period_SD THEN
+  (
+    E = GET_PAYROLL_PERIOD(add_days(First_Eligible_To_Accrue_Period_ED,1))
+    First_Eligible_To_Accrue_Period_SD  = get_date('PAYROLL_PERIOD_START_DATE')
+    First_Eligible_To_Accrue_Period_ED  = get_date('PAYROLL_PERIOD_END_DATE')
+   )
+
+  IF (First_Eligible_To_Accrue_Period_SD > Calculation_Period_ED) THEN
+  (
+    Total_Accrued_PTO = 0
+    E = PUT_MESSAGE('HR_52793_PTO_FML_ASG_INELIG')
+  )
+
+  Payroll_Year_1st_Period_SD = First_Eligible_To_Accrue_Period_SD
+  Payroll_Year_1st_Period_ED = First_Eligible_To_Accrue_Period_ED
+
+  Effective_Start_Date = First_Eligible_To_Accrue_Date
+)
+
+  Effective_Start_Date = GREATEST(Effective_Start_Date, ACP_ENROLLMENT_START_DATE)
+
+/* -----------------------------------------------------------------
+  Output messages based on calculated date
+----------------------------------------------------------------- */
+
+IF (Early_End_Date < Payroll_Year_1st_Period_ED) THEN
+(
+  Total_Accrued_PTO = 0
+  E = PUT_MESSAGE('HR_52794_PTO_FML_ASG_TER')
+)
+
+If (Calculation_Period_ED < Payroll_Year_1st_Period_ED) THEN
+(
+  Total_Accrued_PTO = 0
+  E = PUT_MESSAGE('HR_52795_PTO_FML_CALC_DATE')
+)
+
+
+
+/* ------------------------------------------------------------------------
+   Determine the date on which PTO actually starts accruing based on Hire Date,
+   Continuous Service Date and plan Enrollment Start Date. Remember, we have
+   already determined whether to user hire date or CSD earlier in the formula.
+   If this date is after the 1st period and the fisrt eligible date then
+   establish the first full payroll period after this date
+   (if the Actual Start Date falls on the beginning of a payroll period then
+   use this period)
+ ------------------------------------------------------------------------ */
+
+
+  Enrollment_Start_Date = ACP_ENROLLMENT_START_DATE
+
+  Actual_Accrual_Start_Date = GREATEST(Enrollment_Start_Date,
+                                       Continuous_Service_Date,
+                                       Payroll_Year_1st_Period_SD)
+
+/* -------------------------------------------------------------------------
+       Determine the actual start of the accrual calculation
+-------------------------------------------------------------------------*/
+IF (Actual_Accrual_Start_Date > Payroll_Year_1st_Period_SD AND
+     Actual_Accrual_Start_Date > First_Eligible_To_Accrue_Date) THEN
+    (
+     E = GET_PAYROLL_PERIOD(Actual_Accrual_Start_Date)
+
+     Accrual_Start_Period_SD = get_date('PAYROLL_PERIOD_START_DATE')
+     Accrual_Start_Period_ED = get_date('PAYROLL_PERIOD_END_DATE')
+
+     IF Actual_Accrual_Start_Date > Accrual_Start_Period_SD THEN
+         (
+          E = GET_PAYROLL_PERIOD(add_days(Accrual_Start_Period_ED,1))
+
+          Accrual_Start_Period_SD = get_date('PAYROLL_PERIOD_START_DATE')
+          Accrual_Start_Period_ED = get_date('PAYROLL_PERIOD_END_DATE')
+         )
+
+/* -----------------------------------------------------------------
+        If the Actual Acrual Period is after the Calculation Period then end the processing.
+----------------------------------------------------------------- */
+        IF (Accrual_Start_Period_SD > Calculation_Period_ED) THEN
+            (
+            Total_Accrued_PTO = 0
+            E = PUT_MESSAGE('HR_52797_PTO_FML_ACT_ACCRUAL')
+            )
+     )
+
+ELSE IF (First_Eligible_To_Accrue_Date > Payroll_Year_1st_Period_SD) THEN
+     (
+          Accrual_Start_Period_SD = First_Eligible_To_Accrue_Period_SD
+          Accrual_Start_Period_ED = First_Eligible_To_Accrue_Period_ED
+     )
+ELSE
+    (
+          Accrual_Start_Period_SD = Payroll_Year_1st_Period_SD
+          Accrual_Start_Period_ED = Payroll_Year_1st_Period_ED
+    )
+
+ /* -------------------------------------------------------------------
+       Now set up the information that will be used in when looping
+       through the payroll periods
+--------------------------------------------------------------------- */
+
+IF Calculation_Period_ED >= Accrual_Start_Period_ED THEN
+(
+E = set_date('PERIOD_SD',Actual_Accrual_Start_date)
+E = set_date('PERIOD_ED',Accrual_Start_Period_ED)
+E = set_date('LAST_PERIOD_SD',Calculation_Period_SD)
+E = set_date('LAST_PERIOD_ED',Calculation_date)
+
+IF (Process_Full_Term = 'N') THEN
+(
+  E = set_number('TOTAL_ACCRUED_PTO', Latest_Balance)
+)
+ELSE
+(
+  E = set_number('TOTAL_ACCRUED_PTO', 0)
+)
+
+/* -------------------------------------------------------------------
+       Initialize Band Information
+-------------------------------------------------------------------- */
+/*
+E = set_number('ANNUAL_RATE', 0)
+E = set_number('UPPER_LIMIT', 0)
+E = set_number('CEILING', 0)
+*/
+/*
+E = LOOP_CONTROL('SC_ANNUAL_LEAVE_PERIOD_ACCRUAL')
+
+*/
+
+   Total_Accrued_PTO = get_number('TOTAL_ACCRUED_PTO')- Latest_Balance   
+
+)
+
+IF Accrual_Start_Period_SD <= Calculation_Period_SD THEN
+(
+  Accrual_end_date = Calculation_Period_ED
+)
+
+IF Process_Full_Term = 'Y' AND
+   Effective_Start_Date > Actual_Accrual_Start_Date THEN
+(
+  Effective_Start_Date = Actual_Accrual_Start_Date
+)
+
+Effective_End_Date = Calculation_Date
+
+/* bug 4047666*/
+IF Process_Full_Term = 'N' AND NOT (Accrual_Start_Date WAS DEFAULTED)
+                           AND NOT (Accrual_Latest_Balance WAS DEFAULTED)
+                           AND prm_Accrual_Start_Date > prm_Calculation_Date THEN
+  (
+    Effective_Start_Date = ADD_DAYS(Effective_End_Date,1)
+  )
+ELSE
+  (
+/* bug 4047666*/
+    IF Effective_Start_Date >= Effective_End_Date THEN
+      (
+        Effective_Start_Date = least(Effective_End_Date, Accrual_Start_Period_SD)
+      )
+  )
+
+
+IF PERIODS_OF_SERVICE_SEPARATION_DATE WAS NOT DEFAULTED THEN
+(
+  SEPARATION_DATE = TO_DATE(PERIODS_OF_SERVICE_SEPARATION_DATE,'YYYY/MM/DD HH24:MI:SS ')
+  IF (TO_CHAR(SEPARATION_DATE,'YYYY') = TO_CHAR(CALCULATION_DATE,'YYYY'))
+  THEN(
+  CALCULATION_DATE = SEPARATION_DATE
+  EFFECTIVE_END_DATE = CALCULATION_DATE
+   )
+)
+
+Accrual_Rate = XXSC_ANNUAL_LEAVE_ACCR_DAYS(Effective_start_date,calculation_date,'SC AL ACCRUAL','GRADE')
+
+/* --Commented by Anil on 27-Jul-15--
+Annual_Rate = SC_get_table_value('SC AL ACCRUAL','GRADE',ASG_GRADE,CALCULATION_DATE)
+
+IF Effective_start_date = Payroll_Year_First_Valid_Date AND Calculation_Date = add_days(trunc(add_months(Payroll_Year_First_Valid_Date,12),'year'),-1) THEN
+(
+Accrual_Rate = Annual_Rate
+)
+ELSE
+(
+l_days=days_between(calculation_date,Effective_start_date)+1
+Accrual_Rate = Annual_Rate * (l_days/365)
+)
+*/
+E=SET_NUMBER('TOTAL_ACCRUED_PTO',Accrual_Rate)
+
+Total_Accrued_PTO = get_number('TOTAL_ACCRUED_PTO')
+
+
+RETURN Total_Accrued_PTO, Effective_start_date, Effective_end_date, Accrual_end_date
+
+SC_ANNUAL_LEAVE_CALC
+
+Oracle Payroll
+
+Annual Leave Days Calculation
+
+
+
+DEFAULT FOR ENTRY_START_DATE IS '01-JAN-1952'(DATE)  
+DEFAULT FOR ENTRY_END_DATE IS '31-DEC-4712'(DATE)
+DEFAULT FOR PAY_PROC_PERIOD_START_DATE IS '01-JAN-1952'(DATE)
+DEFAULT FOR PAY_PROC_PERIOD_END_DATE IS '31-DEC-4712'(DATE)
+DEFAULT FOR TOTAL_MONTHLY_SALARY_MONTHLY_SALARY_ENTRY_VALUE IS 0
+
+
+L_ST_DT=GREATEST(PAY_PROC_PERIOD_START_DATE,ENTRY_START_DATE)
+L_ED_DT=LEAST(PAY_PROC_PERIOD_END_DATE,ENTRY_END_DATE)
+
+DURATION=SC_GET_LEAVE_DAYS('Annual Leave',L_ST_DT,L_ED_DT,'Working')
+
+WORKING_DAYS=SC_GET_WORK_DAYS(PAY_PROC_PERIOD_START_DATE,PAY_PROC_PERIOD_END_DATE,'AM','PM')
+
+ANNUAL_LEAVE_RETRO = SC_GET_ENTRY_VALUE_RETRO(PAY_PROC_PERIOD_START_DATE,'Annual Leave','Days')
+
+DEDUCTION=(TOTAL_MONTHLY_SALARY_MONTHLY_SALARY_ENTRY_VALUE/WORKING_DAYS)*DURATION
+
+EFFECTIVE_DATE = PAY_PROC_PERIOD_START_DATE
+
+RETURN DURATION , annual_leave_retro , EFFECTIVE_DATE
+
+SC_ANNUAL_LEAVE_ENCASHMENT
+
+Oracle Payroll
+
+Annual Leave Encashment Amount Calculation
+
+INPUTS ARE DAYS
+
+DEFAULT FOR TOTAL_MONTHLY_SALARY_MONTHLY_SALARY_ENTRY_VALUE IS 0
+DEFAULT FOR BASIC_SALARY_MONTHLY_AMOUNT_ENTRY_VALUE IS 0
+DEFAULT FOR PTO_DATE_PAID_CALCULATION_DATE IS '31-DEC-4712'(DATE)
+DEFAULT FOR PTO_ACCRUAL_PLAN_ID IS 0
+DEFAULT FOR PTO_DATE_PAID_START_DATE IS '01-JAN-1952'(DATE)
+
+Total_Accrued_PTO = get_net_accrual(
+                    PTO_DATE_PAID_CALCULATION_DATE,
+                    PTO_ACCRUAL_PLAN_ID,
+                    PTO_DATE_PAID_START_DATE,
+                    ANNUAL_LEAVE_PLAN_BALANCE_ASG_PTO_YTD )
+
+IF DAYS < Total_Accrued_PTO THEN
+( 
+    DAYS = Total_Accrued_PTO
+)
+
+PAY_VALUE = ((TOTAL_MONTHLY_SALARY_MONTHLY_SALARY_ENTRY_VALUE/22)+(BASIC_SALARY_MONTHLY_AMOUNT_ENTRY_VALUE/22))* DAYS
+
+RETURN DAYS,PAY_VALUE
+
+SC_GRATUITY_ACCRUAL_CALCULATION
+
+Oracle Payroll
+
+/****************************************************************************
+             SC Gratuity Accrual (Accrual & Payment) Calculation Formula
+
+Balances               :GRATUITY_ACCRUAL_DAYS_ASG_ITD
+                        GRAUTITY_ACCRUAL_AMOUNT_ASG_ITD
+                        UNPAID_ABSENCE_ASG_RUN
+                        UNPAID_ABSENCE_ASG_ITD
+Globas                 :SC_BASIC_PERCENT
+                        SC_MONTHLY_ALLOWANCE_PERCENT
+******************************************************************************/
+
+/*--------------------- Alias Begins -----------------*/
+ALIAS TOTAL_MONTHLY_SALARY_MONTHLY_SALARY_ENTRY_VALUE AS TOT_SAL
+/*--------------- Alias Ends ---------------*/
+
+/*--------------- Database Item Default Begins ---------------*/
+DEFAULT FOR PAY_PROC_PERIOD_END_DATE is '31-DEC-4712'(DATE)
+DEFAULT FOR PAY_PROC_PERIOD_NUMBER is 0
+DEFAULT FOR EMP_HIRE_DATE is '01-JAN-1952'(DATE)
+DEFAULT FOR EMP_TERM_DATE is '31-DEC-4712'(DATE)
+DEFAULT FOR ENTRY_START_DATE is '01-JAN-1952'(DATE)
+DEFAULT FOR ENTRY_END_DATE is '31-DEC-4712'(DATE)
+DEFAULT FOR GRATUITY_ACCRUAL_DAYS_ASG_ITD is 0
+DEFAULT FOR GRATUITY_ACCRUAL_AMOUNT_ASG_ITD is 0
+DEFAULT FOR GROUP_KF_MONTHLY_ALLOWANCE_PERCENTAGE IS '0'
+DEFAULT FOR GROUP_KF_BASIC_SALARY_PERCENTAGE IS '0'
+DEFAULT FOR TOT_SAL is 0
+DEFAULT FOR GROUP_KF_GRATUITY_DATE IS '01-JAN-1952'
+DEFAULT FOR PERIODS_OF_SERVICE_SEPARATION_DATE IS '31-DEC-4712'
+DEFAULT FOR GRATUITY_HOLD_HOLD_ENTRY_VALUE IS 'N'
+/*--------------- Database Item Default Ends ---------------*/
+
+/*--------------- Variable Default Begins ---------------*/
+ ACCRUAL_DAYS = 0
+ ACCRUAL_AMOUNT = 0
+ TOTAL_ACCRUAL_DAYS = 0
+ TOTAL_ACCRUAL_AMOUNT = 0
+ EOSB_GAIN = 0
+ EOSB_AMOUNT = 0
+ EOSB_ADJ_AMOUNT = 0
+ EOSB_ADJ_DAYS = 0
+ L_CURR_UNPAID_DAYS = 0
+ 
+
+/*--------------- Variable Default Ends ---------------*/ 
+
+/*--------------- Formula Body Begins -----------------*/
+IF TERMINATION_DAYS_ASG_ITD = 0 THEN
+(
+IF GROUP_KF_MONTHLY_ALLOWANCE_PERCENTAGE WAS DEFAULTED OR GROUP_KF_BASIC_SALARY_PERCENTAGE WAS DEFAULTED THEN
+   (
+     L_BASIC = SC_BASIC_PERCENT
+     L_MONTHLY = SC_MONTHLY_ALLOWANCE_PERCENT
+   )
+ELSE
+   (
+     L_BASIC = TO_NUM(GROUP_KF_BASIC_SALARY_PERCENTAGE)
+     L_MONTHLY= TO_NUM(GROUP_KF_MONTHLY_ALLOWANCE_PERCENTAGE)
+   )
+
+MONTHLY_VALUE = TOT_SAL * (L_MONTHLY/100)
+BASIC = TOT_SAL - MONTHLY_VALUE
+
+L_END_DATE = least(PAY_PROC_PERIOD_END_DATE, ENTRY_END_DATE, EMP_TERM_DATE)
+L_START_DATE = greatest(ENTRY_START_DATE,EMP_HIRE_DATE)
+L_TERM_DATE = L_END_DATE
+
+/*========== Monthly Accrual ==========*/
+IF PERIODS_OF_SERVICE_SEPARATION_DATE WAS NOT DEFAULTED THEN
+(
+  L_END_DATE = TO_DATE(PERIODS_OF_SERVICE_SEPARATION_DATE,'YYYY/MM/DD HH24:MI:SS ')
+)
+IF GROUP_KF_GRATUITY_DATE WAS NOT DEFAULTED THEN
+(
+  L_START_DATE = TO_DATE(GROUP_KF_GRATUITY_DATE,'YYYY/MM/DD HH24:MI:SS')
+)
+
+MSG3 = TO_CHAR(L_END_DATE)
+TOTAL_SERVICE_DAYS =  DAYS_BETWEEN (L_END_DATE, L_START_DATE )+1
+L_UNPAID_DAYS = UNPAID_ABSENCE_SERVICE_ASG_ITD
+
+IF (L_TERM_DATE = EMP_TERM_DATE OR PAY_PROC_PERIOD_NUMBER = 12) AND UNPAID_ABSENCE_ASG_YTD > 20 THEN 
+(
+     L_CURR_UNPAID_DAYS = UNPAID_ABSENCE_ASG_YTD - 20 
+     L_UNPAID_DAYS = L_UNPAID_DAYS + L_CURR_UNPAID_DAYS
+      
+)
+
+LENGTH_OF_SERVICE_DAYS = TOTAL_SERVICE_DAYS - L_UNPAID_DAYS
+
+LENGTH_OF_SERVICE_YEARS = LENGTH_OF_SERVICE_DAYS/365
+
+MSG = ELEMENT_NAME+': Total Length of Service Days: ' + to_text (TOTAL_SERVICE_DAYS) + '; Unpaid Absence Days: ' + to_text (L_UNPAID_DAYS) + '; Length of Service Days: ' + 
+       to_text (LENGTH_OF_SERVICE_DAYS) + '; Length of Service Years: ' + to_text (LENGTH_OF_SERVICE_YEARS)
+
+TOTAL_ACCRUAL_DAYS = LENGTH_OF_SERVICE_YEARS * SC_GRATUITY_ACCRUAL_DAYS
+TOTAL_ACCRUAL_AMOUNT = TOTAL_ACCRUAL_DAYS * (BASIC/30)
+
+ACCRUAL_DAYS = TOTAL_ACCRUAL_DAYS - GRATUITY_ACCRUAL_DAYS_ASG_ITD
+ACCRUAL_AMOUNT = TOTAL_ACCRUAL_AMOUNT - GRATUITY_ACCRUAL_AMOUNT_ASG_ITD
+MSG2 = TO_TEXT(TOTAL_ACCRUAL_DAYS)
+IF L_TERM_DATE <> EMP_TERM_DATE THEN
+(
+    RETURN ACCRUAL_DAYS, ACCRUAL_AMOUNT, L_CURR_UNPAID_DAYS, MSG, MSG2,MSG3
+)
+
+
+/*========== Final Settlement ===========*/
+
+IF (L_TERM_DATE = EMP_TERM_DATE) THEN
+(
+       IF LENGTH_OF_SERVICE_YEARS < 1 THEN
+       (
+               MSG = MSG || 'Service is <1 year; not eligible to get Gratuity Amount'
+               EOSB_AMOUNT = 0
+       )
+       ELSE
+       (
+               EOSB_AMOUNT = TOTAL_ACCRUAL_AMOUNT 
+       )
+   
+       EOSB_GAIN = (TOTAL_ACCRUAL_AMOUNT - EOSB_AMOUNT) * (-1)
+
+       EOSB_ADJ_AMOUNT = -(TOTAL_ACCRUAL_AMOUNT)
+       EOSB_ADJ_DAYS = -(TOTAL_ACCRUAL_DAYS)
+       IF GRATUITY_HOLD_HOLD_ENTRY_VALUE = 'Y' AND EOSB_AMOUNT > 0 THEN 
+       (
+            L_HOLD_AMOUNT = EOSB_AMOUNT
+            EOSB_AMOUNT = 0
+            MSG = MSG || 'Gratuity on Hold'
+            RETURN ACCRUAL_DAYS, ACCRUAL_AMOUNT, EOSB_AMOUNT, EOSB_GAIN, EOSB_ADJ_AMOUNT, EOSB_ADJ_DAYS, MSG, L_CURR_UNPAID_DAYS,MSG2,MSG3, L_HOLD_AMOUNT
+       )
+       RETURN ACCRUAL_DAYS, ACCRUAL_AMOUNT, EOSB_AMOUNT, EOSB_GAIN, EOSB_ADJ_AMOUNT, EOSB_ADJ_DAYS, MSG, L_CURR_UNPAID_DAYS,MSG2,MSG3
+)
+)
+
+
+/*--------------- Formula Body Begins ---------------*/
+SC_GRATUITY_EOSB_REVERSAL
+
+Oracle Payroll
+
+
+/****************************************************************************
+             SC Gratuity EOSB Accrual Reversal Calculation Formula
+
+Balances               :GRAUTITY_ACCRUAL_AMOUNT_ASG_ITD
+******************************************************************************/
+
+
+/*--------------- Database Item Default Begins ---------------*/
+DEFAULT FOR GRATUITY_ACCRUAL_AMOUNT_ASG_ITD is 0
+DEFAULT FOR GRATUITY_ACCRUAL_DAYS_ASG_ITD is 0
+/*--------------- Database Item Default Ends ---------------*/
+
+L_AMOUNT = GRATUITY_ACCRUAL_AMOUNT_ASG_ITD*-1
+L_ADJ_AMOUNT = GRATUITY_ACCRUAL_AMOUNT_ASG_ITD*-1
+L_ADJ_DAYS = GRATUITY_ACCRUAL_DAYS_ASG_ITD*-1
+
+RETURN L_AMOUNT,L_ADJ_AMOUNT,L_ADJ_DAYS
+
+/******************** End Formula *********************/
+
+SC_GRATUITY_RELEASE
+
+Oracle Payroll
+
+
+DEFAULT FOR GRATUITY_RELEASE_RELEASE_ENTRY_VALUE IS 'Y'
+
+INPUTS ARE RELEASE (TEXT)
+
+IF GRATUITY_RELEASE_RELEASE_ENTRY_VALUE = 'Y' AND GRATUITY_HOLD_AMOUNT_ASG_ITD <> 0 THEN 
+   (
+       EOSB_AMOUNT = GRATUITY_HOLD_AMOUNT_ASG_ITD
+       L_HOLD_ADJ_AMOUNT = - EOSB_AMOUNT
+	   RETURN EOSB_AMOUNT, L_HOLD_ADJ_AMOUNT
+   )
+
+SC_HOUSE_RENT_ADVANCE1_SKIP
+Element Skip
+SC House Rent Advance Skip
+/**************************************************************
+ Formula Name : SC_HOUSE_RENT_ADVANCE1_SKIP
+ Description : This formula prevents element from being
+               processed in each period if Skip Input is set to 'Y' or Deduction is in future
+***************************************************************/
+DEFAULT FOR HOUSE_RENT_ADVANCE1_SKIP_ENTRY_VALUE IS 'N'
+DEFAULT FOR HOUSE_RENT_ADVANCE1_DEDUCTION_START_DATE_ENTRY_VALUE IS '31-DEC-4712' (DATE)
+DEFAULT FOR EMP_TERM_DATE IS '31-DEC-4712' (DATE)
+DEFAULT FOR PAY_PROC_PERIOD_END_DATE IS '31-DEC-4712' (DATE)
+
+L_END_DATE = LEAST (EMP_TERM_DATE, PAY_PROC_PERIOD_END_DATE)
+
+/*=============== HOUSE RENT ADVANCE SKIP==========*/
+If (HOUSE_RENT_ADVANCE1_SKIP_ENTRY_VALUE = 'Y' OR 
+HOUSE_RENT_ADVANCE1_DEDUCTION_START_DATE_ENTRY_VALUE > PAY_PROC_PERIOD_END_DATE) AND (EMP_TERM_DATE <> L_END_DATE) THEN
+ skip_flag = 'Y'
+Else 
+skip_flag = 'N'
+Return skip_flag
+
+SC_HOUSE_RENT_ADVANCE2_SKIP
+
+Element Skip
+
+/**************************************************************
+ Formula Name : SC_HOUSE_RENT_ADVANCE2_SKIP
+ Description : This formula prevents element from being
+               processed in each period if Skip Input is set to 'Y' or Deduction is in future
+***************************************************************/
+DEFAULT FOR HOUSE_RENT_ADVANCE2_SKIP_ENTRY_VALUE IS 'N'
+DEFAULT FOR HOUSE_RENT_ADVANCE2_DEDUCTION_START_DATE_ENTRY_VALUE IS '31-DEC-4712' (DATE)
+DEFAULT FOR EMP_TERM_DATE IS '31-DEC-4712' (DATE)
+DEFAULT FOR PAY_PROC_PERIOD_END_DATE IS '31-DEC-4712' (DATE)
+
+L_END_DATE = LEAST (EMP_TERM_DATE, PAY_PROC_PERIOD_END_DATE)
+
+/*================= HOUSE RENT ADVANCE SKIP ==============*/
+If (HOUSE_RENT_ADVANCE2_SKIP_ENTRY_VALUE = 'Y' OR 
+HOUSE_RENT_ADVANCE2_DEDUCTION_START_DATE_ENTRY_VALUE > PAY_PROC_PERIOD_END_DATE) AND (EMP_TERM_DATE <> L_END_DATE) THEN
+ skip_flag = 'Y'
+Else 
+skip_flag = 'N'
+Return skip_flag
+
+SC_HRA1_RECOVERY
+
+Oracle Payroll
+
+/*****************************************************************************
+               SC HRA1 Recovery Calculation Formula 
+
+Globals                : None
+Balances               : OUTSTANDING_HRA_AMOUNT1_ASG_ITD
+User Defined Functions : None
+******************************************************************************
+
+/*--------------- Database Item Default Begins ---------------*/
+DEFAULT FOR PAY_PROC_PERIOD_END_DATE IS '31-DEC-4712' (DATE)
+DEFAULT FOR EMP_TERM_DATE IS '31-DEC-4712' (DATE)
+DEFAULT FOR Override_Amount IS 0
+DEFAULT FOR Installments IS 0
+DEFAULT FOR OUTSTANDING_HRA_AMOUNT1_ASG_ITD IS 0
+DEFAULT FOR Skip IS 'N'
+DEFAULT FOR HRA_CASH_PAYMENT1_AMOUNT_ENTRY_VALUE IS 0
+/*--------------- Database Item Default Ends---------------*/
+
+INPUTS ARE Advance_Amount, Installments, Deduction_Start_Date (DATE), Skip (TEXT), Override_Amount
+
+/*--------------- Variable Default Begins ---------------*/
+L_Advance_Given = 0
+L_Advance_Paid = 0
+L_Installment_Amount = 0
+L_Deduction_Amount = 0
+L_STOP = 'Y'
+L_Installments = 0
+A = 0
+L_EARLY_PAYMENT = 0
+/*--------------- Variable Default Ends---------------*/
+/*--------------- Formula Body Begins ---------------*/
+IF OUTSTANDING_HRA_AMOUNT1_ASG_ITD = 0 THEN 
+(
+    L_Advance_Given = Advance_Amount
+    
+)
+A = TRUNC(MONTHS_BETWEEN(PAY_PROC_PERIOD_END_DATE, Deduction_Start_Date),0)
+L_Installments = Installments - A
+IF L_Installments <=0 THEN
+   (
+     L_Installments = 1
+   )
+
+/*============== TERMINATION MONTH OUTSTANDING AMOUNT REPAYMENT =============*/
+IF EMP_TERM_DATE <= PAY_PROC_PERIOD_END_DATE THEN
+(
+      L_Deduction_Amount = OUTSTANDING_HRA_AMOUNT1_ASG_ITD + L_Advance_Given
+      RETURN L_Deduction_Amount, L_STOP
+)
+
+/* =============== INSTALLMENT AMOUNT CALCULATION =============*/
+IF Deduction_Start_Date <= PAY_PROC_PERIOD_END_DATE AND Skip = 'N' THEN
+(
+     L_Installment_Amount = ((OUTSTANDING_HRA_AMOUNT1_ASG_ITD + L_Advance_Given)/L_Installments)
+     IF HRA_CASH_PAYMENT1_AMOUNT_ENTRY_VALUE <> 0 THEN
+     (
+	    /* IF HRA_CASH_PAYMENT1_AMOUNT_ENTRY_VALUE <= OUTSTANDING_HRA_AMOUNT1_ASG_ITD THEN
+	     (
+		     L_Deduction_Amount = OUTSTANDING_HRA_AMOUNT1_ASG_ITD - HRA_CASH_PAYMENT1_AMOUNT_ENTRY_VALUE
+                     L_EARLY_PAYMENT = LEAST (HRA_CASH_PAYMENT1_AMOUNT_ENTRY_VALUE, OUTSTANDING_HRA_AMOUNT1_ASG_ITD)
+	 	     RETURN L_Deduction_Amount, L_STOP, L_EARLY_PAYMENT, L_Advance_Paid, L_Advance_Given, L_Installments
+	     )*/
+
+	     L_EARLY_PAYMENT = LEAST (HRA_CASH_PAYMENT1_AMOUNT_ENTRY_VALUE, OUTSTANDING_HRA_AMOUNT1_ASG_ITD)
+     )	
+     IF Override_Amount <> 0 THEN
+     (
+         L_Deduction_AMount = least (Override_Amount, (OUTSTANDING_HRA_AMOUNT1_ASG_ITD + L_Advance_Given - L_EARLY_PAYMENT ))
+     )
+     ELSE
+     (
+         L_Deduction_Amount = least (L_Installment_Amount, (OUTSTANDING_HRA_AMOUNT1_ASG_ITD + L_Advance_Given - L_EARLY_PAYMENT))
+     )
+
+     L_Installments = L_Installments - 1
+
+     IF (OUTSTANDING_HRA_AMOUNT1_ASG_ITD + L_Advance_Given) - L_Deduction_Amount <= 0 THEN 
+     (
+         IF HRA_CASH_PAYMENT1_AMOUNT_ENTRY_VALUE <> 0 THEN
+	 (
+		 RETURN L_Deduction_Amount, L_STOP, L_EARLY_PAYMENT, L_Advance_Paid, L_Advance_Given, L_Installments
+	 )
+	 ELSE
+	 (	 
+		 RETURN L_Deduction_Amount, L_STOP, L_Advance_Paid, L_Advance_Given, L_Installments
+	 )
+     )
+     
+     
+     IF HRA_CASH_PAYMENT1_AMOUNT_ENTRY_VALUE <> 0 THEN
+     (
+		 RETURN L_Deduction_Amount, L_EARLY_PAYMENT, L_Advance_Paid, L_Advance_Given, L_Installments
+     )
+     ELSE
+     (
+		RETURN L_Deduction_Amount, L_Advance_Paid, L_Advance_Given, L_Installments
+     )
+)
+/* ****************************
+ELSE
+(
+     IF Deduction_Start_date > PAY_PROC_PERIOD_END_DATE then
+      (
+        L_Installments = Installments
+      )
+     else
+      (
+        L_Installments = L_Installments - 1
+      )
+     RETURN L_Advance_Paid, L_Advance_Given, L_Installments
+)
+************************************* */
+/*--------------- Formula Body Ends ----------------*/
+
+SC_HRA2_RECOVERY
+
+Oracle Payroll
+
+/*****************************************************************************
+               SC HRA2 Recovery Calculation Formula 
+
+Globals                : None
+Balances               : OUTSTANDING_HRA_AMOUNT2_ASG_ITD
+User Defined Functions : None
+******************************************************************************
+
+/*--------------- Database Item Default Begins ---------------*/
+DEFAULT FOR PAY_PROC_PERIOD_END_DATE IS '31-DEC-4712' (DATE)
+DEFAULT FOR EMP_TERM_DATE IS '31-DEC-4712' (DATE)
+DEFAULT FOR Override_Amount IS 0
+DEFAULT FOR Installments IS 0
+DEFAULT FOR OUTSTANDING_HRA_AMOUNT2_ASG_ITD IS 0
+DEFAULT FOR Skip IS 'N'
+DEFAULT FOR HRA_CASH_PAYMENT2_AMOUNT_ENTRY_VALUE IS 0
+/*--------------- Database Item Default Ends---------------*/
+
+INPUTS ARE Advance_Amount, Installments, Deduction_Start_Date (DATE), Skip (TEXT), Override_Amount
+
+/*--------------- Variable Default Begins ---------------*/
+L_Advance_Given = 0
+L_Advance_Paid = 0
+L_Installment_Amount = 0
+L_Deduction_Amount = 0
+L_STOP = 'Y'
+L_Installments = 0
+A = 0
+L_EARLY_PAYMENT = 0
+/*--------------- Variable Default Ends---------------*/
+/*--------------- Formula Body Begins ---------------*/
+IF OUTSTANDING_HRA_AMOUNT2_ASG_ITD = 0 THEN 
+(
+    L_Advance_Given = Advance_Amount
+    
+)
+A = TRUNC(MONTHS_BETWEEN(PAY_PROC_PERIOD_END_DATE, Deduction_Start_Date),0)
+L_Installments = Installments - A
+IF L_Installments <=0 THEN
+   (
+     L_Installments = 1
+   )
+
+/*======================= TERMINATION MONTH OUTSTANDING AMOUNT REPAYMENT ================*/
+IF EMP_TERM_DATE <= PAY_PROC_PERIOD_END_DATE THEN
+(
+      L_Deduction_Amount = OUTSTANDING_HRA_AMOUNT2_ASG_ITD + L_Advance_Given
+      RETURN L_Deduction_Amount, L_STOP
+)
+
+/* ===================== INSTALLMENT AMOUNT CALCULATION ================*/
+IF Deduction_Start_Date <= PAY_PROC_PERIOD_END_DATE AND Skip = 'N' THEN
+(
+     L_Installment_Amount = ((OUTSTANDING_HRA_AMOUNT2_ASG_ITD + L_Advance_Given)/L_Installments)
+     IF HRA_CASH_PAYMENT2_AMOUNT_ENTRY_VALUE <> 0 THEN
+	 (
+	     /*IF HRA_CASH_PAYMENT2_AMOUNT_ENTRY_VALUE <= OUTSTANDING_HRA_AMOUNT2_ASG_ITD THEN
+		 (
+		     L_Deduction_Amount = OUTSTANDING_HRA_AMOUNT2_ASG_ITD - HRA_CASH_PAYMENT2_AMOUNT_ENTRY_VALUE
+             L_EARLY_PAYMENT = HRA_CASH_PAYMENT2_AMOUNT_ENTRY_VALUE
+			 RETURN L_Deduction_Amount, L_STOP, L_EARLY_PAYMENT, L_Advance_Paid, L_Advance_Given, L_Installments
+		 )*/
+     
+      L_EARLY_PAYMENT = LEAST (HRA_CASH_PAYMENT2_AMOUNT_ENTRY_VALUE, OUTSTANDING_HRA_AMOUNT2_ASG_ITD)
+	 )	 
+     IF Override_Amount <> 0 THEN
+     (
+         L_Deduction_AMount = least (Override_Amount, (OUTSTANDING_HRA_AMOUNT2_ASG_ITD + L_Advance_Given-L_EARLY_PAYMENT))
+     )
+     ELSE
+     (
+         L_Deduction_Amount = least (L_Installment_Amount, (OUTSTANDING_HRA_AMOUNT2_ASG_ITD + L_Advance_Given-L_EARLY_PAYMENT))
+     )
+     
+     L_Installments = L_Installments - 1
+     
+     IF (OUTSTANDING_HRA_AMOUNT2_ASG_ITD + L_Advance_Given) - L_Deduction_Amount <= 0 THEN 
+     (
+     
+         IF HRA_CASH_PAYMENT2_AMOUNT_ENTRY_VALUE <> 0 THEN
+	   ( 
+     
+		 RETURN L_Deduction_Amount, L_STOP, L_EARLY_PAYMENT, L_Advance_Paid, L_Advance_Given, L_Installments     
+     )
+	 ELSE
+	 (	 
+		 RETURN L_Deduction_Amount, L_STOP, L_Advance_Paid, L_Advance_Given, L_Installments
+	 )    
+     /*RETURN L_Deduction_Amount, L_STOP, L_Advance_Paid, L_Advance_Given,  L_Installments*/
+     )
+     
+     IF HRA_CASH_PAYMENT2_AMOUNT_ENTRY_VALUE <> 0 THEN
+     (
+		 RETURN L_Deduction_Amount, L_EARLY_PAYMENT, L_Advance_Paid, L_Advance_Given, L_Installments
+     )
+     ELSE
+     (
+		RETURN L_Deduction_Amount, L_Advance_Paid, L_Advance_Given, L_Installments
+     )
+     /*RETURN L_Deduction_Amount, L_Advance_Paid, L_Advance_Given,  L_Installments*/
+)
+/***********************************************
+ELSE
+(
+     L_Installments = L_Installments - 1
+     RETURN L_Advance_Paid, L_Advance_Given, L_Installments
+)
+****************************************************/
+/*--------------- Formula Body Ends ---------------*/
+
+SC_NBC_SAVINGS_SKIP
+
+Element Skip
+
+/**************************************************************
+ Formula Name : SC_NBC_SAVINGS_SKIP
+ Description : This formula prevents element from being
+               processed in each period if Skip Input is set to 'Y'.
+***************************************************************/
+DEFAULT FOR NBC_SAVINGS_SKIP_ENTRY_VALUE IS 'N'
+
+/*================ NBC SAVINGS SKIP ============*/
+If NBC_SAVINGS_SKIP_ENTRY_VALUE = 'Y'
+  Then skip_flag = 'Y'
+  Else skip_flag = 'N'
+Return skip_flag
+
+SC_NEGATIVE_PAY_MONITOR
+
+Oracle Payroll
+/*--------------- Alias Begins ---------------*/
+ALIAS TOTAL_EARNINGS_ASG_RUN AS TOTAL_EARNINGS
+/*--------------- Alias Ends ---------------*/
+
+/*--------------- Database Item Default Begins ---------------*/
+ default for PAY_PROC_PERIOD_END_DATE is '31-DEC-4712'(DATE)
+ default for EMP_TERM_DATE is '31-DEC-4712'(DATE)
+ default for TOTAL_EARNINGS is 0
+ default for SC_PAY_PERCENTAGE is 0
+/*--------------- Database Item Default Ends ---------------*/
+
+/*--------------- Variable Default Begins ---------------*/
+/*--------------- Variable Default Ends ----------------*/ 
+
+/*--------------- Formula Body Begins ---------------*/
+
+BF_PAY_VALUE = NEGATIVE_SALARY_ASG_ITD 
+CF_PAY_VALUE = 0
+L_MIN_SAL = ROUND (TOTAL_EARNINGS * (SC_PAY_PERCENTAGE/100))
+MSG = ' '
+
+L_END_DATE = LEAST (EMP_TERM_DATE, PAY_PROC_PERIOD_END_DATE)
+
+IF L_END_DATE  < EMP_TERM_DATE THEN 
+(
+      L_ELIG_AMOUNT =  NET_ASG_RUN - NEGATIVE_SALARY_ASG_ITD - L_MIN_SAL
+
+      IF L_ELIG_AMOUNT < 0 THEN 
+      (
+            CF_PAY_VALUE = L_ELIG_AMOUNT * -1 
+            MSG = 'Minimum Salary should not less than ' + to_text (L_MIN_SAL) +'; Negative Salary Carry Forward : ' + to_text (CF_PAY_VALUE) + 'Negative Salary 
+Brought Forward: '+ to_Text (BF_PAY_VALUE) 
+      )
+      MSG = 'Minimum Salary should not less than ' + to_text (L_MIN_SAL) + 'Negative Salary Brought Forward: '+ to_Text (BF_PAY_VALUE) 
+) 
+ELSE
+(
+     MSG = 'Minimum Salary should not less than ' + to_text (L_MIN_SAL) + 'Employee got terminated, outstanding negative salary is '+ to_Text (BF_PAY_VALUE)
+)
+
+RETURN CF_PAY_VALUE, BF_PAY_VALUE, MSG
+
+SC_NOTICE_PERIOD_PAY
+Splitting of Notice Period Pay
+
+/****************************************************************************
+             SC Notice Period Pay Costing Formula
+
+Balances               :
+Globals                :
+******************************************************************************/
+ALIAS TOTAL_MONTHLY_SALARY_MONTHLY_SALARY_ENTRY_VALUE AS TOT_SAL
+
+default for NOTICE_PERIOD_PAY_PAY_VALUE_ENTRY_VALUE IS 0
+default for TOT_SAL is 0
+DEFAULT FOR GROUP_KF_MONTHLY_ALLOWANCE_PERCENTAGE IS '0'
+DEFAULT FOR GROUP_KF_BASIC_SALARY_PERCENTAGE IS '0'
+
+BASIC = 0
+MONTHLY_ALLOWANCE = 0
+L_BASIC = 0
+L_MONTHLY = 0
+
+IF GROUP_KF_MONTHLY_ALLOWANCE_PERCENTAGE WAS DEFAULTED OR GROUP_KF_BASIC_SALARY_PERCENTAGE WAS DEFAULTED THEN
+  (
+     L_BASIC = SC_BASIC_PERCENT
+     L_MONTHLY = SC_MONTHLY_ALLOWANCE_PERCENT
+  )
+  ELSE 
+  (
+     L_BASIC = TO_NUM(GROUP_KF_BASIC_SALARY_PERCENTAGE)
+     L_MONTHLY= TO_NUM(GROUP_KF_MONTHLY_ALLOWANCE_PERCENTAGE)
+  )
+BASIC = TOT_SAL * (L_BASIC/100)
+MONTHLY = TOT_SAL * (L_MONTHLY/100)
+
+RETURN BASIC, MONTHLY
+
+SC_OVERTIME_ALLOWANCE
+
+Oracle Payroll
+
+/********************************************************************************
+               SC Overtime Allowance Calculation Formula 
+
+Globals                : None
+Balances               : None
+User Defined Functions : None
+******************************************************************************/
+
+inputs are Normal_Hours, Late_Hours, Weekend_Hours, Holiday_Hours
+
+/*--------------------- Database Item Default Begins ---------------*/
+ default for PAY_PROC_PERIOD_START_DATE is '01-JAN-1952'(DATE)
+ default for PAY_PROC_PERIOD_END_DATE is '31-DEC-4712'(DATE)
+ default for ENTRY_START_DATE is '01-JAN-1952'(DATE)
+ default for ENTRY_END_DATE is '31-DEC-4712'(DATE)
+ default for EMP_HIRE_DATE is '01-JAN-1952'(DATE)
+ default for EMP_TERM_DATE is '31-DEC-4712'(DATE)
+ default for TOTAL_MONTHLY_SALARY_MONTHLY_SALARY_ENTRY_VALUE is 0
+ default for BASIC_SALARY_ASG_PTD is 0
+ default for Normal_Hours is 0
+ default for Late_Hours is 0
+ default for Weekend_Hours is 0
+ default for Holiday_Hours is 0
+ default for GROUP_KF_MONTHLY_ALLOWANCE_PERCENTAGE is '0'
+ default for GROUP_KF_BASIC_SALARY_PERCENTAGE is '0'
+/*--------------- Database Item Default Ends ---------------*/
+
+/*--------------- Variable Default Begins ---------------*/
+ Normal_OT_Amount = 0
+ Late_OT_Amount = 0
+ Weekend_OT_Amount = 0
+ Holiday_OT_Amount = 0
+ Total_OT_Amount = 0
+  CAL_DAYS = 0
+
+/*--------------- Variable Default Ends ---------------*/ 
+
+
+/*--------------- Formula Body Begins ---------------*/
+
+/*Added on 13SEP15 to calculate Overtime allowance based on Calender days*/
+
+CAL_DAYS =DAYS_BETWEEN(PAY_PROC_PERIOD_END_DATE,PAY_PROC_PERIOD_START_DATE)+1
+
+IF GROUP_KF_MONTHLY_ALLOWANCE_PERCENTAGE WAS DEFAULTED OR GROUP_KF_BASIC_SALARY_PERCENTAGE WAS DEFAULTED THEN
+   (
+     L_BASIC = SC_BASIC_PERCENT
+     L_MONTHLY = SC_MONTHLY_ALLOWANCE_PERCENT
+   )
+ELSE
+   (
+     L_BASIC = TO_NUM(GROUP_KF_BASIC_SALARY_PERCENTAGE)
+     L_MONTHLY= TO_NUM(GROUP_KF_MONTHLY_ALLOWANCE_PERCENTAGE)
+   )
+MONTHLY_VALUE = ROUND(TOTAL_MONTHLY_SALARY_MONTHLY_SALARY_ENTRY_VALUE * (L_MONTHLY/100),2)
+BASIC = ROUND(TOTAL_MONTHLY_SALARY_MONTHLY_SALARY_ENTRY_VALUE - MONTHLY_VALUE,2)
+
+Normal_OT_Amount = (TOTAL_MONTHLY_SALARY_MONTHLY_SALARY_ENTRY_VALUE/(CAL_DAYS*8))* 1.25 * Normal_Hours
+
+Late_OT_Amount = (TOTAL_MONTHLY_SALARY_MONTHLY_SALARY_ENTRY_VALUE/(CAL_DAYS*8))* 1.5 * Late_Hours
+
+Weekend_OT_Amount = (TOTAL_MONTHLY_SALARY_MONTHLY_SALARY_ENTRY_VALUE/(CAL_DAYS*8)) * 0.5 * Weekend_Hours + (BASIC/(CAL_DAYS*8))* Weekend_Hours
+
+
+/* Commented on 22SEP15 to change OT calculation for public holidays as requsted by SC */ 
+/*Holiday_OT_Amount = (TOTAL_MONTHLY_SALARY_MONTHLY_SALARY_ENTRY_VALUE/(CAL_DAYS*8)) * 0.5 * Holiday_Hours +  (BASIC/(CAL_DAYS*8))* Holiday_Hours*/
+
+Holiday_OT_Amount = (TOTAL_MONTHLY_SALARY_MONTHLY_SALARY_ENTRY_VALUE/(CAL_DAYS*8)) * Holiday_Hours +  (BASIC/(CAL_DAYS*8))* Holiday_Hours * 1.5
+
+Total_OT_Amount = Normal_OT_Amount + Late_OT_Amount + Weekend_OT_Amount + Holiday_OT_Amount
+
+return Normal_OT_Amount, Late_OT_Amount, Weekend_OT_Amount, Holiday_OT_Amount, Total_OT_Amount
+
+SC_PENSION_CONTRIBUTION
+
+Oracle Payroll
+
+/****************************************************************************
+               SC PENSION CONTRIBUTION Calculation Formula 
+
+Globals                : None
+Balances               : None
+User Defined Functions : None
+******************************************************************************/
+
+
+/*-------------------- Database Item Default Begins ---------------*/
+default for PAY_PROC_PERIOD_START_DATE is '01-JAN-1952'(DATE)
+default for PAY_PROC_PERIOD_END_DATE is '31-DEC-4712'(DATE)
+default for EMP_HIRE_DATE is '01-JAN-1952'(DATE)
+default for EMP_TERM_DATE is '31-DEC-4712'(DATE)
+default for GROUP_KF_PENSION_ELIGIBILITY IS 'NO'
+default for TOTAL_MONTHLY_SALARY_MONTHLY_SALARY_ENTRY_VALUE is 0
+default for GROUP_KF_EMPLOYEE_PENSION_CONTRIBUTION is '0'
+default for GROUP_KF_EMPLOYER_PENSION_CONTRIBUTION is '0'
+
+/*--------------- Database Item Default Ends---------------*/
+
+COMP_WORKER_CONTR =  0
+COMP_PENSION_CONTR = 0
+COMP_CONTR = 0
+EMP_CONTR = 0
+IF TERMINATION_DAYS_ASG_ITD = 0 THEN
+(
+PENSION_SAL = TOTAL_MONTHLY_SALARY_MONTHLY_SALARY_ENTRY_VALUE
+
+IF PENSION_SAL > 50000 THEN
+   (
+      PENSION_SAL = 50000
+   )
+L_NATIONALITY = SC_GET_NATIONALITY(PAY_PROC_PERIOD_END_DATE)
+IF GROUP_KF_EMPLOYEE_PENSION_CONTRIBUTION WAS DEFAULTED OR GROUP_KF_EMPLOYER_PENSION_CONTRIBUTION WAS DEFAULTED THEN
+(
+L_COMP_CONTR = SC_GET_TABLE_VALUE('SC PENSION','Company Contribution',L_NATIONALITY ,PAY_PROC_PERIOD_END_DATE)
+
+L_EMP_CONTR  = SC_GET_TABLE_VALUE('SC PENSION','Employee Contribution',L_NATIONALITY, PAY_PROC_PERIOD_END_DATE)
+
+)
+ELSE
+(
+L_COMP_CONTR = to_num(GROUP_KF_EMPLOYER_PENSION_CONTRIBUTION)
+L_EMP_CONTR = to_num(GROUP_KF_EMPLOYEE_PENSION_CONTRIBUTION)
+)
+COMP_CONTR = PENSION_SAL * (L_COMP_CONTR/100)
+EMP_CONTR = PENSION_SAL * (L_EMP_CONTR/100)
+
+return COMP_CONTR, EMP_CONTR
+)
+
+SC_PERFORMANCE_ALLOWANCE
+
+Oracle Payroll
+
+/*****************************************************************************
+               SC Performance Allowance Calculation Formula 
+
+Globals                : None
+Balances               : None
+User Defined Functions : None
+******************************************************************************/
+
+inputs are Monthly_Amount, Upto_Date(DATE)
+
+/*--------------- Database Item Default Begins ---------------*/
+default for PAY_PROC_PERIOD_START_DATE is '01-JAN-1952'(DATE)
+default for PAY_PROC_PERIOD_END_DATE is '31-DEC-4712'(DATE)
+default for ENTRY_START_DATE is '01-JAN-1952'(DATE)
+default for ENTRY_END_DATE is '31-DEC-4712'(DATE)
+default for EMP_HIRE_DATE is '01-JAN-1952'(DATE)
+default for EMP_TERM_DATE is '31-DEC-4712'(DATE)
+default for Monthly_Amount is 0
+/*--------------- Database Item Default Ends---------------*/
+
+/*--------------- Variable Default Begins ---------------*/
+ L_STOP = 'Y'
+/*--------------- Variable Default Ends ---------------*/ 
+
+/*--------------- Formula Body Begins ---------------*/
+IF TERMINATION_DAYS_ASG_ITD = 0 THEN
+(
+MSG = 'Performance Allowance for the month'+' is '+to_char(Monthly_Amount)
+IF EMP_TERM_DATE <= PAY_PROC_PERIOD_END_DATE THEN
+(
+   RETURN Monthly_Amount, MSG, L_STOP
+)
+IF Upto_Date < PAY_PROC_PERIOD_START_DATE THEN
+   (
+     return L_STOP
+   )
+IF Upto_Date <= PAY_PROC_PERIOD_END_DATE THEN
+   (
+     return Monthly_Amount, L_STOP, MSG
+   )
+return Monthly_Amount, MSG
+)
+/*--------------- Formula Body Ends -------------*/
+
+SC_SALARY_ADVANCE_DEDUCTION_SKIP
+Element Skip
+/**************************************************************
+ Formula Name : SC_SALARY_ADVANCE_DEDUCTION_SKIP
+ Description : This formula prevents element from being
+               processed in each period if Skip Input is set to 'Y' or Deduction is in future
+***************************************************************/
+DEFAULT FOR SALARY_ADVANCE_SKIP_ENTRY_VALUE IS 'N'
+DEFAULT FOR SALARY_ADVANCE_DEDUCTION_START_DATE_ENTRY_VALUE IS '31-DEC-4712' (DATE)
+DEFAULT FOR EMP_TERM_DATE IS '31-DEC-4712' (DATE)
+DEFAULT FOR PAY_PROC_PERIOD_END_DATE IS '31-DEC-4712' (DATE)
+
+L_END_DATE = LEAST (EMP_TERM_DATE, PAY_PROC_PERIOD_END_DATE)
+
+If (SALARY_ADVANCE_SKIP_ENTRY_VALUE = 'Y' OR 
+SALARY_ADVANCE_DEDUCTION_START_DATE_ENTRY_VALUE > PAY_PROC_PERIOD_END_DATE) AND (EMP_TERM_DATE <> L_END_DATE) THEN
+ skip_flag = 'Y'
+Else 
+skip_flag = 'N'
+Return skip_flag
+
+ SC_SALARY_ADVANCE_RECOVERY
+ Oracle Payroll
+
+/*****************************************************************************
+               SC Salary Advance Recovery Calculation Formula 
+
+Globals                : None
+Balances               : OUTSTANDING_SALARY_ADVANCE_ASG_ITD
+User Defined Functions : None
+******************************************************************************
+
+/*--------------- Database Item Default Begins ---------------*/
+DEFAULT FOR PAY_PROC_PERIOD_END_DATE IS '31-DEC-4712' (DATE)
+DEFAULT FOR EMP_TERM_DATE IS '31-DEC-4712' (DATE)
+DEFAULT FOR Override_Amount IS 0
+DEFAULT FOR Installments IS 0
+DEFAULT FOR OUTSTANDING_SALARY_ADVANCE_ASG_ITD IS 0
+DEFAULT FOR Skip IS 'N'
+DEFAULT FOR SALARY_ADVANCE_CASH_PAYMENT_AMOUNT_ENTRY_VALUE IS 0
+
+/*--------------- Database Item Default Ends---------------*/
+
+INPUTS ARE Advance_Amount, Installments, Deduction_Start_Date (DATE), Skip (TEXT), Override_Amount
+
+/*--------------- Variable Default Begins ---------------*/
+L_Advance_Given = 0
+L_Advance_Paid = 0
+L_Installment_Amount = 0
+L_Deduction_Amount = 0
+L_STOP = 'Y'
+L_Installments = 0
+A = 0
+/*--------------- Variable Default Ends---------------*/
+/*--------------- Formula Body Begins ---------------*/
+IF OUTSTANDING_SALARY_ADVANCE_ASG_ITD = 0 THEN 
+(
+    L_Advance_Given = Advance_Amount
+)
+A = TRUNC(MONTHS_BETWEEN(PAY_PROC_PERIOD_END_DATE, Deduction_Start_Date),0)
+L_Installments = Installments - A
+IF L_Installments <=0 THEN
+   (
+     L_Installments = 1
+   )
+
+/*================ TERMINATION MONTH OUTSTANING AMOUNT REPAYMENT ============*/
+IF EMP_TERM_DATE <= PAY_PROC_PERIOD_END_DATE THEN
+(
+      L_Deduction_Amount = OUTSTANDING_SALARY_ADVANCE_ASG_ITD
+      RETURN L_Deduction_Amount, L_STOP
+)
+
+/*================== INSTALLMENT AMOUNT CALCULATON ======================*/
+IF Deduction_Start_Date <= PAY_PROC_PERIOD_END_DATE AND Skip = 'N' THEN
+(
+     L_Installment_Amount = ((OUTSTANDING_SALARY_ADVANCE_ASG_ITD + L_Advance_Given)/L_Installments)
+	 IF SALARY_ADVANCE_CASH_PAYMENT_AMOUNT_ENTRY_VALUE <> 0 THEN
+	 (
+	     IF SALARY_ADVANCE_CASH_PAYMENT_AMOUNT_ENTRY_VALUE <= OUTSTANDING_SALARY_ADVANCE_ASG_ITD THEN
+		 (
+		     L_Deduction_Amount = OUTSTANDING_SALARY_ADVANCE_ASG_ITD - SALARY_ADVANCE_CASH_PAYMENT_AMOUNT_ENTRY_VALUE
+             L_EARLY_PAYMENT = SALARY_ADVANCE_CASH_PAYMENT_AMOUNT_ENTRY_VALUE
+			 RETURN L_Deduction_Amount, L_STOP, L_EARLY_PAYMENT, L_Advance_Paid, L_Advance_Given, L_Installments
+		 )
+	 )	 
+     IF Override_Amount <> 0 THEN
+     (
+         L_Deduction_Amount = least (Override_Amount, (OUTSTANDING_SALARY_ADVANCE_ASG_ITD + L_Advance_Given))
+     )
+     ELSE
+     (
+         L_Deduction_Amount = least (L_Installment_Amount, (OUTSTANDING_SALARY_ADVANCE_ASG_ITD + L_Advance_Given))
+     )
+     L_Installments = L_Installments - 1
+     IF (OUTSTANDING_SALARY_ADVANCE_ASG_ITD + L_Advance_Given) - L_Deduction_Amount <= 0 THEN 
+     (
+         RETURN L_Deduction_Amount, L_STOP, L_Advance_Paid, L_Advance_Given, L_Installments
+     )
+     RETURN L_Deduction_Amount, L_Advance_Paid, L_Advance_Given, L_Installments
+)
+
+/* ******************************************
+ELSE
+(    
+     L_Installments = INSTALLMENTS 
+     RETURN L_Advance_Paid, L_Advance_Given, L_Installments
+)
+
+********************************************** */
+/*--------------- Formula Body Ends ---------------*/
+
+SC_SICK_LEAVE_ACCRUAL
+
+Oracle Payroll
+
+DEFAULT FOR EMP_HIRE_DATE IS '01-JAN-1952'(DATE)
+DEFAULT FOR PAY_PROC_PERIOD_START_DATE IS '01-JAN-1952'(DATE)
+DEFAULT FOR PAY_PROC_PERIOD_NUMBER IS 0
+DEFAULT FOR PAY_PROC_PERIOD_END_DATE IS '31-DEC-4712'(DATE)
+DEFAULT FOR ASG_LAST_PROC_PERIOD_NUMBER IS 0
+
+FULL_PAY = 0
+HALF_PAY = 0
+WITHOUT_PAY = 0
+FULL_PAY_RETRO = 0
+HALF_PAY_RETRO = 0
+WITHOUT_PAY_RETRO = 0
+
+/*--------------Calendar Days or Working Days differentiation--------------------*/
+/* Below function added on 01SEP15 to get MOL ID exist or not for Sick Leave calculation */
+L_DOR_EXIST=XXSC_DOC_RECORDS_EXIST('Work Permit Information') 
+
+/* Sick Leave Accrual for MOL Employees*/
+IF L_DOR_EXIST = 'Y'
+THEN
+(
+	FULL_PAY_RETRO = SC_GET_ENTRY_VALUE_PREVIOUS_RETRO(PAY_PROC_PERIOD_START_DATE,'Sick Leave','Full Pay Days')
+	HALF_PAY_RETRO = SC_GET_ENTRY_VALUE_PREVIOUS_RETRO(PAY_PROC_PERIOD_START_DATE,'Sick Leave','Half Pay Days')
+	WITHOUT_PAY_RETRO = SC_GET_ENTRY_VALUE_PREVIOUS_RETRO(PAY_PROC_PERIOD_START_DATE,'Sick Leave','Without Pay Days')
+
+	IF LAST_DAY(EMP_HIRE_DATE) = PAY_PROC_PERIOD_END_DATE OR (EMP_HIRE_DATE < PAY_PROC_PERIOD_START_DATE AND ASG_LAST_PROC_PERIOD_NUMBER = 0) THEN
+	(
+	   L_ELIG_DAYS = (DAYS_BETWEEN(ADD_DAYS(TRUNC(ADD_MONTHS(EMP_HIRE_DATE,12),'YEAR'),-1),EMP_HIRE_DATE)+1)/365
+	   FULL_PAY=ROUND((SC_SICK_LEAVE_FULL_PAY* L_ELIG_DAYS)*2,0)/2
+	   HALF_PAY = ROUND((SC_SICK_LEAVE_HALF_PAY * L_ELIG_DAYS)*2,0)/2
+	   WITHOUT_PAY=ROUND((SC_SICK_LEAVE_WITHOUT_PAY * L_ELIG_DAYS)*2,0)/2
+	)
+
+	IF PAY_PROC_PERIOD_NUMBER = 1 AND EMP_HIRE_DATE < PAY_PROC_PERIOD_START_DATE THEN
+	(
+	   
+	   FULL_PAY = SC_SICK_LEAVE_FULL_PAY
+	   HALF_PAY = SC_SICK_LEAVE_HALF_PAY
+	   WITHOUT_PAY = SC_SICK_LEAVE_WITHOUT_PAY
+
+	)
+	RETURN FULL_PAY,HALF_PAY,WITHOUT_PAY, FULL_PAY_RETRO,HALF_PAY_RETRO, WITHOUT_PAY_RETRO  
+)
+ELSE
+(	
+	/* Sick Leave Accrual for DIFC Employees*/
+	FULL_PAY_RETRO = SC_GET_ENTRY_VALUE_PREVIOUS_RETRO(PAY_PROC_PERIOD_START_DATE,'Sick Leave','Full Pay Days')
+	/*HALF_PAY_RETRO = SC_GET_ENTRY_VALUE_PREVIOUS_RETRO(PAY_PROC_PERIOD_START_DATE,'Sick Leave','Half Pay Days')
+	  WITHOUT_PAY_RETRO = SC_GET_ENTRY_VALUE_PREVIOUS_RETRO(PAY_PROC_PERIOD_START_DATE,'Sick Leave','Without Pay Days')*/
+
+	IF LAST_DAY(EMP_HIRE_DATE) = PAY_PROC_PERIOD_END_DATE OR (EMP_HIRE_DATE < PAY_PROC_PERIOD_START_DATE AND ASG_LAST_PROC_PERIOD_NUMBER = 0) THEN
+	(
+	   L_ELIG_DAYS = (DAYS_BETWEEN(ADD_DAYS(TRUNC(ADD_MONTHS(EMP_HIRE_DATE,12),'YEAR'),-1),EMP_HIRE_DATE)+1)/365
+	   FULL_PAY=ROUND((SC_DIFC_SICK_LEAVE_LIMIT* L_ELIG_DAYS)*2,0)/2
+	)
+
+	IF PAY_PROC_PERIOD_NUMBER = 1 AND EMP_HIRE_DATE < PAY_PROC_PERIOD_START_DATE THEN
+	(
+	   
+	   FULL_PAY = SC_DIFC_SICK_LEAVE_LIMIT
+
+	)
+	RETURN FULL_PAY,FULL_PAY_RETRO
+)
+
+SC_SICK_LEAVE_TAKEN
+
+Oracle Payroll
+
+DEFAULT FOR PAY_PROC_PERIOD_START_DATE IS '01-JAN-1952'(DATE)
+DEFAULT FOR PAY_PROC_PERIOD_END_DATE IS '31-DEC-4712'(DATE)
+DEFAULT FOR ENTRY_START_DATE IS '01-JAN-1952'(DATE)
+DEFAULT FOR ENTRY_END_DATE IS '31-DEC-4712'(DATE)
+DEFAULT FOR TOTAL_MONTHLY_SALARY_MONTHLY_SALARY_ENTRY_VALUE IS 0
+DEFAULT FOR GROUP_KF_MONTHLY_ALLOWANCE_PERCENTAGE IS '0'
+DEFAULT FOR GROUP_KF_BASIC_SALARY_PERCENTAGE IS '0'
+
+BASIC_DEDUCTION = 0
+MONTHLY_ALLOWANCE_DEDUCTION = 0
+FROM_DATE = GREATEST(PAY_PROC_PERIOD_START_DATE,ENTRY_START_DATE)
+TO_DATE = LEAST(PAY_PROC_PERIOD_END_DATE,ENTRY_END_DATE)
+
+CALENDAR_DAYS = DAYS_BETWEEN(PAY_PROC_PERIOD_END_DATE,PAY_PROC_PERIOD_START_DATE)+1
+
+/* Below function added on 01SEP15 to get MOL ID exist or not */
+L_DOR_EXIST=XXSC_DOC_RECORDS_EXIST('Work Permit Information') 
+
+IF L_DOR_EXIST = 'Y'
+THEN
+(
+	DAYS = SC_GET_LEAVE_DAYS('Sick Leave',from_date,to_date,'Calendar')
+
+	FULL_PAY_RETRO = SC_GET_ENTRY_VALUE_RETRO(PAY_PROC_PERIOD_END_DATE,'Sick Leave','Full Pay Days')
+
+	msg = 'MOL Full Pay Retro Days: '||TO_TEXT (FULL_PAY_RETRO)
+
+	HALF_PAY_RETRO = SC_GET_ENTRY_VALUE_RETRO(PAY_PROC_PERIOD_END_DATE,'Sick Leave','Half Pay Days')
+
+	WITHOUT_PAY_RETRO = SC_GET_ENTRY_VALUE_RETRO(PAY_PROC_PERIOD_END_DATE,'Sick Leave','Without Pay Days')
+
+	REMAINING = DAYS
+
+	FULL_PAY = LEAST(REMAINING, AVAILABLE_SICK_LEAVE_FULL_PAY_ASG_YTD - FULL_PAY_RETRO)
+
+	REMAINING = REMAINING - FULL_PAY
+
+	HALF_PAY = LEAST(REMAINING, AVAILABLE_SICK_LEAVE_HALF_PAY_ASG_YTD - HALF_PAY_RETRO)
+
+	REMAINING = REMAINING - HALF_PAY
+
+	WITHOUT_PAY = LEAST(REMAINING, AVAILABLE_SICK_LEAVE_WITHOUT_PAY_ASG_YTD - WITHOUT_PAY_RETRO)
+
+	UNPAID = REMAINING - WITHOUT_PAY
+
+	DEDUCTION = ((HALF_PAY*0.5)+WITHOUT_PAY+UNPAID)*TOTAL_MONTHLY_SALARY_MONTHLY_SALARY_ENTRY_VALUE/CALENDAR_DAYS
+
+	IF GROUP_KF_MONTHLY_ALLOWANCE_PERCENTAGE WAS DEFAULTED OR GROUP_KF_BASIC_SALARY_PERCENTAGE WAS DEFAULTED THEN
+	  (
+		 L_BASIC = SC_BASIC_PERCENT
+		 L_MONTHLY = SC_MONTHLY_ALLOWANCE_PERCENT
+	  )
+	  ELSE 
+	  (
+		 L_BASIC = TO_NUM(GROUP_KF_BASIC_SALARY_PERCENTAGE)
+		 L_MONTHLY= TO_NUM(GROUP_KF_MONTHLY_ALLOWANCE_PERCENTAGE)
+	  )
+
+	MONTHLY_ALLOWANCE_DEDUCTION = DEDUCTION * L_MONTHLY/100
+	BASIC_DEDUCTION = DEDUCTION - MONTHLY_ALLOWANCE_DEDUCTION 
+
+	MSG=MSG+' Unpaid Days '+TO_CHAR(UNPAID)+' Deduction '+TO_CHAR(DEDUCTION) +' Montly '+TO_CHAR(L_MONTHLY) +' Montly Ded '+TO_CHAR(MONTHLY_ALLOWANCE_DEDUCTION)
+
+	RETURN DAYS,FULL_PAY,HALF_PAY,WITHOUT_PAY,UNPAID, BASIC_DEDUCTION, MONTHLY_ALLOWANCE_DEDUCTION, MSG
+)
+ELSE
+(	
+	DAYS = SC_GET_LEAVE_DAYS('Sick Leave',from_date,to_date,'Working')
+	
+	FULL_PAY_RETRO = SC_GET_ENTRY_VALUE_RETRO(PAY_PROC_PERIOD_END_DATE,'Sick Leave','Full Pay Days')
+
+	msg = 'DIFC Full Pay Retro Days: '||TO_TEXT (FULL_PAY_RETRO)
+
+	/*HALF_PAY_RETRO = SC_GET_ENTRY_VALUE_RETRO(PAY_PROC_PERIOD_END_DATE,'Sick Leave','Half Pay Days')
+
+	WITHOUT_PAY_RETRO = SC_GET_ENTRY_VALUE_RETRO(PAY_PROC_PERIOD_END_DATE,'Sick Leave','Without Pay Days')*/
+
+	REMAINING = DAYS
+
+	FULL_PAY = LEAST(REMAINING, AVAILABLE_SICK_LEAVE_FULL_PAY_ASG_YTD - FULL_PAY_RETRO)
+
+	UNPAID = REMAINING - FULL_PAY	
+
+	DEDUCTION = (UNPAID)*TOTAL_MONTHLY_SALARY_MONTHLY_SALARY_ENTRY_VALUE/CALENDAR_DAYS
+
+	IF GROUP_KF_MONTHLY_ALLOWANCE_PERCENTAGE WAS DEFAULTED OR GROUP_KF_BASIC_SALARY_PERCENTAGE WAS DEFAULTED THEN
+	  (
+		 L_BASIC = SC_BASIC_PERCENT
+		 L_MONTHLY = SC_MONTHLY_ALLOWANCE_PERCENT
+	  )
+	  ELSE 
+	  (
+		 L_BASIC = TO_NUM(GROUP_KF_BASIC_SALARY_PERCENTAGE)
+		 L_MONTHLY= TO_NUM(GROUP_KF_MONTHLY_ALLOWANCE_PERCENTAGE)
+	  )
+
+	MONTHLY_ALLOWANCE_DEDUCTION = DEDUCTION * L_MONTHLY/100
+	BASIC_DEDUCTION = DEDUCTION - MONTHLY_ALLOWANCE_DEDUCTION 
+
+	MSG=MSG+' Unpaid Days '+TO_CHAR(UNPAID)+' Deduction '+TO_CHAR(DEDUCTION) +' Montly '+TO_CHAR(L_MONTHLY) +' Montly Ded '+TO_CHAR(MONTHLY_ALLOWANCE_DEDUCTION)
+
+	RETURN DAYS,FULL_PAY,UNPAID, BASIC_DEDUCTION, MONTHLY_ALLOWANCE_DEDUCTION, MSG
+)
+
+SC_STOP_SALARY
+
+Oracle Payroll
+
+
+/*------------------ Database Item Default Begins ---------------*/
+DEFAULT FOR PAY_PROC_PERIOD_END_DATE IS  '31-DEC-4712'(DATE)
+DEFAULT FOR EMP_TERM_DATE IS '31-DEC-4712' (DATE)
+
+inputs are SALARY_RELEASE_DATE (DATE)
+L_STOP = 'Y'
+BF_PAY_VALUE = 0
+STOP_PAY_VALUE = 0
+
+IF SALARY_RELEASE_DATE <= PAY_PROC_PERIOD_END_DATE THEN
+   (
+     BF_PAY_VALUE = STOP_SALARY_ASG_ITD
+     RETURN BF_PAY_VALUE, L_STOP
+   )
+ELSE
+   (
+     STOP_PAY_VALUE = NET_ASG_RUN
+     RETURN STOP_PAY_VALUE
+   )
+
+
+SC_TOTAL_MONTHLY_SALARY
+
+Oracle Payroll
+
+
+/******************************************************************************
+               SC Total Monthly Salary Calculation Formula 
+
+Globals                : SC_BASIC_PERCENT, SC_MONTHLY_ALLOWANCE_PERCENT
+Balances               : None
+User Defined Functions : None
+******************************************************************************/
+
+inputs are MONTHLY_SALARY, PRORATE_START(DATE), PRORATE_END(DATE)
+
+/*------------------- Database Item Default Begins ----------------*/
+default for PAY_PROC_PERIOD_START_DATE is '01-JAN-1952'(DATE)
+default for PAY_PROC_PERIOD_END_DATE is '31-DEC-4712'(DATE)
+default for PRORATE_START is '01-JAN-1952'(DATE)
+default for PRORATE_END is '31-DEC-4712'(DATE)
+default for ENTRY_START_DATE is '01-JAN-1952'(DATE)
+default for ENTRY_END_DATE is '31-DEC-4712'(DATE)
+default for EMP_HIRE_DATE is '01-JAN-1952'(DATE)
+default for EMP_TERM_DATE is '31-DEC-4712'(DATE)
+default for MONTHLY_SALARY is 0
+DEFAULT FOR GROUP_KF_MONTHLY_ALLOWANCE_PERCENTAGE IS '0'
+DEFAULT FOR GROUP_KF_BASIC_SALARY_PERCENTAGE IS '0'
+DEFAULT FOR ASG_LAST_PROC_PERIOD_NUMBER IS 0
+
+/*--------------- Database Item Default Ends---------------*/
+
+/*--------------- Variable Default Begins ---------------*/
+ CALENDAR_DAYS = 0
+ PRORATED_DAYS = 0
+ BASIC_PERCENT = 0
+ MONTHLY_PERCENT = 0
+ EXTRA_DAYS = 0
+ BASIC_RETRO = 0
+ MONTHLY_RETRO = 0
+
+/*--------------- Variable Default Ends ---------------*/ 
+
+/*--------------- Formula Body Begins ---------------*/
+IF TERMINATION_DAYS_ASG_ITD = 0 THEN
+(
+  L_START_DATE = greatest(PAY_PROC_PERIOD_START_DATE,ENTRY_START_DATE, EMP_HIRE_DATE, PRORATE_START)
+  L_END_DATE = least(PAY_PROC_PERIOD_END_DATE, ENTRY_END_DATE, EMP_TERM_DATE, PRORATE_END)
+  PRORATED_DAYS = (days_between(L_END_DATE, L_START_DATE)+1)
+
+  CALENDAR_DAYS = (days_between(PAY_PROC_PERIOD_END_DATE, PAY_PROC_PERIOD_START_DATE)+1)
+  IF EMP_TERM_DATE <= PAY_PROC_PERIOD_END_DATE THEN
+  (
+    EXTRA_DAYS = 1
+  )
+  /*----------------------- TERMINATED AFTER PAYROLL, PROCESSING IN NEXT MONTH BEGINS ------------*/
+  IF EMP_TERM_DATE < PAY_PROC_PERIOD_START_DATE THEN
+  (
+     L_START_DATE = EMP_TERM_DATE
+     L_END_DATE = PAY_PROC_PERIOD_START_DATE
+     PRORATED_DAYS = days_between(L_START_DATE,L_END_DATE)+1
+     CALENDAR_DAYS = days_between(ADD_MONTHS(PAY_PROC_PERIOD_END_DATE,-1),ADD_MONTHS(PAY_PROC_PERIOD_START_DATE,-1))+1
+  )
+  /*----------------------- TERMINATED AFTER PAYROLL, PROCESSING IN NEXT MONTH ENDS ------------*/
+  IF GROUP_KF_MONTHLY_ALLOWANCE_PERCENTAGE WAS DEFAULTED OR GROUP_KF_BASIC_SALARY_PERCENTAGE WAS DEFAULTED THEN
+  (
+     L_BASIC = SC_BASIC_PERCENT
+     L_MONTHLY = SC_MONTHLY_ALLOWANCE_PERCENT
+  )
+  ELSE 
+  (
+     L_BASIC = TO_NUM(GROUP_KF_BASIC_SALARY_PERCENTAGE)
+     L_MONTHLY= TO_NUM(GROUP_KF_MONTHLY_ALLOWANCE_PERCENTAGE)
+  )
+  /*------------------------ PERCENTAGES EXCEEEDING 100 ------------*/
+  IF L_BASIC+L_MONTHLY > 100 THEN
+  (
+     MSG = ELEMENT_NAME+': Total Percentage exceeds 100'
+     RETURN MSG, EXTRA_DAYS
+  )
+
+  MONTHLY_VALUE = ROUND(Monthly_Salary * (L_MONTHLY/100),2)
+  BASIC = MONTHLY_SALARY - MONTHLY_VALUE
+
+  TOTAL = ROUND((MONTHLY_SALARY * (PRORATED_DAYS/CALENDAR_DAYS)),2)
+  MONTHLY_ALLOWANCE = ROUND(TOTAL*L_MONTHLY/100,2)
+  BASIC_SALARY = TOTAL- MONTHLY_ALLOWANCE
+  
+  IF ASG_LAST_PROC_PERIOD_NUMBER = 0 AND EMP_HIRE_DATE < PAY_PROC_PERIOD_START_DATE THEN
+  (
+     BASIC_RETRO = BASIC * (days_between(add_months(PAY_PROC_PERIOD_END_DATE,-1),EMP_HIRE_DATE) + 1)/(days_between(ADD_MONTHS(PAY_PROC_PERIOD_END_DATE,-1),ADD_MONTHS(PAY_PROC_PERIOD_START_DATE,-1))+1)
+     MONTHLY_RETRO = MONTHLY_VALUE * (days_between(add_months(PAY_PROC_PERIOD_END_DATE,-1),EMP_HIRE_DATE) + 1)/(days_between(ADD_MONTHS(PAY_PROC_PERIOD_END_DATE,-1),ADD_MONTHS(PAY_PROC_PERIOD_START_DATE,-1))+1)
+     BASIC_SALARY = BASIC
+     MONTHLY_ALLOWANCE = MONTHLY_VALUE
+     IF (CALENDAR_DAYS <> PRORATED_DAYS)THEN
+  (
+     MSG = ELEMENT_NAME+': Prorated from ' +to_char(L_START_DATE,'DD-MON-YYYY')+' to '+to_char(L_END_DATE,'DD-MON-YYYY')+'.Amount Paid for the Period is '+to_char(BASIC_SALARY + MONTHLY_ALLOWANCE)
+  )
+ ELSE
+  (
+     MSG = ELEMENT_NAME+': No Proration. Full Amount Paid'+'. Full Value for the Period is '+to_char(Monthly_Salary) 
+  )
+     RETURN BASIC, MONTHLY_VALUE, BASIC_SALARY, MONTHLY_ALLOWANCE, MSG, EXTRA_DAYS, BASIC_RETRO, MONTHLY_RETRO
+  )
+
+
+  IF (CALENDAR_DAYS <> PRORATED_DAYS)THEN
+  (
+     MSG = ELEMENT_NAME+': Prorated from ' +to_char(L_START_DATE,'DD-MON-YYYY')+' to '+to_char(L_END_DATE,'DD-MON-YYYY')+'.Amount Paid for the Period is '+to_char(BASIC_SALARY + MONTHLY_ALLOWANCE)
+  )
+ ELSE
+  (
+     MSG = ELEMENT_NAME+': No Proration. Full Amount Paid'+'. Full Value for the Period is '+to_char(Monthly_Salary) 
+  )
+
+ RETURN BASIC, MONTHLY_VALUE, BASIC_SALARY, MONTHLY_ALLOWANCE, MSG, EXTRA_DAYS
+)
+
+/*--------------- Formula Body Ends ---------------*/
+
+SC_TRANSPORT_ALLOWANCE
+
+Oracle Payroll
+
+/*****************************************************************************
+               SC Transport Allowance Calculation Formula 
+
+Globals                : None
+Balances               : None
+User Defined Functions : None
+******************************************************************************/
+
+inputs are Monthly_Amount,PRORATE_START(DATE),PRORATE_END(DATE)
+
+/*--------------- Database Item Default Begins ---------------*/
+default for PAY_PROC_PERIOD_START_DATE is '01-JAN-1952'(DATE)
+default for PAY_PROC_PERIOD_END_DATE is '31-DEC-4712'(DATE)
+default for PRORATE_START is '01-JAN-1952'(DATE)
+default for PRORATE_END is '31-DEC-4712'(DATE)
+default for ENTRY_START_DATE is '01-JAN-1952'(DATE)
+default for ENTRY_END_DATE is '31-DEC-4712'(DATE)
+default for EMP_HIRE_DATE is '01-JAN-1952'(DATE)
+default for EMP_TERM_DATE is '31-DEC-4712'(DATE)
+default for Monthly_Amount is 0
+/*--------------- Database Item Default Ends---------------*/
+
+/*--------------- Variable Default Begins ---------------*/
+ CALENDAR_DAYS = 0
+ PRORATED_DAYS = 0
+ Transport_Allowance = 0
+/*--------------- Variable Default Ends ---------------*/ 
+
+/*--------------- Formula Body Begins ---------------*/
+L_START_DATE = greatest(PAY_PROC_PERIOD_START_DATE,ENTRY_START_DATE, EMP_HIRE_DATE, PRORATE_START)
+L_END_DATE = least(PAY_PROC_PERIOD_END_DATE, ENTRY_END_DATE, EMP_TERM_DATE, PRORATE_END)
+
+PRORATED_DAYS = (days_between(L_END_DATE, L_START_DATE)+1)
+
+CALENDAR_DAYS = (days_between(PAY_PROC_PERIOD_END_DATE, PAY_PROC_PERIOD_START_DATE)+1)
+
+Transport_Allowance = (Monthly_Amount * (PRORATED_DAYS/CALENDAR_DAYS))
+
+if (CALENDAR_DAYS <> PRORATED_DAYS)
+then
+(
+MSG = ELEMENT_NAME+': Prorated from ' +to_char(L_START_DATE,'DD-MON-YYYY')+' to '+to_char(L_END_DATE,'DD-MON-YYYY')+'. Amount for the Period is '+to_char(Transport_Allowance)
+)
+
+else
+(
+MSG = ELEMENT_NAME+': No Proration. Full Amount Paid'+'. Full Value for the Period is '+to_char(Monthly_Amount)
+)
+
+return Transport_Allowance, MSG
+/*--------------- Formula Body Ends -------------*/
+
+SC_UNPAID_LEAVE_DEDUCTION
+
+Oracle Payroll
+
+inputs are days
+
+DEFAULT FOR DAYS IS 0
+DEFAULT FOR GROUP_KF_MONTHLY_ALLOWANCE_PERCENTAGE IS '0'
+DEFAULT FOR GROUP_KF_BASIC_SALARY_PERCENTAGE IS '0'
+default for total_monthly_salary_monthly_salary_entry_value is 0
+
+BASIC_DEDUCTION = 0
+MONTHLY_ALLOWANCE_DEDUCTION = 0
+Leave_deduction = (total_monthly_salary_monthly_salary_entry_value/22) * days
+
+IF GROUP_KF_MONTHLY_ALLOWANCE_PERCENTAGE WAS DEFAULTED OR GROUP_KF_BASIC_SALARY_PERCENTAGE WAS DEFAULTED THEN
+  (
+     L_BASIC = SC_BASIC_PERCENT
+     L_MONTHLY = SC_MONTHLY_ALLOWANCE_PERCENT
+  )
+  ELSE 
+  (
+     L_BASIC = TO_NUM(GROUP_KF_BASIC_SALARY_PERCENTAGE)
+     L_MONTHLY= TO_NUM(GROUP_KF_MONTHLY_ALLOWANCE_PERCENTAGE)
+  )
+MONTHLY_ALLOWANCE_DEDUCTION = leave_deduction * L_MONTHLY/100
+BASIC_DEDUCTION = leave_deduction - MONTHLY_ALLOWANCE_DEDUCTION
+ 
+return  MONTHLY_ALLOWANCE_DEDUCTION, BASIC_DEDUCTION
+
+SC_UNPAID_LEAVE_TAKEN
+
+INPUTS ARE DAYS 
+
+DEFAULT FOR PAY_PROC_PERIOD_START_DATE IS '01-JAN-1952'(DATE)
+DEFAULT FOR PAY_PROC_PERIOD_END_DATE IS '31-DEC-4712'(DATE)
+DEFAULT FOR ENTRY_START_DATE IS '01-JAN-1952'(DATE)
+DEFAULT FOR ENTRY_END_DATE IS '31-DEC-4712'(DATE)
+DEFAULT FOR TOTAL_MONTHLY_SALARY_MONTHLY_SALARY_ENTRY_VALUE IS 0
+DEFAULT FOR GROUP_KF_MONTHLY_ALLOWANCE_PERCENTAGE IS '0'
+DEFAULT FOR GROUP_KF_BASIC_SALARY_PERCENTAGE IS '0'
+
+BASIC_DEDUCTION = 0
+MONTHLY_ALLOWANCE_DEDUCTION = 0
+FROM_DATE = GREATEST(PAY_PROC_PERIOD_START_DATE,ENTRY_START_DATE)
+TO_DATE = LEAST(PAY_PROC_PERIOD_END_DATE,ENTRY_END_DATE)
+
+CALENDAR_DAYS = DAYS_BETWEEN(PAY_PROC_PERIOD_END_DATE,PAY_PROC_PERIOD_START_DATE)+1
+
+DAYS = SC_GET_LEAVE_DAYS('Unpaid Leave',from_date, TO_DATE,'Calendar')
+
+DEDUCTION=(DAYS * TOTAL_MONTHLY_SALARY_MONTHLY_SALARY_ENTRY_VALUE)/CALENDAR_DAYS
+
+IF (GROUP_KF_MONTHLY_ALLOWANCE_PERCENTAGE WAS DEFAULTED) OR (GROUP_KF_BASIC_SALARY_PERCENTAGE WAS DEFAULTED) THEN
+  (
+     L_BASIC = SC_BASIC_PERCENT
+     L_MONTHLY = SC_MONTHLY_ALLOWANCE_PERCENT
+  )
+  ELSE 
+  (
+     L_BASIC = TO_NUM(GROUP_KF_BASIC_SALARY_PERCENTAGE)
+     L_MONTHLY= TO_NUM(GROUP_KF_MONTHLY_ALLOWANCE_PERCENTAGE)
+  )
+
+MONTHLY_ALLOWANCE_DEDUCTION = DEDUCTION * (L_MONTHLY/100)
+BASIC_DEDUCTION = DEDUCTION - MONTHLY_ALLOWANCE_DEDUCTION
+
+RETURN DAYS, MONTHLY_ALLOWANCE_DEDUCTION, BASIC_DEDUCTION
+
+SC_UNPAID_MATERNITY_CALCULATION
+
+Oracle Payroll
+
+INPUTS ARE DAYS
+
+DEFAULT FOR ENTRY_START_DATE IS '01-JAN-1952'(DATE)
+DEFAULT FOR ENTRY_END_DATE IS '31-DEC-4712'(DATE)
+DEFAULT FOR PAY_PROC_PERIOD_START_DATE IS '01-JAN-1952'(DATE)
+DEFAULT FOR PAY_PROC_PERIOD_END_DATE IS '31-DEC-4712'(DATE)
+DEFAULT FOR TOTAL_MONTHLY_SALARY_MONTHLY_SALARY_ENTRY_VALUE IS 0
+DEFAULT FOR GROUP_KF_MONTHLY_ALLOWANCE_PERCENTAGE IS '0'
+DEFAULT FOR GROUP_KF_BASIC_SALARY_PERCENTAGE IS '0'
+
+BASIC_DEDUCTION = 0
+MONTHLY_ALLOWANCE_DEDUCTION = 0
+L_ST_DT = GREATEST(PAY_PROC_PERIOD_START_DATE,ENTRY_START_DATE)
+L_ED_DT = LEAST(PAY_PROC_PERIOD_END_DATE,ENTRY_END_DATE)
+
+DURATION = SC_GET_LEAVE_DAYS('Unpaid Maternity Leave',L_ST_DT,L_ED_DT,'Working')
+
+WORKING_DAYS = SC_GET_WORK_DAYS(PAY_PROC_PERIOD_START_DATE,PAY_PROC_PERIOD_END_DATE,'AM','PM')
+
+DEDUCTION = (TOTAL_MONTHLY_SALARY_MONTHLY_SALARY_ENTRY_VALUE/WORKING_DAYS)* DURATION
+
+IF GROUP_KF_MONTHLY_ALLOWANCE_PERCENTAGE WAS DEFAULTED OR GROUP_KF_BASIC_SALARY_PERCENTAGE WAS DEFAULTED THEN
+  (
+     L_BASIC = SC_BASIC_PERCENT
+     L_MONTHLY = SC_MONTHLY_ALLOWANCE_PERCENT
+  )
+  ELSE 
+  (
+     L_BASIC = TO_NUM(GROUP_KF_BASIC_SALARY_PERCENTAGE)
+     L_MONTHLY= TO_NUM(GROUP_KF_MONTHLY_ALLOWANCE_PERCENTAGE)
+  )
+MONTHLY_ALLOWANCE_DEDUCTION = DEDUCTION * L_MONTHLY/100
+BASIC_DEDUCTION = DEDUCTION - MONTHLY_ALLOWANCE_DEDUCTION 
+
+RETURN DURATION, MONTHLY_ALLOWANCE_DEDUCTION, BASIC_DEDUCTION
+
