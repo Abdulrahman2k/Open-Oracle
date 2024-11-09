@@ -1,0 +1,84 @@
+/********************************************************** *
+* FORMULA NAME: GENERATE_EXTERNALBANKACCOUNTENDDATE_HDL_FROM_TXT
+* FORMULA TYPE: HCM Data Loader
+* DESCRIPTION: This formula will create ExternalBankAccount HDL File for Enddating Employee existing Bank Account from TXT File
+* CHANGE HISTORY:
+*****************************************************************
+Version Date Created By Comments
+-----------------------------------------------------------------------
+1.0 1-Jan-2024 Abdulrahman Mohammed Initial Version
+******************************************************************/
+INPUTS ARE OPERATION (text), LINENO (number), LINEREPEATNO (number),POSITION1 (text), POSITION2 (text), POSITION3 (text), POSITION4 (text), POSITION5 (text), POSITION6 (text)
+DEFAULT FOR POSITION1 IS 'NO DATA'
+DEFAULT FOR POSITION2 IS 'NO DATA'
+DEFAULT FOR POSITION3 IS 'NO DATA'
+DEFAULT FOR POSITION4 IS 'NO DATA'
+DEFAULT FOR POSITION5 IS 'NO DATA'
+DEFAULT FOR POSITION6 IS 'NO DATA'
+DEFAULT FOR LINEREPEATNO IS 1
+IF OPERATION='FILETYPE' THEN 
+   OUTPUTVALUE='DELIMITED' 
+ELSE IF OPERATION='DELIMITER' THEN 
+   OUTPUTVALUE='|' 
+ELSE IF OPERATION='READ' THEN 
+   OUTPUTVALUE='NONE'
+ELSE IF OPERATION = 'NUMBEROFBUSINESSOBJECTS' THEN
+   (
+   OUTPUTVALUE = '3'
+   RETURN OUTPUTVALUE
+   )
+ELSE IF OPERATION = 'METADATALINEINFORMATION' THEN
+    (
+	METADATA1[1] = 'ExternalBankAccount' /*FileName*/ /*Reserved*/
+    METADATA1[2] = 'ExternalBankAccount' /*FileDiscriminator*/ /*Reserved*/
+    METADATA1[3] = 'ExternalBankAccountId'
+    METADATA1[4] = 'InactiveFlag'
+    METADATA2[1] = 'ExternalBankAccount' /*FileName*/ /*Reserved*/
+    METADATA2[2] = 'ExternalBankAccountOwner' /*FileDiscriminator*/
+    METADATA2[3] = 'ExternalBankAccountId'
+    METADATA2[4] = 'ExternalBankAccountOwnerId'
+    METADATA2[5] = 'PersonNumber'
+    METADATA2[6] = 'PrimaryFlag'
+	METADATA3[1] = 'PersonalPaymentMethod' /*FileName*/ /*Reserved*/
+    METADATA3[2] = 'PersonalPaymentMethod' /*FileDiscriminator*/
+    METADATA3[3] = 'PersonalPaymentMethodId'
+    METADATA3[4] = 'EffectiveStartDate'
+    METADATA3[5] = 'EffectiveEndDate'
+   RETURN METADATA1, METADATA2, METADATA3
+    )
+ELSE IF OPERATION='MAP' THEN 
+
+  IF POSITION2='ExternalBankAccount' THEN
+    ( 
+	FileName = 'ExternalBankAccount'
+    BusinessOperation = 'MERGE'
+    FileDiscriminator = 'ExternalBankAccount' /*trim(POSITION2)*/
+    ExternalBankAccountId = trim(POSITION3)
+    InactiveFlag = trim(POSITION4)
+RETURN BusinessOperation,FileName,FileDiscriminator,ExternalBankAccountId,InactiveFlag
+    )
+    IF POSITION2='ExternalBankAccountOwner' THEN
+    (
+	FileName = 'ExternalBankAccount'
+    BusinessOperation = 'MERGE'
+    FileDiscriminator = 'ExternalBankAccountOwner' /*trim(POSITION2)*/
+    ExternalBankAccountId = trim(POSITION3)
+	ExternalBankAccountOwnerId = trim(POSITION4)
+	PersonNumber = trim(POSITION5)
+	PrimaryFlag = trim(POSITION6)
+    RETURN BusinessOperation,FileName,FileDiscriminator,ExternalBankAccountId,ExternalBankAccountOwnerId,PersonNumber,PrimaryFlag
+    )
+    IF POSITION2='PersonalPaymentMethod' THEN
+    (
+	FileName = 'PersonalPaymentMethod'
+    BusinessOperation = 'MERGE'
+    FileDiscriminator = 'PersonalPaymentMethod' /*trim(POSITION2)*/
+    PersonalPaymentMethodId = trim(POSITION3)
+	EffectiveStartDate = trim(POSITION4)
+	EffectiveEndDate = trim(POSITION5)
+    RETURN BusinessOperation,FileName,FileDiscriminator,PersonalPaymentMethodId,EffectiveStartDate,EffectiveEndDate
+    )
+ELSE 
+   OUTPUTVALUE='NONE'
+RETURN OUTPUTVALUE
+/* End Formula Text */
